@@ -1,5 +1,5 @@
 # Zapata
-Computational and Mapping Library   
+## Computational and Mapping Library   
 
 A revolutionary library for analysis and plotting of meteorological data. The mapping is based on cartopy and GEOCAT libraries from NCAR.
 It uses `xarray` as a basic data structure. 
