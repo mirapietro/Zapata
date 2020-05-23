@@ -1,0 +1,2597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>zapata.mapping API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', ' ', 'auto'); ga('send', 'pageview');
+</script><script async src='https://www.google-analytics.com/analytics.js'></script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>zapata.mapping</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import cartopy.crs as car
+import cartopy.util as utl
+import matplotlib.ticker as mticker
+import matplotlib.pyplot as plt 
+import matplotlib.path as mpath
+import numpy as np
+import xarray as xr
+
+import cartopy.mpl.ticker as ctick
+import cartopy.feature as cfeature
+from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,
+                                LatitudeLocator)
+import zapata.data as era
+import zapata.computation as zcom
+
+
+import mpl_toolkits.axes_grid1 as tl
+
+import geocat.datafiles as gdf
+from geocat.viz import cmaps as gvcmaps
+import geocat.viz.util as gvutil
+
+    
+def choose_contour(cont):
+    &#34;&#34;&#34;
+    Choose contours according to length of _cont_.
+
+    Parameters
+    -----------
+    cont :  
+        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
+        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
+        * n                      _n contours_  
+        * []                     _automatic choice_   
+
+    Returns
+    --------
+    
+    contour_levels :    
+        Levels of selected Contours
+
+    Examples
+    --------
+    &gt;&gt;&gt; [0,1000,10] # Contours from 0 1000
+    &gt;&gt;&gt; [0.01, 0.05, 1.0, 2.0, 5.0, 10.0] # Set Contours Leves   
+    &#34;&#34;&#34;
+    if len(cont) == 3:
+        print(&#34;Setting Fixed Contours&#34;)
+        cc=np.arange(cont[0]-cont[2],cont[1]+2*cont[2],cont[2])
+        print(&#39; Contouring from &#39;, cont[0], &#39;  to&#39;, cont[1],&#39; with interval  &#39;,cont[2])  
+    elif len(cont)&gt; 3:
+        cc=cont
+        print(&#39;Fixed Contours to..&#39;,cont)
+    elif len(cont) == 1:
+        cc=cont[0]
+        print(&#39;Number of Contours &#39;,cc)
+    else:
+        cc=10
+        print(&#39;Ten Contours automatic&#39;)
+    return cc
+
+def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize=&#34;small&#34;,length=6,width=0.9):
+    &#34;&#34;&#34;
+    Utility function to make plots look like NCL plots by adding minor and major tick lines
+    
+    Parameters
+    -----------
+    ax :       
+        Current axes to the current figure
+
+    x_minor_per_major :  
+        Number of minor ticks between adjacent major ticks on x-axis
+
+    y_minor_per_major :   
+        Number of minor ticks between adjacent major ticks on y-axis
+    &#34;&#34;&#34;
+    import matplotlib.ticker as tic
+
+    ax.tick_params(labelsize=labelsize)
+    ax.minorticks_on()
+    ax.xaxis.set_minor_locator(tic.AutoMinorLocator(n=x_minor_per_major))
+    ax.yaxis.set_minor_locator(tic.AutoMinorLocator(n=y_minor_per_major))
+
+    # length and width are in points and may need to change depending on figure size etc.
+    ax.tick_params(
+        &#34;both&#34;,
+        length=length,
+        width=width,
+        which=&#34;major&#34;,
+        bottom=True,
+        top=False,
+        left=True,
+        right=True,
+    )
+    ax.tick_params(
+        &#34;both&#34;,
+        length=length/2,
+        width=width/2,
+        which=&#34;minor&#34;,
+        bottom=True,
+        top=False,
+        left=True,
+        right=True,
+    )
+    
+def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=False):
+    &#34;&#34;&#34;
+    Utility function to make plots look like NCL plots by using latitude, longitude tick labels
+    
+    Parameters
+    ----------
+    ax :    
+        Current axes to the current figure
+
+    zero_direction_label :    
+        Set True to get 0 E / O W or False to get 0 only.
+
+    dateline_direction_label :      
+        Set True to get 180 E / 180 W or False to get 180 only.
+    &#34;&#34;&#34;
+    from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,
+                                LatitudeLocator)
+    
+    lon_formatter = LongitudeFormatter(zero_direction_label=zero_direction_label,
+                        dateline_direction_label=dateline_direction_label,degree_symbol=&#39;&#39;)
+    lat_formatter = LatitudeFormatter(degree_symbol=&#39;&#39;)
+    ax.xaxis.set_major_formatter(lon_formatter)
+    ax.yaxis.set_major_formatter(lat_formatter)
+
+    return
+
+def add_colorbar(fig, handle, ax, colorbar_size=0.01,label_size=10,edges=True):
+    &#34;&#34;&#34;
+    Add colorbar to plot.
+    
+    Parameters
+    -----------
+    
+    handle :   
+        Handle to plot
+    ax :   
+        Axis to which to add the colorbar
+    colorbar_size:    
+        Size of colorbar as a fraxtion of the axis
+    label_size:   
+        Size of labels
+    edges:   
+        Draw edges of the color bar
+    &#34;&#34;&#34;    
+    divider = tl.make_axes_locatable(ax)
+    cax = divider.append_axes(&#39;bottom&#39;,size=&#34;2.5%&#34;, pad=0.4, axes_class=plt.Axes)
+    ax.get_figure().colorbar(handle, cax=cax, orientation=&#39;horizontal&#39;,\
+                        ticks=handle.levels,fraction=0.05,drawedges=edges)
+    return
+
+def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_format = &#39; {:6.0f} &#39;, \
+                      zeroline=False, Special_Value = 9999.,\
+                      lefttitle=&#39;&#39;,righttitle=&#39;&#39;,maintitle=&#39;&#39;,\
+                      xlimit=None,ylimit=None,\
+                      colorbar=False,cmap=&#39;coolwarm&#39;,
+                      coasts=True,color_land=&#39;lightgray&#39;):
+    &#34;&#34;&#34;
+    Lat-Lon mapping function for cartopy.
+
+    Brief description. Internally assume data is always on a latlon projection 
+    with central longitude at Greenwich.
+
+    Parameters 
+    ----------
+    field :     
+        xarray  --  cyclic point added in the routine
+
+    cont :  
+        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
+        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
+        * n                      _n contours_  
+        * []                     _automatic choice_   
+    pro :   
+        Map Projection as initialized by init
+
+    ax :    
+        Plot axis to be used
+    
+    fill :  
+        True/False flag to have filled contours or not
+    
+    contour :  
+        True/False flag to have  contours or not
+    
+    clabel :  
+        True/False flag to have labelled contours or not
+    
+    c_format :  
+        Format for the contour labels
+
+    Special_Value : 
+        Values to be ignored
+
+    lefttitle : 
+        Title string on the left
+
+    righttitle :    
+        Title string on the right
+
+    maintitle : 
+        Title string at the center
+
+    cmap :  
+        Colormap
+
+    coasts: 
+        False/True   Plotting or not empty coastlines 
+
+    color_land: 
+         if coasts=False, use color_land for land
+    
+    Returns
+    -------
+
+    handle :    
+        Dictionary with matplotlib-like info on the plot
+    
+    &#34;&#34;&#34;
+    #Check right projection
+    this = pro.__class__.__name__
+    if not this  in  [&#39;PlateCarree&#39;]:
+        print(&#39; Wrong Projection in `xmap` {}&#39;.format(this))
+        raise SystemExit
+    
+    #Special Values
+    data=field.where(field != 9999.)
+
+    #Eliminate extra dimensions
+    if len(data.shape) &gt; 2:
+        data = data.squeeze()
+        
+    # Add coastlines
+    if coasts:
+        ax.coastlines(linewidth=0.5)
+    else:
+        ax.coastlines(linewidths=0.5)
+        ax.add_feature(cfeature.LAND, facecolor=&#39;lightgray&#39;)
+    
+    #Set axes limits
+    if xlimit is  None:
+        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
+    else:
+        xlim=xlimit
+        
+    if ylimit is  None:
+        ylim = (np.amin(data.lat.values),np.amax(data.lat.values))
+    else:
+        ylim=ylimit
+    print(&#39; Plotting with x limits {}  &#39;.format(xlim)  ) 
+    print(&#39; Plotting with y limits {}  &#39;.format(ylim) )
+    
+    ax.set_extent(list(xlim+ylim),car.PlateCarree())
+    add_ticks(ax)
+    add_ticklabels(ax)
+
+    handles = dict()
+    if fill:
+        handles[&#34;filled&#34;] = data.plot.contourf(
+            ax=ax,                            # this is the axes we want to plot to
+            cmap=cmap,                        # our special colormap
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            xticks=np.arange(xlim[0],xlim[1], 30),  # nice x ticks
+            yticks=np.arange(ylim[0], ylim[1], 15),    # nice y ticks
+            add_colorbar=False,               # don&#39;t add individual colorbars for each plot call
+            add_labels=False,                 # turn off xarray&#39;s automatic Lat, lon labels
+        )
+    if contour:
+        handles[&#39;contours&#39;] = data.plot.contour(
+            ax=ax,                            # this is the axes we want to plot to
+            colors=&#39;black&#39;,                       # our special colormap
+            linestyles=&#34;-&#34;,
+            linewidths=0.8,
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            add_labels = False
+        )
+    if zeroline:
+        handles[&#34;zeroline&#34;] = data.plot.contour(
+        ax=ax,
+        levels=[0],
+        colors=&#34;k&#34;,  # note plurals in this and following kwargs
+        linestyles=&#34;-&#34;,
+        linewidths=1.0,
+        transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+        add_labels=False  # again turn off automatic labels
+        )
+    # Label the contours
+    if clabel:
+        ax.clabel(handles[&#39;contours&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+        if zeroline:
+            ax.clabel(handles[&#39;zeroline&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+    
+    # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
+    set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
+                                maintitle=maintitle, maintitlefontsize=16,
+                                righttitle=righttitle, righttitlefontsize=14)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(handles[&#39;filled&#39;], cax=cax,orientation=&#39;vertical&#39;)
+
+    return handles
+def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose=False):
+    &#34;&#34;&#34;
+    Utility function add ticks and labels to stereo plots
+    
+    Parameters
+    -----------
+    ax :       
+        Current axes to the current figure
+
+    xt :    
+        Locations of desired Longitude labels
+
+    yt :     
+        Locations of desired Latitude labels
+
+    xlim :  
+        Longitudinal extent of the stereo map
+    
+    ylim :  
+        Latitudinal extent of the stereo map
+
+    promap :    
+        Projection 
+
+    Top_label :    
+        True/False  _Turn off the top labels_
+
+    Lat_labels :    
+        True/False  _Turn off the latitude labels_
+
+    &#34;&#34;&#34;
+    # Hardwire ticks for grid lines
+    xloc = xt
+    yloc = yt
+    xlab = []
+    ylab = []
+    # use Geodetic
+    pro=car.Geodetic()
+
+    for i in range(len(xloc)):
+        if xloc[i] &lt; 0: 
+            xlab.append(str(abs(xloc[i])) + &#39;E&#39;)
+        elif xloc[i] &gt; 0: 
+            xlab.append(str(xloc[i]) + &#39;W&#39;)
+        else:
+           xlab.append(str(xloc[i]))
+    for i in range(len(yloc)):
+        if yloc[i] &lt; 0: 
+            ylab.append(str(int(abs(yloc[i]))) + &#39;S&#39;)
+        elif yloc[i] &gt; 0: 
+            ylab.append(str(int(yloc[i])) + &#39;N&#39;)
+        else:
+            ylab.append(str(yloc[i]))
+    if verbose : print(xlab,ylab)
+
+    # Center plot is always at (0,0) in projected coordinate
+    # Choose border and label shift according to hemisphere
+    if np.min(ylim) &gt;= 0 :
+        border = np.min(ylim) - 2.5
+        shift = 0
+    else:
+        border = np.max(ylim) + 2.5
+        shift = 1
+
+    for i in range(len(xloc)):
+        tx=ax.text(xloc[i], border, xlab[i], transform=pro,\
+            horizontalalignment=&#39;center&#39;, verticalalignment=&#39;center&#39;,fontsize=16)
+        tx=_set_label_location(tx,xloc[i], border ,promap,ylim)
+        if shift &gt; 0 and tx.__getattribute__(&#39;Location&#39;) == &#39;Right&#39;:
+            tx.set_position([xloc[i],border+shift])
+        if not Top_label and tx.__getattribute__(&#39;Location&#39;) == &#39;Top&#39;:
+            tx._visible = False
+    if Lat_labels:
+        for i in range(len(yloc)):
+            tx=ax.text(xloc[0], yloc[i], ylab[i], transform=pro,\
+                horizontalalignment=&#39;center&#39;, verticalalignment=&#39;center&#39;,fontsize=16) 
+        
+
+    return
+
+def _set_label_location(tx,x, y, pro,ylim):
+    &#34;&#34;&#34; utility to find the location of labels on projection &#34;&#34;&#34;
+
+    xu,yu = pro.transform_point(x,y,car.PlateCarree())
+    xmin,xmax = pro.x_limits
+    ymin,ymax = pro.y_limits
+    ymax=ymax*abs(np.max(ylim)-np.min(ylim))/180.
+    #print(xmin,xmax,ymin,ymax,xu,yu,x,y)
+    if xu &lt; 0 and abs(xu) &gt; 0.001:
+        tx.__setattr__(&#39;Location&#39;,&#39;Left&#39;)
+    elif xu &gt; 0 and abs(xu) &gt; 0.001:
+        tx.__setattr__(&#39;Location&#39;,&#39;Right&#39;)
+    elif  yu &gt; 0 and abs(xu) &lt; 0.001:
+        tx.__setattr__(&#39;Location&#39;,&#39;Top&#39;)
+    elif  yu &lt; 0 and abs(xu) &lt; 0.001:
+        tx.__setattr__(&#39;Location&#39;,&#39;Bottom&#39;)
+    #print(xu,yu,ymax, ymin,tx.__getattribute__(&#39;Location&#39;))
+
+    if tx.__getattribute__(&#39;Location&#39;) == &#39;Left&#39;:
+        tx.set_horizontalalignment(&#39;right&#39;)
+    return tx
+
+def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
+                      zeroline=False, Special_Value = 9999.,\
+                      lefttitle=&#39;&#39;,righttitle=&#39;&#39;,maintitle=&#39;&#39;,\
+                      xlimit=None,ylimit=None,\
+                      colorbar=False,cmap=&#39;coolwarm&#39;,
+                      coasts=True,color_land=&#39;lightgray&#39;,
+                      Top_label=False,Lat_labels=True,
+                      c_format = &#39; {:6.0f} &#39;,
+                      ):
+    &#34;&#34;&#34;
+    Stereo mapping function for cartopy.
+
+    Brief description. Internally assume data is always on a latlon projection 
+    with central longitude at Greenwich.
+
+    Parameters 
+    ----------
+    field :     
+        xarray  --  cyclic point added in the routine
+
+    cont :  
+        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
+        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
+        * n                      _n contours_  
+        * []                     _automatic choice_   
+    pro :   
+        Map Projection as initialized by init
+
+    ax :    
+        Plot axis to be used    
+    
+    fill :  
+        True/False flag to have filled contours or not
+    
+    contour :  
+        True/False flag to have  contours or not
+    
+    clabel :  
+        True/False flag to have labelled contours or not
+    
+    c_format :  
+        Format for the contour labels
+
+    Special_Value : 
+        Values to be ignored
+
+    lefttitle : 
+        Title string on the left
+
+    righttitle :    
+        Title string on the right
+
+    maintitle : 
+        Title string at the center
+
+    cmap :  
+        Colormap
+
+    coasts: 
+        False/True   Plotting or not empty coastlines 
+
+    color_land: 
+         if coasts=False, use color_land for land
+    
+    Top_label :    
+        True/False  _Turn off the top labels_
+
+    Lat_labels :    
+        True/False  _Turn off the latitude labels_
+    
+    Returns
+    -------
+
+    handle :    
+        Dictionary with matplotlib-like info on the plot
+    
+    &#34;&#34;&#34;
+    #Check right projection
+    this = pro.__class__.__name__
+    if not this  in  [&#39;SouthPolarStereo&#39; ,&#39;NorthPolarStereo&#39; ]:
+        print(&#39; Wrong Projection in `xsmap` {}&#39;.format(this))
+        raise SystemExit
+
+    #Special Values
+    data=field.where(field != 9999.)
+
+    # Fix the artifact of not-shown-data around 0 and 360-degree longitudes
+    data = gvutil.xr_add_cyclic_longitudes(field, &#39;lon&#39;)
+    
+    #Eliminate extra dimensions
+    if len(data.shape) &gt; 2:
+        data = data.squeeze()
+        
+    # Add coastlines
+    if coasts:
+        ax.coastlines(linewidth=0.5,color=&#39;grey&#39;)
+    else:
+        ax.coastlines(linewidths=0.5)
+        ax.add_feature(cfeature.LAND, facecolor=&#39;lightgray&#39;)
+    
+    #Set axes limits
+    if xlimit is  None:
+        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180+0.001)
+    else:
+        xlim=xlimit
+        
+    if ylimit is  None:
+        ylim = (np.amin(data.lat.values),np.amax(data.lat.values))
+    else:
+        ylim=ylimit
+    print(&#39; Plotting with x limits {}  &#39;.format(xlim)  ) 
+    print(&#39; Plotting with y limits {}  &#39;.format(ylim) )
+    
+    ax.set_extent(list(xlim+ylim),car.PlateCarree())  # 
+    theta = np.linspace(0, 2*np.pi, 100)
+    center, radius = [0.5, 0.5], 0.5
+    verts = np.vstack([np.sin(theta), np.cos(theta)]).T
+    circle = mpath.Path(verts * radius + center)
+    ax.set_boundary(circle, transform=ax.transAxes)
+    ax.spines[&#39;geo&#39;].set_linewidth(2.0)
+  
+    handles = dict()
+    if fill:
+        handles[&#34;filled&#34;] = data.plot.contourf(
+            ax=ax,                            # this is the axes we want to plot to
+            cmap=cmap,                        # our special colormap
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            #xticks=np.arange(xlim[0],xlim[1], 30),  # nice x ticks
+            #yticks=np.arange(ylim[0], ylim[1], 15),    # nice y ticks
+            add_colorbar=False,               # don&#39;t add individual colorbars for each plot call
+            add_labels=False,                 # turn off xarray&#39;s automatic Lat, lon labels
+        )
+    if contour:
+        handles[&#39;contours&#39;] = data.plot.contour(
+            ax=ax,                            # this is the axes we want to plot to
+            colors=&#39;black&#39;,                       # our special colormap
+            linestyles=&#34;-&#34;,
+            linewidths=0.8,
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            add_labels = False
+        )
+    if zeroline:
+        handles[&#34;zeroline&#34;] = data.plot.contour(
+        ax=ax,
+        levels=[0],
+        colors=&#34;k&#34;,  # note plurals in this and following kwargs
+        linestyles=&#34;-&#34;,
+        linewidths=1.0,
+        transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+        add_labels=False  # again turn off autransform=car.Geodetic()tomatic labels
+        )
+    # Label the contours
+    if clabel:
+        ax.clabel(handles[&#39;contours&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+        if zeroline:
+            ax.clabel(handles[&#39;zeroline&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+    
+    xt = np.arange(-180,180,45)
+    yt = np.arange(np.min(ylim),np.min([np.max(ylim),75]),20)
+    add_sttick(ax,xt,yt[1:],xlim,ylim,pro,Top_label=Top_label,Lat_labels=Lat_labels,verbose=False)
+    
+    gl=ax.gridlines(color=&#39;grey&#39;, linestyle=&#39;--&#39;, draw_labels=True)
+    gl.xlocator = mticker.FixedLocator(xt)
+    gl.ylocator = mticker.FixedLocator(yt)
+    gl.xformatter = LongitudeFormatter()
+    gl.yformatter = LatitudeFormatter()
+    gl.xlabel_style = {&#39;size&#39;: 16, &#39;color&#39;: &#39;black&#39;}
+    
+    # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
+    set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=18,
+                                maintitle=maintitle, maintitlefontsize=18,
+                                righttitle=righttitle, righttitlefontsize=18,ytitle=1.00)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(handles[&#39;filled&#39;], cax=cax,orientation=&#39;vertical&#39;)
+
+    return handles
+def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
+    &#34;&#34;&#34;
+    Initialization for the entire figure, choose projection and number of panels.
+
+    Parameters
+    ----------
+    rows :  
+        Number of rows in multiple picture
+
+    cols :       
+        Number of columns in multiple picture
+
+     figsize :    
+        Size of figure in inches (height, width)
+
+    proview :    
+        Projection for the map  
+        _&#34;Pacific&#34;_,   cartopy PlateCarree, central longitude 180   
+        _&#34;Atlantic&#34;_,  cartopy PlateCarree, central longitude 0      
+        _&#34;NHStereoEurope&#34;_,  NH Stereo, central longitude 0     
+        _&#34;NHStereoAmerica&#34;_,  NH Stereo, central longitude 90   
+        _&#34;SHStereoAfrica&#34;_,  NH Stereo, central longitude 0 
+    constrained_layout :    
+        True/False 
+
+    Returns
+    -------
+
+    fig :   
+        fig handle
+    
+    ax :    
+        Axes of the panels
+    
+    pro :   
+        Projection chosen
+    &#34;&#34;&#34;
+    
+    # This fixes the projection for the mapping: 
+    #      Data Projection is then fixed in mapping routine
+    if   proview == &#39;Pacific&#39;:
+        projection = car.PlateCarree(central_longitude=180.)
+    elif proview == &#39;Atlantic&#39;:
+        projection = car.PlateCarree(central_longitude=0.)
+    elif proview == &#39;NHStereoEurope&#39;:
+        projection = car.NorthPolarStereo(central_longitude=0.)
+    elif proview == &#39;NHStereoAmerica&#39;:
+        projection = car.NorthPolarStereo(central_longitude=-90.)
+    elif proview == &#39;SHStereoAfrica&#39;:
+        projection = car.SouthPolarStereo(central_longitude=90.)
+    else:
+        print(&#39; Error in init_figure projection {}&#39;.format(proview))
+        raise SystemExit
+    
+    fig, ax = plt.subplots(rows, cols,figsize=figsize, constrained_layout=constrained_layout, \
+                           subplot_kw={ &#34;projection&#34;: projection})
+    
+    print(&#39; Opening figure , %i rows and %i cols \n&#39; % (rows,cols))
+    
+    return fig,ax,projection
+
+def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
+                          lefttitle=None, lefttitlefontsize=18, \
+                          righttitle=None, righttitlefontsize=18,
+                          xlabel=None, ylabel=None, labelfontsize=16,
+                          ytitle=0.98):
+    &#34;&#34;&#34;
+    Utility function to handle axis titles, left/right aligned titles.
+
+    Parameters  
+    ----------
+
+    ax :    
+        Current axes to the current figure  
+    
+    maintitle :   
+        Text to use for the maintitle   
+
+    maintitlefontsize :   
+        Text font size for maintitle. A default value of 18 is used if nothing is set
+    
+    lefttitle :  
+        Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,
+        but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.
+    
+    lefttitlefontsize :     
+        Text font size for lefttitle. A default value of 18 is used if nothing is set
+    
+    righttitle :        
+        Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,
+        but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.
+    
+    righttitlefontsize :    
+        Text font size for righttitle. A default value of 18 is used if nothing is set
+
+    xlabel :    
+        Text for the x-axis label
+
+    ylabel :    
+        Text for the y-axis label
+
+    labelfontsize :     
+        Text font size for x- and y-axes. A default value of 16 is used if nothing is set
+    
+    ytitle :    
+        Y position of the main title
+    &#34;&#34;&#34;
+    
+
+    if maintitle is not None:
+        ax.set_title(maintitle, fontsize=maintitlefontsize, loc=&#39;center&#39;, y=ytitle+0.01)
+
+    if lefttitle is not None:
+        ax.set_title(lefttitle, fontsize=lefttitlefontsize, y=ytitle+0.01, loc=&#39;left&#39;)
+
+    if righttitle is not None:
+        ax.set_title(righttitle, fontsize=righttitlefontsize, y=ytitle+0.01, loc=&#39;right&#39;)
+
+    if xlabel is not None:
+        ax.set_xlabel(xlabel, fontsize=labelfontsize)
+
+    if ylabel is not None:
+        ax.set_ylabel(ylabel, fontsize=labelfontsize)
+
+    return
+def xstmap(U, V,  color=&#39;black&#39;, ax=None, \
+                      density=2, Special_Value = 9999.,\
+                      lefttitle=&#39;&#39;,righttitle=&#39;&#39;,maintitle=&#39;&#39;,\
+                      xlimit=None,ylimit=None,\
+                      colorbar=False,cmap=&#39;coolwarm&#39;):
+    &#34;&#34;&#34;
+    Plot streamline for field U and V.
+
+    This routine draws streamlines for the fields U,V, optionally colored with the field ``color``. Internally assume data is always on a latlon projection with central longitude at Greenwich.
+
+    Parameters      
+    ----------
+    U : xarray
+        X component of the streamlines   
+    
+    V : xarray
+        Y component of the streamlines
+    
+    color :   
+        Color of the stremalines (&#39;black&#39;). If it is xarray color the streamlines with the colormap ``cmap``       
+    
+    density :    
+        Density of the streamlines      
+
+    ax :          
+        Plot axis to be used        
+    
+    Special_Value :         
+        Values to be ignored       
+    
+    lefttitle :         
+        Title string on the left       
+    
+    righttitle :       
+        Title string on the right      
+    
+    maintitle :      
+        Title string at the center    
+    
+    cmap :  
+        Colormap    
+    
+    colorbar :   
+        False/True  
+    
+    xlimit :       
+        Limit of the map (lon)  
+    
+    ylimit :        
+        Limit of the map (lat)  
+    &#34;&#34;&#34;
+    #Special Values
+    U=U.where(U != 9999.)
+    
+    #select color scale
+    this = type(color).__name__
+    if this == &#39;str&#39;:
+        color_scale=color
+    elif this == &#39;DataArray&#39;:
+        print(this)
+        color_scale = color.data
+    elif this == &#39;ndarray&#39;:
+        color_scale=color
+    else:
+        color_scale=&#39;black&#39;
+
+    #Eliminate extra dimensions
+    if len(U.shape) &gt; 2:
+        U = U.squeeze()
+        V = V.squeeze()
+       
+    # Stream-plot the data
+    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can&#39;t
+    # pass xarray.DataArray objects directly: fetch NumPy arrays via &#39;data&#39; attribute&#39;
+    hc=ax.streamplot(U.lon.data, U.lat.data, U.data, V.data, linewidth=1, density=density, color=color_scale, \
+                     cmap=cmap,  zorder=1,transform=car.PlateCarree()    )
+
+    # # Label the contours
+    #     ax.clabel
+    #         handles[&#34;contour&#34;], fontsize=8, fmt=&#34;%.0f&#34;,  # Turn off decimal points
+    #    )
+
+    # Add coastlines
+    ax.coastlines(linewidth=0.5)
+    # Draw filled polygons for land
+    ax.add_feature(cfeature.LAND, zorder=0, edgecolor=&#39;black&#39;, color=&#39;lightgray&#39;)
+
+    #Set axes limits a
+    if xlimit is  None:
+        xlim = (np.amin(U.lon.values)-180.,np.amax(U.lon.values)-180.)
+    else:
+        xlim=xlimit
+        
+    if ylimit is  None:
+        ylim = (np.amin(U.lat.values),np.amax(U.lat.values))
+    else:
+        ylim=ylimit
+    print(&#39; Plotting with x limits {}  &#39;.format(xlim)  ) 
+    print(&#39; Plotting with y limits {}  &#39;.format(ylim) )
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    
+    # Use libcartopy convenience function to add minor and major tick lines
+    add_ticks(ax)
+
+    # Use libcartopy convenience function to make plots look like NCL plots by using latitude, longitude tick labels
+    add_ticklabels(ax)
+
+    # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
+    set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
+                                 maintitle=maintitle, maintitlefontsize=16,
+                                 righttitle=righttitle, righttitlefontsize=14)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(hc.lines, cax=cax,orientation=&#39;vertical&#39;)
+
+    return hc
+def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True):
+    &#34;&#34;&#34;
+    Zonal mapping function for xarray (lat,pressure). 
+    
+    Parameters
+    ----------
+    data :    
+            xarray  --  cyclic point added in the routine (latitude, pressure)      
+    
+    cont :   
+            Choose contours according to length of _cont_
+    * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_
+    * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_
+    * n                      _n contours_
+    * []                     _automatic choice_
+    
+    ax :            
+            Plot axis to be used
+            
+    Special_Value:     
+            Values to be ignored
+            
+    lefttitle:     
+            Title string on the left
+            
+    righttitle:   
+            Title string on the right
+            
+    maintitle:  
+            Title string at the center
+            
+    cmap:  
+            Colormap
+            
+    zeroline:   
+            False/True if a zero line is desired
+            
+    colorbar:   
+            False/True if a colorbar is desired
+    
+    Returns
+    --------
+    
+    handle: 
+        Dict with plot parameters
+    
+    Examples
+    --------
+    
+    &gt;&gt;&gt; zonal_plot(data,ax,[],&#39;BYR&#39;,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True)
+    &#34;&#34;&#34;
+
+    handle = data.plot.contourf(
+        ax=ax,                            # this is the axes we want to plot to
+        cmap=cmap,                        # our special colormap
+        levels=choose_contour(cont),      # contour levels specified outside this function
+        xticks=np.arange(-90, 90, 15),  # nice x ticks
+        yticks=[1000,850,700,500,300,200,100],    # nice y ticks
+        add_colorbar=colorbar,               # don&#39;t add individual colorbars for each plot call
+        add_labels=False                 # turn off xarray&#39;s automatic Lat, lon labels
+    )
+    if zeroline:
+        hc = data.plot.contour(
+        ax=ax,
+        levels=[0],
+        colors=&#34;k&#34;,  # note plurals in this and following kwargs
+        linestyles=&#34;-&#34;,
+        linewidths=1.25,
+        add_labels=False  # again turn off automatic labels
+        )
+    lev=data.pressure.values
+    nlev=len(lev)
+    ax.set_ylim(lev[nlev-1], lev[0])  # Invert y axis
+    ax.set_xlim(90,-90)  # Invert x axis
+    #
+    set_titles_and_labels(ax, maintitle=maintitle, maintitlefontsize=18, \
+                          lefttitle=lefttitle, lefttitlefontsize=18, \
+                          righttitle=righttitle, righttitlefontsize=18,
+                          xlabel=&#39;Latitude&#39;, ylabel=&#39;Pressure&#39;, labelfontsize=16)
+    return handle
+def zonal_stream_plot(datau,datav,ax,color=&#39;black&#39;,\
+                     cmap=&#39;bwr&#39;, density=2,\
+                     maintitle=None, lefttitle=None, righttitle=None,\
+                     colorbar=True, smooth=True, special_value=9999):
+    &#34;&#34;&#34;
+    Zonal mapping streamfunction.
+
+    Plot zonal streamline for fielddatu e datav.
+
+    Parameters      
+    ----------
+    datau : xarray
+        X component of the streamlines   
+    
+    datav : xarray
+        Y component of the streamlines
+    
+    color :   
+        Color of the stremalines (&#39;black&#39;). If it is xarray color the streamlines with the colormap ``cmap``       
+    
+    density :    
+        Density of the streamlines      
+
+    ax :          
+        Plot axis to be used        
+    
+    Special_Value :         
+        Values to be ignored       
+    
+    lefttitle :         
+        Title string on the left       
+    
+    righttitle :       
+        Title string on the right
+
+    maintitle:  
+        Title string at the center
+            
+    cmap:  
+        Colormap
+            
+    smooth:   
+        False/True if smoothing is desired
+            
+    colorbar:   
+        False/True if a colorbar is desired      
+    
+
+    &#34;&#34;&#34;
+    #Special Values
+    datau=datau.where(datau != 9999.)
+    datav=datav.where(datav != 9999.)
+    
+    #select color scale
+    this = type(color).__name__
+    if this == &#39;str&#39;:
+        color_scale=color
+    elif this == &#39;DataArray&#39;:
+        print(this)
+        color_scale = color.interp(pressure=np.arange(100,1000,50)).data
+    elif this == &#39;ndarray&#39;:
+        color_scale=color
+    else:
+        color_scale=&#39;black&#39;
+        colorbar=False
+
+    #Eliminate extra dimensions
+    if len(datau.shape) &gt; 2:
+        datau = datau.squeeze()
+        datav = datav.squeeze()
+    #Interpolate on a pressure regular grid
+    U=datau.interp(pressure=np.arange(100,1000,50))
+    V=datav.interp(pressure=np.arange(100,1000,50))
+    
+    # Stream-plot the data
+    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can&#39;t
+    # pass xarray.DataArray objects directly: fetch NumPy arrays via &#39;data&#39; attribute&#39;
+    hc=ax.streamplot(U.lat.data, V.pressure.data, U.data, V.data, linewidth=1, density=density, color=color_scale, \
+                     zorder=1,cmap=cmap   )
+    #  Label the contours
+    #     ax.clabel
+    #         handles[&#34;contour&#34;], fontsize=8, fmt=&#34;%.0f&#34;,  # Turn off decimal points
+    #    )
+
+    lev=U.pressure.values
+    nlev=len(lev)
+    ax.set_ylim(lev[nlev-1], lev[0])  # Invert y axis
+    ax.set_xlim(90,-90)  # Invert x axis
+    #
+    set_titles_and_labels(ax, maintitle=maintitle, maintitlefontsize=18, \
+                          lefttitle=lefttitle, lefttitlefontsize=18, \
+                          righttitle=righttitle, righttitlefontsize=18,
+                          xlabel=&#39;Latitude&#39;, ylabel=&#39;Pressure&#39;, labelfontsize=16)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(hc.lines, cax=cax,orientation=&#39;vertical&#39;)
+
+    return hc</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="zapata.mapping.add_colorbar"><code class="name flex">
+<span>def <span class="ident">add_colorbar</span></span>(<span>fig, handle, ax, colorbar_size=0.01, label_size=10, edges=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Add colorbar to plot.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>handle</code></strong> :&ensp;</dt>
+<dd>Handle to plot</dd>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Axis to which to add the colorbar</dd>
+<dt><strong><code>colorbar_size</code></strong> :&ensp;</dt>
+<dd>Size of colorbar as a fraxtion of the axis</dd>
+<dt><strong><code>label_size</code></strong> :&ensp;</dt>
+<dd>Size of labels</dd>
+<dt><strong><code>edges</code></strong> :&ensp;</dt>
+<dd>Draw edges of the color bar</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_colorbar(fig, handle, ax, colorbar_size=0.01,label_size=10,edges=True):
+    &#34;&#34;&#34;
+    Add colorbar to plot.
+    
+    Parameters
+    -----------
+    
+    handle :   
+        Handle to plot
+    ax :   
+        Axis to which to add the colorbar
+    colorbar_size:    
+        Size of colorbar as a fraxtion of the axis
+    label_size:   
+        Size of labels
+    edges:   
+        Draw edges of the color bar
+    &#34;&#34;&#34;    
+    divider = tl.make_axes_locatable(ax)
+    cax = divider.append_axes(&#39;bottom&#39;,size=&#34;2.5%&#34;, pad=0.4, axes_class=plt.Axes)
+    ax.get_figure().colorbar(handle, cax=cax, orientation=&#39;horizontal&#39;,\
+                        ticks=handle.levels,fraction=0.05,drawedges=edges)
+    return</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.add_sttick"><code class="name flex">
+<span>def <span class="ident">add_sttick</span></span>(<span>ax, xt, yt, xlim, ylim, promap, Top_label=True, Lat_labels=True, verbose=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Utility function add ticks and labels to stereo plots</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Current axes to the current figure</dd>
+<dt><strong><code>xt</code></strong> :&ensp;</dt>
+<dd>Locations of desired Longitude labels</dd>
+<dt><strong><code>yt</code></strong> :&ensp;</dt>
+<dd>Locations of desired Latitude labels</dd>
+<dt><strong><code>xlim</code></strong> :&ensp;</dt>
+<dd>Longitudinal extent of the stereo map</dd>
+<dt><strong><code>ylim</code></strong> :&ensp;</dt>
+<dd>Latitudinal extent of the stereo map</dd>
+<dt><strong><code>promap</code></strong> :&ensp;</dt>
+<dd>Projection</dd>
+<dt><strong><code>Top_label</code></strong> :&ensp;</dt>
+<dd>True/False
+<em>Turn off the top labels</em></dd>
+<dt><strong><code>Lat_labels</code></strong> :&ensp;</dt>
+<dd>True/False
+<em>Turn off the latitude labels</em></dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose=False):
+    &#34;&#34;&#34;
+    Utility function add ticks and labels to stereo plots
+    
+    Parameters
+    -----------
+    ax :       
+        Current axes to the current figure
+
+    xt :    
+        Locations of desired Longitude labels
+
+    yt :     
+        Locations of desired Latitude labels
+
+    xlim :  
+        Longitudinal extent of the stereo map
+    
+    ylim :  
+        Latitudinal extent of the stereo map
+
+    promap :    
+        Projection 
+
+    Top_label :    
+        True/False  _Turn off the top labels_
+
+    Lat_labels :    
+        True/False  _Turn off the latitude labels_
+
+    &#34;&#34;&#34;
+    # Hardwire ticks for grid lines
+    xloc = xt
+    yloc = yt
+    xlab = []
+    ylab = []
+    # use Geodetic
+    pro=car.Geodetic()
+
+    for i in range(len(xloc)):
+        if xloc[i] &lt; 0: 
+            xlab.append(str(abs(xloc[i])) + &#39;E&#39;)
+        elif xloc[i] &gt; 0: 
+            xlab.append(str(xloc[i]) + &#39;W&#39;)
+        else:
+           xlab.append(str(xloc[i]))
+    for i in range(len(yloc)):
+        if yloc[i] &lt; 0: 
+            ylab.append(str(int(abs(yloc[i]))) + &#39;S&#39;)
+        elif yloc[i] &gt; 0: 
+            ylab.append(str(int(yloc[i])) + &#39;N&#39;)
+        else:
+            ylab.append(str(yloc[i]))
+    if verbose : print(xlab,ylab)
+
+    # Center plot is always at (0,0) in projected coordinate
+    # Choose border and label shift according to hemisphere
+    if np.min(ylim) &gt;= 0 :
+        border = np.min(ylim) - 2.5
+        shift = 0
+    else:
+        border = np.max(ylim) + 2.5
+        shift = 1
+
+    for i in range(len(xloc)):
+        tx=ax.text(xloc[i], border, xlab[i], transform=pro,\
+            horizontalalignment=&#39;center&#39;, verticalalignment=&#39;center&#39;,fontsize=16)
+        tx=_set_label_location(tx,xloc[i], border ,promap,ylim)
+        if shift &gt; 0 and tx.__getattribute__(&#39;Location&#39;) == &#39;Right&#39;:
+            tx.set_position([xloc[i],border+shift])
+        if not Top_label and tx.__getattribute__(&#39;Location&#39;) == &#39;Top&#39;:
+            tx._visible = False
+    if Lat_labels:
+        for i in range(len(yloc)):
+            tx=ax.text(xloc[0], yloc[i], ylab[i], transform=pro,\
+                horizontalalignment=&#39;center&#39;, verticalalignment=&#39;center&#39;,fontsize=16) 
+        
+
+    return</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.add_ticklabels"><code class="name flex">
+<span>def <span class="ident">add_ticklabels</span></span>(<span>ax, zero_direction_label=False, dateline_direction_label=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Utility function to make plots look like NCL plots by using latitude, longitude tick labels</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Current axes to the current figure</dd>
+<dt><strong><code>zero_direction_label</code></strong> :&ensp;</dt>
+<dd>Set True to get 0 E / O W or False to get 0 only.</dd>
+<dt><strong><code>dateline_direction_label</code></strong> :&ensp;</dt>
+<dd>Set True to get 180 E / 180 W or False to get 180 only.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=False):
+    &#34;&#34;&#34;
+    Utility function to make plots look like NCL plots by using latitude, longitude tick labels
+    
+    Parameters
+    ----------
+    ax :    
+        Current axes to the current figure
+
+    zero_direction_label :    
+        Set True to get 0 E / O W or False to get 0 only.
+
+    dateline_direction_label :      
+        Set True to get 180 E / 180 W or False to get 180 only.
+    &#34;&#34;&#34;
+    from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,
+                                LatitudeLocator)
+    
+    lon_formatter = LongitudeFormatter(zero_direction_label=zero_direction_label,
+                        dateline_direction_label=dateline_direction_label,degree_symbol=&#39;&#39;)
+    lat_formatter = LatitudeFormatter(degree_symbol=&#39;&#39;)
+    ax.xaxis.set_major_formatter(lon_formatter)
+    ax.yaxis.set_major_formatter(lat_formatter)
+
+    return</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.add_ticks"><code class="name flex">
+<span>def <span class="ident">add_ticks</span></span>(<span>ax, x_minor_per_major=3, y_minor_per_major=3, labelsize='small', length=6, width=0.9)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Utility function to make plots look like NCL plots by adding minor and major tick lines</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Current axes to the current figure</dd>
+<dt><strong><code>x_minor_per_major</code></strong> :&ensp;</dt>
+<dd>Number of minor ticks between adjacent major ticks on x-axis</dd>
+<dt><strong><code>y_minor_per_major</code></strong> :&ensp;</dt>
+<dd>Number of minor ticks between adjacent major ticks on y-axis</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize=&#34;small&#34;,length=6,width=0.9):
+    &#34;&#34;&#34;
+    Utility function to make plots look like NCL plots by adding minor and major tick lines
+    
+    Parameters
+    -----------
+    ax :       
+        Current axes to the current figure
+
+    x_minor_per_major :  
+        Number of minor ticks between adjacent major ticks on x-axis
+
+    y_minor_per_major :   
+        Number of minor ticks between adjacent major ticks on y-axis
+    &#34;&#34;&#34;
+    import matplotlib.ticker as tic
+
+    ax.tick_params(labelsize=labelsize)
+    ax.minorticks_on()
+    ax.xaxis.set_minor_locator(tic.AutoMinorLocator(n=x_minor_per_major))
+    ax.yaxis.set_minor_locator(tic.AutoMinorLocator(n=y_minor_per_major))
+
+    # length and width are in points and may need to change depending on figure size etc.
+    ax.tick_params(
+        &#34;both&#34;,
+        length=length,
+        width=width,
+        which=&#34;major&#34;,
+        bottom=True,
+        top=False,
+        left=True,
+        right=True,
+    )
+    ax.tick_params(
+        &#34;both&#34;,
+        length=length/2,
+        width=width/2,
+        which=&#34;minor&#34;,
+        bottom=True,
+        top=False,
+        left=True,
+        right=True,
+    )</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.choose_contour"><code class="name flex">
+<span>def <span class="ident">choose_contour</span></span>(<span>cont)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Choose contours according to length of <em>cont</em>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cont</code></strong> :&ensp;</dt>
+<dd>
+<ul>
+<li>[cmin,cmax,cinc]
+<em>fixed increment from cmin to cmax step cinc</em>
+</li>
+<li>[ c1,c2, &hellip;, cn]
+<em>fixed contours at [ c1,c2, &hellip;, cn]</em>
+</li>
+<li>n
+<em>n contours</em>
+</li>
+<li>[]
+<em>automatic choice</em></li>
+</ul>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>contour_levels</code></strong> :&ensp;</dt>
+<dd>Levels of selected Contours</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code>&gt;&gt;&gt; [0,1000,10] # Contours from 0 1000
+&gt;&gt;&gt; [0.01, 0.05, 1.0, 2.0, 5.0, 10.0] # Set Contours Leves
+</code></pre></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def choose_contour(cont):
+    &#34;&#34;&#34;
+    Choose contours according to length of _cont_.
+
+    Parameters
+    -----------
+    cont :  
+        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
+        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
+        * n                      _n contours_  
+        * []                     _automatic choice_   
+
+    Returns
+    --------
+    
+    contour_levels :    
+        Levels of selected Contours
+
+    Examples
+    --------
+    &gt;&gt;&gt; [0,1000,10] # Contours from 0 1000
+    &gt;&gt;&gt; [0.01, 0.05, 1.0, 2.0, 5.0, 10.0] # Set Contours Leves   
+    &#34;&#34;&#34;
+    if len(cont) == 3:
+        print(&#34;Setting Fixed Contours&#34;)
+        cc=np.arange(cont[0]-cont[2],cont[1]+2*cont[2],cont[2])
+        print(&#39; Contouring from &#39;, cont[0], &#39;  to&#39;, cont[1],&#39; with interval  &#39;,cont[2])  
+    elif len(cont)&gt; 3:
+        cc=cont
+        print(&#39;Fixed Contours to..&#39;,cont)
+    elif len(cont) == 1:
+        cc=cont[0]
+        print(&#39;Number of Contours &#39;,cc)
+    else:
+        cc=10
+        print(&#39;Ten Contours automatic&#39;)
+    return cc</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.init_figure"><code class="name flex">
+<span>def <span class="ident">init_figure</span></span>(<span>rows, cols, proview, constrained_layout=True, figsize=(16, 8))</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Initialization for the entire figure, choose projection and number of panels.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rows</code></strong> :&ensp;</dt>
+<dd>Number of rows in multiple picture</dd>
+<dt><strong><code>cols</code></strong> :&ensp;</dt>
+<dd>Number of columns in multiple picture</dd>
+</dl>
+<p>figsize :
+<br>
+Size of figure in inches (height, width)</p>
+<dl>
+<dt><strong><code>proview</code></strong> :&ensp;</dt>
+<dd>Projection for the map<br>
+<em>"Pacific"</em>,
+cartopy PlateCarree, central longitude 180 <br>
+<em>"Atlantic"</em>,
+cartopy PlateCarree, central longitude 0
+<br>
+<em>"NHStereoEurope"</em>,
+NH Stereo, central longitude 0
+<br>
+<em>"NHStereoAmerica"</em>,
+NH Stereo, central longitude 90 <br>
+<em>"SHStereoAfrica"</em>,
+NH Stereo, central longitude 0</dd>
+<dt><strong><code>constrained_layout</code></strong> :&ensp;</dt>
+<dd>True/False</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>fig</code></strong> :&ensp;</dt>
+<dd>fig handle</dd>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Axes of the panels</dd>
+<dt><strong><code>pro</code></strong> :&ensp;</dt>
+<dd>Projection chosen</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
+    &#34;&#34;&#34;
+    Initialization for the entire figure, choose projection and number of panels.
+
+    Parameters
+    ----------
+    rows :  
+        Number of rows in multiple picture
+
+    cols :       
+        Number of columns in multiple picture
+
+     figsize :    
+        Size of figure in inches (height, width)
+
+    proview :    
+        Projection for the map  
+        _&#34;Pacific&#34;_,   cartopy PlateCarree, central longitude 180   
+        _&#34;Atlantic&#34;_,  cartopy PlateCarree, central longitude 0      
+        _&#34;NHStereoEurope&#34;_,  NH Stereo, central longitude 0     
+        _&#34;NHStereoAmerica&#34;_,  NH Stereo, central longitude 90   
+        _&#34;SHStereoAfrica&#34;_,  NH Stereo, central longitude 0 
+    constrained_layout :    
+        True/False 
+
+    Returns
+    -------
+
+    fig :   
+        fig handle
+    
+    ax :    
+        Axes of the panels
+    
+    pro :   
+        Projection chosen
+    &#34;&#34;&#34;
+    
+    # This fixes the projection for the mapping: 
+    #      Data Projection is then fixed in mapping routine
+    if   proview == &#39;Pacific&#39;:
+        projection = car.PlateCarree(central_longitude=180.)
+    elif proview == &#39;Atlantic&#39;:
+        projection = car.PlateCarree(central_longitude=0.)
+    elif proview == &#39;NHStereoEurope&#39;:
+        projection = car.NorthPolarStereo(central_longitude=0.)
+    elif proview == &#39;NHStereoAmerica&#39;:
+        projection = car.NorthPolarStereo(central_longitude=-90.)
+    elif proview == &#39;SHStereoAfrica&#39;:
+        projection = car.SouthPolarStereo(central_longitude=90.)
+    else:
+        print(&#39; Error in init_figure projection {}&#39;.format(proview))
+        raise SystemExit
+    
+    fig, ax = plt.subplots(rows, cols,figsize=figsize, constrained_layout=constrained_layout, \
+                           subplot_kw={ &#34;projection&#34;: projection})
+    
+    print(&#39; Opening figure , %i rows and %i cols \n&#39; % (rows,cols))
+    
+    return fig,ax,projection</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.set_titles_and_labels"><code class="name flex">
+<span>def <span class="ident">set_titles_and_labels</span></span>(<span>ax, maintitle=None, maintitlefontsize=18, lefttitle=None, lefttitlefontsize=18, righttitle=None, righttitlefontsize=18, xlabel=None, ylabel=None, labelfontsize=16, ytitle=0.98)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Utility function to handle axis titles, left/right aligned titles.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Current axes to the current figure</dd>
+<dt><strong><code>maintitle</code></strong> :&ensp;</dt>
+<dd>Text to use for the maintitle</dd>
+<dt><strong><code>maintitlefontsize</code></strong> :&ensp;</dt>
+<dd>Text font size for maintitle. A default value of 18 is used if nothing is set</dd>
+<dt><strong><code>lefttitle</code></strong> :&ensp;</dt>
+<dd>Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,
+but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.</dd>
+<dt><strong><code>lefttitlefontsize</code></strong> :&ensp;</dt>
+<dd>Text font size for lefttitle. A default value of 18 is used if nothing is set</dd>
+<dt><strong><code>righttitle</code></strong> :&ensp;</dt>
+<dd>Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,
+but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.</dd>
+<dt><strong><code>righttitlefontsize</code></strong> :&ensp;</dt>
+<dd>Text font size for righttitle. A default value of 18 is used if nothing is set</dd>
+<dt><strong><code>xlabel</code></strong> :&ensp;</dt>
+<dd>Text for the x-axis label</dd>
+<dt><strong><code>ylabel</code></strong> :&ensp;</dt>
+<dd>Text for the y-axis label</dd>
+<dt><strong><code>labelfontsize</code></strong> :&ensp;</dt>
+<dd>Text font size for x- and y-axes. A default value of 16 is used if nothing is set</dd>
+<dt><strong><code>ytitle</code></strong> :&ensp;</dt>
+<dd>Y position of the main title</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
+                          lefttitle=None, lefttitlefontsize=18, \
+                          righttitle=None, righttitlefontsize=18,
+                          xlabel=None, ylabel=None, labelfontsize=16,
+                          ytitle=0.98):
+    &#34;&#34;&#34;
+    Utility function to handle axis titles, left/right aligned titles.
+
+    Parameters  
+    ----------
+
+    ax :    
+        Current axes to the current figure  
+    
+    maintitle :   
+        Text to use for the maintitle   
+
+    maintitlefontsize :   
+        Text font size for maintitle. A default value of 18 is used if nothing is set
+    
+    lefttitle :  
+        Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,
+        but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.
+    
+    lefttitlefontsize :     
+        Text font size for lefttitle. A default value of 18 is used if nothing is set
+    
+    righttitle :        
+        Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,
+        but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.
+    
+    righttitlefontsize :    
+        Text font size for righttitle. A default value of 18 is used if nothing is set
+
+    xlabel :    
+        Text for the x-axis label
+
+    ylabel :    
+        Text for the y-axis label
+
+    labelfontsize :     
+        Text font size for x- and y-axes. A default value of 16 is used if nothing is set
+    
+    ytitle :    
+        Y position of the main title
+    &#34;&#34;&#34;
+    
+
+    if maintitle is not None:
+        ax.set_title(maintitle, fontsize=maintitlefontsize, loc=&#39;center&#39;, y=ytitle+0.01)
+
+    if lefttitle is not None:
+        ax.set_title(lefttitle, fontsize=lefttitlefontsize, y=ytitle+0.01, loc=&#39;left&#39;)
+
+    if righttitle is not None:
+        ax.set_title(righttitle, fontsize=righttitlefontsize, y=ytitle+0.01, loc=&#39;right&#39;)
+
+    if xlabel is not None:
+        ax.set_xlabel(xlabel, fontsize=labelfontsize)
+
+    if ylabel is not None:
+        ax.set_ylabel(ylabel, fontsize=labelfontsize)
+
+    return</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.xmap"><code class="name flex">
+<span>def <span class="ident">xmap</span></span>(<span>field, cont, pro, ax=None, fill=True, contour=True, clabel=True, c_format=' {:6.0f} ', zeroline=False, Special_Value=9999.0, lefttitle='', righttitle='', maintitle='', xlimit=None, ylimit=None, colorbar=False, cmap='coolwarm', coasts=True, color_land='lightgray')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Lat-Lon mapping function for cartopy.</p>
+<p>Brief description. Internally assume data is always on a latlon projection
+with central longitude at Greenwich.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>field</code></strong> :&ensp;</dt>
+<dd>xarray
+&ndash;
+cyclic point added in the routine</dd>
+<dt><strong><code>cont</code></strong> :&ensp;</dt>
+<dd>
+<ul>
+<li>[cmin,cmax,cinc]
+<em>fixed increment from cmin to cmax step cinc</em>
+</li>
+<li>[ c1,c2, &hellip;, cn]
+<em>fixed contours at [ c1,c2, &hellip;, cn]</em>
+</li>
+<li>n
+<em>n contours</em>
+</li>
+<li>[]
+<em>automatic choice</em></li>
+</ul>
+</dd>
+<dt><strong><code>pro</code></strong> :&ensp;</dt>
+<dd>Map Projection as initialized by init</dd>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Plot axis to be used</dd>
+<dt><strong><code>fill</code></strong> :&ensp;</dt>
+<dd>True/False flag to have filled contours or not</dd>
+<dt><strong><code>contour</code></strong> :&ensp;</dt>
+<dd>True/False flag to have
+contours or not</dd>
+<dt><strong><code>clabel</code></strong> :&ensp;</dt>
+<dd>True/False flag to have labelled contours or not</dd>
+<dt><strong><code>c_format</code></strong> :&ensp;</dt>
+<dd>Format for the contour labels</dd>
+<dt><strong><code>Special_Value</code></strong></dt>
+<dd>Values to be ignored</dd>
+<dt><strong><code>lefttitle</code></strong></dt>
+<dd>Title string on the left</dd>
+<dt><strong><code>righttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the right</dd>
+<dt><strong><code>maintitle</code></strong></dt>
+<dd>Title string at the center</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;</dt>
+<dd>Colormap</dd>
+<dt><strong><code>coasts</code></strong></dt>
+<dd>False/True
+Plotting or not empty coastlines</dd>
+<dt><strong><code>color_land</code></strong></dt>
+<dd>if coasts=False, use color_land for land</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>handle</code></strong> :&ensp;</dt>
+<dd>Dictionary with matplotlib-like info on the plot</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_format = &#39; {:6.0f} &#39;, \
+                      zeroline=False, Special_Value = 9999.,\
+                      lefttitle=&#39;&#39;,righttitle=&#39;&#39;,maintitle=&#39;&#39;,\
+                      xlimit=None,ylimit=None,\
+                      colorbar=False,cmap=&#39;coolwarm&#39;,
+                      coasts=True,color_land=&#39;lightgray&#39;):
+    &#34;&#34;&#34;
+    Lat-Lon mapping function for cartopy.
+
+    Brief description. Internally assume data is always on a latlon projection 
+    with central longitude at Greenwich.
+
+    Parameters 
+    ----------
+    field :     
+        xarray  --  cyclic point added in the routine
+
+    cont :  
+        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
+        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
+        * n                      _n contours_  
+        * []                     _automatic choice_   
+    pro :   
+        Map Projection as initialized by init
+
+    ax :    
+        Plot axis to be used
+    
+    fill :  
+        True/False flag to have filled contours or not
+    
+    contour :  
+        True/False flag to have  contours or not
+    
+    clabel :  
+        True/False flag to have labelled contours or not
+    
+    c_format :  
+        Format for the contour labels
+
+    Special_Value : 
+        Values to be ignored
+
+    lefttitle : 
+        Title string on the left
+
+    righttitle :    
+        Title string on the right
+
+    maintitle : 
+        Title string at the center
+
+    cmap :  
+        Colormap
+
+    coasts: 
+        False/True   Plotting or not empty coastlines 
+
+    color_land: 
+         if coasts=False, use color_land for land
+    
+    Returns
+    -------
+
+    handle :    
+        Dictionary with matplotlib-like info on the plot
+    
+    &#34;&#34;&#34;
+    #Check right projection
+    this = pro.__class__.__name__
+    if not this  in  [&#39;PlateCarree&#39;]:
+        print(&#39; Wrong Projection in `xmap` {}&#39;.format(this))
+        raise SystemExit
+    
+    #Special Values
+    data=field.where(field != 9999.)
+
+    #Eliminate extra dimensions
+    if len(data.shape) &gt; 2:
+        data = data.squeeze()
+        
+    # Add coastlines
+    if coasts:
+        ax.coastlines(linewidth=0.5)
+    else:
+        ax.coastlines(linewidths=0.5)
+        ax.add_feature(cfeature.LAND, facecolor=&#39;lightgray&#39;)
+    
+    #Set axes limits
+    if xlimit is  None:
+        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
+    else:
+        xlim=xlimit
+        
+    if ylimit is  None:
+        ylim = (np.amin(data.lat.values),np.amax(data.lat.values))
+    else:
+        ylim=ylimit
+    print(&#39; Plotting with x limits {}  &#39;.format(xlim)  ) 
+    print(&#39; Plotting with y limits {}  &#39;.format(ylim) )
+    
+    ax.set_extent(list(xlim+ylim),car.PlateCarree())
+    add_ticks(ax)
+    add_ticklabels(ax)
+
+    handles = dict()
+    if fill:
+        handles[&#34;filled&#34;] = data.plot.contourf(
+            ax=ax,                            # this is the axes we want to plot to
+            cmap=cmap,                        # our special colormap
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            xticks=np.arange(xlim[0],xlim[1], 30),  # nice x ticks
+            yticks=np.arange(ylim[0], ylim[1], 15),    # nice y ticks
+            add_colorbar=False,               # don&#39;t add individual colorbars for each plot call
+            add_labels=False,                 # turn off xarray&#39;s automatic Lat, lon labels
+        )
+    if contour:
+        handles[&#39;contours&#39;] = data.plot.contour(
+            ax=ax,                            # this is the axes we want to plot to
+            colors=&#39;black&#39;,                       # our special colormap
+            linestyles=&#34;-&#34;,
+            linewidths=0.8,
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            add_labels = False
+        )
+    if zeroline:
+        handles[&#34;zeroline&#34;] = data.plot.contour(
+        ax=ax,
+        levels=[0],
+        colors=&#34;k&#34;,  # note plurals in this and following kwargs
+        linestyles=&#34;-&#34;,
+        linewidths=1.0,
+        transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+        add_labels=False  # again turn off automatic labels
+        )
+    # Label the contours
+    if clabel:
+        ax.clabel(handles[&#39;contours&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+        if zeroline:
+            ax.clabel(handles[&#39;zeroline&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+    
+    # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
+    set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
+                                maintitle=maintitle, maintitlefontsize=16,
+                                righttitle=righttitle, righttitlefontsize=14)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(handles[&#39;filled&#39;], cax=cax,orientation=&#39;vertical&#39;)
+
+    return handles</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.xsmap"><code class="name flex">
+<span>def <span class="ident">xsmap</span></span>(<span>field, cont, pro, ax=None, fill=True, contour=True, clabel=True, zeroline=False, Special_Value=9999.0, lefttitle='', righttitle='', maintitle='', xlimit=None, ylimit=None, colorbar=False, cmap='coolwarm', coasts=True, color_land='lightgray', Top_label=False, Lat_labels=True, c_format=' {:6.0f} ')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Stereo mapping function for cartopy.</p>
+<p>Brief description. Internally assume data is always on a latlon projection
+with central longitude at Greenwich.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>field</code></strong> :&ensp;</dt>
+<dd>xarray
+&ndash;
+cyclic point added in the routine</dd>
+<dt><strong><code>cont</code></strong> :&ensp;</dt>
+<dd>
+<ul>
+<li>[cmin,cmax,cinc]
+<em>fixed increment from cmin to cmax step cinc</em>
+</li>
+<li>[ c1,c2, &hellip;, cn]
+<em>fixed contours at [ c1,c2, &hellip;, cn]</em>
+</li>
+<li>n
+<em>n contours</em>
+</li>
+<li>[]
+<em>automatic choice</em></li>
+</ul>
+</dd>
+<dt><strong><code>pro</code></strong> :&ensp;</dt>
+<dd>Map Projection as initialized by init</dd>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Plot axis to be used</dd>
+<dt><strong><code>fill</code></strong> :&ensp;</dt>
+<dd>True/False flag to have filled contours or not</dd>
+<dt><strong><code>contour</code></strong> :&ensp;</dt>
+<dd>True/False flag to have
+contours or not</dd>
+<dt><strong><code>clabel</code></strong> :&ensp;</dt>
+<dd>True/False flag to have labelled contours or not</dd>
+<dt><strong><code>c_format</code></strong> :&ensp;</dt>
+<dd>Format for the contour labels</dd>
+<dt><strong><code>Special_Value</code></strong></dt>
+<dd>Values to be ignored</dd>
+<dt><strong><code>lefttitle</code></strong></dt>
+<dd>Title string on the left</dd>
+<dt><strong><code>righttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the right</dd>
+<dt><strong><code>maintitle</code></strong></dt>
+<dd>Title string at the center</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;</dt>
+<dd>Colormap</dd>
+<dt><strong><code>coasts</code></strong></dt>
+<dd>False/True
+Plotting or not empty coastlines</dd>
+<dt><strong><code>color_land</code></strong></dt>
+<dd>if coasts=False, use color_land for land</dd>
+<dt><strong><code>Top_label</code></strong> :&ensp;</dt>
+<dd>True/False
+<em>Turn off the top labels</em></dd>
+<dt><strong><code>Lat_labels</code></strong> :&ensp;</dt>
+<dd>True/False
+<em>Turn off the latitude labels</em></dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>handle</code></strong> :&ensp;</dt>
+<dd>Dictionary with matplotlib-like info on the plot</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
+                      zeroline=False, Special_Value = 9999.,\
+                      lefttitle=&#39;&#39;,righttitle=&#39;&#39;,maintitle=&#39;&#39;,\
+                      xlimit=None,ylimit=None,\
+                      colorbar=False,cmap=&#39;coolwarm&#39;,
+                      coasts=True,color_land=&#39;lightgray&#39;,
+                      Top_label=False,Lat_labels=True,
+                      c_format = &#39; {:6.0f} &#39;,
+                      ):
+    &#34;&#34;&#34;
+    Stereo mapping function for cartopy.
+
+    Brief description. Internally assume data is always on a latlon projection 
+    with central longitude at Greenwich.
+
+    Parameters 
+    ----------
+    field :     
+        xarray  --  cyclic point added in the routine
+
+    cont :  
+        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
+        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
+        * n                      _n contours_  
+        * []                     _automatic choice_   
+    pro :   
+        Map Projection as initialized by init
+
+    ax :    
+        Plot axis to be used    
+    
+    fill :  
+        True/False flag to have filled contours or not
+    
+    contour :  
+        True/False flag to have  contours or not
+    
+    clabel :  
+        True/False flag to have labelled contours or not
+    
+    c_format :  
+        Format for the contour labels
+
+    Special_Value : 
+        Values to be ignored
+
+    lefttitle : 
+        Title string on the left
+
+    righttitle :    
+        Title string on the right
+
+    maintitle : 
+        Title string at the center
+
+    cmap :  
+        Colormap
+
+    coasts: 
+        False/True   Plotting or not empty coastlines 
+
+    color_land: 
+         if coasts=False, use color_land for land
+    
+    Top_label :    
+        True/False  _Turn off the top labels_
+
+    Lat_labels :    
+        True/False  _Turn off the latitude labels_
+    
+    Returns
+    -------
+
+    handle :    
+        Dictionary with matplotlib-like info on the plot
+    
+    &#34;&#34;&#34;
+    #Check right projection
+    this = pro.__class__.__name__
+    if not this  in  [&#39;SouthPolarStereo&#39; ,&#39;NorthPolarStereo&#39; ]:
+        print(&#39; Wrong Projection in `xsmap` {}&#39;.format(this))
+        raise SystemExit
+
+    #Special Values
+    data=field.where(field != 9999.)
+
+    # Fix the artifact of not-shown-data around 0 and 360-degree longitudes
+    data = gvutil.xr_add_cyclic_longitudes(field, &#39;lon&#39;)
+    
+    #Eliminate extra dimensions
+    if len(data.shape) &gt; 2:
+        data = data.squeeze()
+        
+    # Add coastlines
+    if coasts:
+        ax.coastlines(linewidth=0.5,color=&#39;grey&#39;)
+    else:
+        ax.coastlines(linewidths=0.5)
+        ax.add_feature(cfeature.LAND, facecolor=&#39;lightgray&#39;)
+    
+    #Set axes limits
+    if xlimit is  None:
+        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180+0.001)
+    else:
+        xlim=xlimit
+        
+    if ylimit is  None:
+        ylim = (np.amin(data.lat.values),np.amax(data.lat.values))
+    else:
+        ylim=ylimit
+    print(&#39; Plotting with x limits {}  &#39;.format(xlim)  ) 
+    print(&#39; Plotting with y limits {}  &#39;.format(ylim) )
+    
+    ax.set_extent(list(xlim+ylim),car.PlateCarree())  # 
+    theta = np.linspace(0, 2*np.pi, 100)
+    center, radius = [0.5, 0.5], 0.5
+    verts = np.vstack([np.sin(theta), np.cos(theta)]).T
+    circle = mpath.Path(verts * radius + center)
+    ax.set_boundary(circle, transform=ax.transAxes)
+    ax.spines[&#39;geo&#39;].set_linewidth(2.0)
+  
+    handles = dict()
+    if fill:
+        handles[&#34;filled&#34;] = data.plot.contourf(
+            ax=ax,                            # this is the axes we want to plot to
+            cmap=cmap,                        # our special colormap
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            #xticks=np.arange(xlim[0],xlim[1], 30),  # nice x ticks
+            #yticks=np.arange(ylim[0], ylim[1], 15),    # nice y ticks
+            add_colorbar=False,               # don&#39;t add individual colorbars for each plot call
+            add_labels=False,                 # turn off xarray&#39;s automatic Lat, lon labels
+        )
+    if contour:
+        handles[&#39;contours&#39;] = data.plot.contour(
+            ax=ax,                            # this is the axes we want to plot to
+            colors=&#39;black&#39;,                       # our special colormap
+            linestyles=&#34;-&#34;,
+            linewidths=0.8,
+            levels=choose_contour(cont),      # contour levels specified outside this function
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            add_labels = False
+        )
+    if zeroline:
+        handles[&#34;zeroline&#34;] = data.plot.contour(
+        ax=ax,
+        levels=[0],
+        colors=&#34;k&#34;,  # note plurals in this and following kwargs
+        linestyles=&#34;-&#34;,
+        linewidths=1.0,
+        transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+        add_labels=False  # again turn off autransform=car.Geodetic()tomatic labels
+        )
+    # Label the contours
+    if clabel:
+        ax.clabel(handles[&#39;contours&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+        if zeroline:
+            ax.clabel(handles[&#39;zeroline&#39;], colors=&#39;black&#39;, inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, fmt=c_format.format )
+    
+    xt = np.arange(-180,180,45)
+    yt = np.arange(np.min(ylim),np.min([np.max(ylim),75]),20)
+    add_sttick(ax,xt,yt[1:],xlim,ylim,pro,Top_label=Top_label,Lat_labels=Lat_labels,verbose=False)
+    
+    gl=ax.gridlines(color=&#39;grey&#39;, linestyle=&#39;--&#39;, draw_labels=True)
+    gl.xlocator = mticker.FixedLocator(xt)
+    gl.ylocator = mticker.FixedLocator(yt)
+    gl.xformatter = LongitudeFormatter()
+    gl.yformatter = LatitudeFormatter()
+    gl.xlabel_style = {&#39;size&#39;: 16, &#39;color&#39;: &#39;black&#39;}
+    
+    # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
+    set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=18,
+                                maintitle=maintitle, maintitlefontsize=18,
+                                righttitle=righttitle, righttitlefontsize=18,ytitle=1.00)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(handles[&#39;filled&#39;], cax=cax,orientation=&#39;vertical&#39;)
+
+    return handles</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.xstmap"><code class="name flex">
+<span>def <span class="ident">xstmap</span></span>(<span>U, V, color='black', ax=None, density=2, Special_Value=9999.0, lefttitle='', righttitle='', maintitle='', xlimit=None, ylimit=None, colorbar=False, cmap='coolwarm')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Plot streamline for field U and V.</p>
+<p>This routine draws streamlines for the fields U,V, optionally colored with the field <code>color</code>. Internally assume data is always on a latlon projection with central longitude at Greenwich.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>U</code></strong> :&ensp;<code>xarray</code></dt>
+<dd>X component of the streamlines</dd>
+<dt><strong><code>V</code></strong> :&ensp;<code>xarray</code></dt>
+<dd>Y component of the streamlines</dd>
+<dt><strong><code>color</code></strong> :&ensp;</dt>
+<dd>Color of the stremalines ('black'). If it is xarray color the streamlines with the colormap <code>cmap</code></dd>
+<dt><strong><code>density</code></strong> :&ensp;</dt>
+<dd>Density of the streamlines</dd>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Plot axis to be used</dd>
+<dt><strong><code>Special_Value</code></strong> :&ensp;</dt>
+<dd>Values to be ignored</dd>
+<dt><strong><code>lefttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the left</dd>
+<dt><strong><code>righttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the right</dd>
+<dt><strong><code>maintitle</code></strong> :&ensp;</dt>
+<dd>Title string at the center</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;</dt>
+<dd>Colormap</dd>
+<dt><strong><code>colorbar</code></strong> :&ensp;</dt>
+<dd>False/True</dd>
+<dt><strong><code>xlimit</code></strong> :&ensp;</dt>
+<dd>Limit of the map (lon)</dd>
+<dt><strong><code>ylimit</code></strong> :&ensp;</dt>
+<dd>Limit of the map (lat)</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def xstmap(U, V,  color=&#39;black&#39;, ax=None, \
+                      density=2, Special_Value = 9999.,\
+                      lefttitle=&#39;&#39;,righttitle=&#39;&#39;,maintitle=&#39;&#39;,\
+                      xlimit=None,ylimit=None,\
+                      colorbar=False,cmap=&#39;coolwarm&#39;):
+    &#34;&#34;&#34;
+    Plot streamline for field U and V.
+
+    This routine draws streamlines for the fields U,V, optionally colored with the field ``color``. Internally assume data is always on a latlon projection with central longitude at Greenwich.
+
+    Parameters      
+    ----------
+    U : xarray
+        X component of the streamlines   
+    
+    V : xarray
+        Y component of the streamlines
+    
+    color :   
+        Color of the stremalines (&#39;black&#39;). If it is xarray color the streamlines with the colormap ``cmap``       
+    
+    density :    
+        Density of the streamlines      
+
+    ax :          
+        Plot axis to be used        
+    
+    Special_Value :         
+        Values to be ignored       
+    
+    lefttitle :         
+        Title string on the left       
+    
+    righttitle :       
+        Title string on the right      
+    
+    maintitle :      
+        Title string at the center    
+    
+    cmap :  
+        Colormap    
+    
+    colorbar :   
+        False/True  
+    
+    xlimit :       
+        Limit of the map (lon)  
+    
+    ylimit :        
+        Limit of the map (lat)  
+    &#34;&#34;&#34;
+    #Special Values
+    U=U.where(U != 9999.)
+    
+    #select color scale
+    this = type(color).__name__
+    if this == &#39;str&#39;:
+        color_scale=color
+    elif this == &#39;DataArray&#39;:
+        print(this)
+        color_scale = color.data
+    elif this == &#39;ndarray&#39;:
+        color_scale=color
+    else:
+        color_scale=&#39;black&#39;
+
+    #Eliminate extra dimensions
+    if len(U.shape) &gt; 2:
+        U = U.squeeze()
+        V = V.squeeze()
+       
+    # Stream-plot the data
+    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can&#39;t
+    # pass xarray.DataArray objects directly: fetch NumPy arrays via &#39;data&#39; attribute&#39;
+    hc=ax.streamplot(U.lon.data, U.lat.data, U.data, V.data, linewidth=1, density=density, color=color_scale, \
+                     cmap=cmap,  zorder=1,transform=car.PlateCarree()    )
+
+    # # Label the contours
+    #     ax.clabel
+    #         handles[&#34;contour&#34;], fontsize=8, fmt=&#34;%.0f&#34;,  # Turn off decimal points
+    #    )
+
+    # Add coastlines
+    ax.coastlines(linewidth=0.5)
+    # Draw filled polygons for land
+    ax.add_feature(cfeature.LAND, zorder=0, edgecolor=&#39;black&#39;, color=&#39;lightgray&#39;)
+
+    #Set axes limits a
+    if xlimit is  None:
+        xlim = (np.amin(U.lon.values)-180.,np.amax(U.lon.values)-180.)
+    else:
+        xlim=xlimit
+        
+    if ylimit is  None:
+        ylim = (np.amin(U.lat.values),np.amax(U.lat.values))
+    else:
+        ylim=ylimit
+    print(&#39; Plotting with x limits {}  &#39;.format(xlim)  ) 
+    print(&#39; Plotting with y limits {}  &#39;.format(ylim) )
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    
+    # Use libcartopy convenience function to add minor and major tick lines
+    add_ticks(ax)
+
+    # Use libcartopy convenience function to make plots look like NCL plots by using latitude, longitude tick labels
+    add_ticklabels(ax)
+
+    # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
+    set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
+                                 maintitle=maintitle, maintitlefontsize=16,
+                                 righttitle=righttitle, righttitlefontsize=14)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(hc.lines, cax=cax,orientation=&#39;vertical&#39;)
+
+    return hc</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.zonal_plot"><code class="name flex">
+<span>def <span class="ident">zonal_plot</span></span>(<span>data, ax, cont, cmap, colorbar=True, maintitle=None, lefttitle=None, righttitle=None, zeroline=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Zonal mapping function for xarray (lat,pressure). </p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;</dt>
+<dd>xarray
+&ndash;
+cyclic point added in the routine (latitude, pressure)</dd>
+<dt><strong><code>cont</code></strong> :&ensp;</dt>
+<dd>Choose contours according to length of <em>cont</em></dd>
+</dl>
+<ul>
+<li>[cmin,cmax,cinc]
+<em>fixed increment from cmin to cmax step cinc</em></li>
+<li>[ c1,c2, &hellip;, cn]
+<em>fixed contours at [ c1,c2, &hellip;, cn]</em></li>
+<li>n
+<em>n contours</em></li>
+<li>[]
+<em>automatic choice</em></li>
+</ul>
+<dl>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Plot axis to be used</dd>
+<dt><strong><code>Special_Value</code></strong> :&ensp;</dt>
+<dd>Values to be ignored</dd>
+<dt><strong><code>lefttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the left</dd>
+<dt><strong><code>righttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the right</dd>
+<dt><strong><code>maintitle</code></strong> :&ensp;</dt>
+<dd>Title string at the center</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;</dt>
+<dd>Colormap</dd>
+<dt><strong><code>zeroline</code></strong> :&ensp;</dt>
+<dd>False/True if a zero line is desired</dd>
+<dt><strong><code>colorbar</code></strong> :&ensp;</dt>
+<dd>False/True if a colorbar is desired</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>handle</code></strong></dt>
+<dd>Dict with plot parameters</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code>&gt;&gt;&gt; zonal_plot(data,ax,[],'BYR',colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True)
+</code></pre></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True):
+    &#34;&#34;&#34;
+    Zonal mapping function for xarray (lat,pressure). 
+    
+    Parameters
+    ----------
+    data :    
+            xarray  --  cyclic point added in the routine (latitude, pressure)      
+    
+    cont :   
+            Choose contours according to length of _cont_
+    * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_
+    * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_
+    * n                      _n contours_
+    * []                     _automatic choice_
+    
+    ax :            
+            Plot axis to be used
+            
+    Special_Value:     
+            Values to be ignored
+            
+    lefttitle:     
+            Title string on the left
+            
+    righttitle:   
+            Title string on the right
+            
+    maintitle:  
+            Title string at the center
+            
+    cmap:  
+            Colormap
+            
+    zeroline:   
+            False/True if a zero line is desired
+            
+    colorbar:   
+            False/True if a colorbar is desired
+    
+    Returns
+    --------
+    
+    handle: 
+        Dict with plot parameters
+    
+    Examples
+    --------
+    
+    &gt;&gt;&gt; zonal_plot(data,ax,[],&#39;BYR&#39;,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True)
+    &#34;&#34;&#34;
+
+    handle = data.plot.contourf(
+        ax=ax,                            # this is the axes we want to plot to
+        cmap=cmap,                        # our special colormap
+        levels=choose_contour(cont),      # contour levels specified outside this function
+        xticks=np.arange(-90, 90, 15),  # nice x ticks
+        yticks=[1000,850,700,500,300,200,100],    # nice y ticks
+        add_colorbar=colorbar,               # don&#39;t add individual colorbars for each plot call
+        add_labels=False                 # turn off xarray&#39;s automatic Lat, lon labels
+    )
+    if zeroline:
+        hc = data.plot.contour(
+        ax=ax,
+        levels=[0],
+        colors=&#34;k&#34;,  # note plurals in this and following kwargs
+        linestyles=&#34;-&#34;,
+        linewidths=1.25,
+        add_labels=False  # again turn off automatic labels
+        )
+    lev=data.pressure.values
+    nlev=len(lev)
+    ax.set_ylim(lev[nlev-1], lev[0])  # Invert y axis
+    ax.set_xlim(90,-90)  # Invert x axis
+    #
+    set_titles_and_labels(ax, maintitle=maintitle, maintitlefontsize=18, \
+                          lefttitle=lefttitle, lefttitlefontsize=18, \
+                          righttitle=righttitle, righttitlefontsize=18,
+                          xlabel=&#39;Latitude&#39;, ylabel=&#39;Pressure&#39;, labelfontsize=16)
+    return handle</code></pre>
+</details>
+</dd>
+<dt id="zapata.mapping.zonal_stream_plot"><code class="name flex">
+<span>def <span class="ident">zonal_stream_plot</span></span>(<span>datau, datav, ax, color='black', cmap='bwr', density=2, maintitle=None, lefttitle=None, righttitle=None, colorbar=True, smooth=True, special_value=9999)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Zonal mapping streamfunction.</p>
+<p>Plot zonal streamline for fielddatu e datav.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>datau</code></strong> :&ensp;<code>xarray</code></dt>
+<dd>X component of the streamlines</dd>
+<dt><strong><code>datav</code></strong> :&ensp;<code>xarray</code></dt>
+<dd>Y component of the streamlines</dd>
+<dt><strong><code>color</code></strong> :&ensp;</dt>
+<dd>Color of the stremalines ('black'). If it is xarray color the streamlines with the colormap <code>cmap</code></dd>
+<dt><strong><code>density</code></strong> :&ensp;</dt>
+<dd>Density of the streamlines</dd>
+<dt><strong><code>ax</code></strong> :&ensp;</dt>
+<dd>Plot axis to be used</dd>
+<dt><strong><code>Special_Value</code></strong> :&ensp;</dt>
+<dd>Values to be ignored</dd>
+<dt><strong><code>lefttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the left</dd>
+<dt><strong><code>righttitle</code></strong> :&ensp;</dt>
+<dd>Title string on the right</dd>
+<dt><strong><code>maintitle</code></strong> :&ensp;</dt>
+<dd>Title string at the center</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;</dt>
+<dd>Colormap</dd>
+<dt><strong><code>smooth</code></strong> :&ensp;</dt>
+<dd>False/True if smoothing is desired</dd>
+<dt><strong><code>colorbar</code></strong> :&ensp;</dt>
+<dd>False/True if a colorbar is desired</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def zonal_stream_plot(datau,datav,ax,color=&#39;black&#39;,\
+                     cmap=&#39;bwr&#39;, density=2,\
+                     maintitle=None, lefttitle=None, righttitle=None,\
+                     colorbar=True, smooth=True, special_value=9999):
+    &#34;&#34;&#34;
+    Zonal mapping streamfunction.
+
+    Plot zonal streamline for fielddatu e datav.
+
+    Parameters      
+    ----------
+    datau : xarray
+        X component of the streamlines   
+    
+    datav : xarray
+        Y component of the streamlines
+    
+    color :   
+        Color of the stremalines (&#39;black&#39;). If it is xarray color the streamlines with the colormap ``cmap``       
+    
+    density :    
+        Density of the streamlines      
+
+    ax :          
+        Plot axis to be used        
+    
+    Special_Value :         
+        Values to be ignored       
+    
+    lefttitle :         
+        Title string on the left       
+    
+    righttitle :       
+        Title string on the right
+
+    maintitle:  
+        Title string at the center
+            
+    cmap:  
+        Colormap
+            
+    smooth:   
+        False/True if smoothing is desired
+            
+    colorbar:   
+        False/True if a colorbar is desired      
+    
+
+    &#34;&#34;&#34;
+    #Special Values
+    datau=datau.where(datau != 9999.)
+    datav=datav.where(datav != 9999.)
+    
+    #select color scale
+    this = type(color).__name__
+    if this == &#39;str&#39;:
+        color_scale=color
+    elif this == &#39;DataArray&#39;:
+        print(this)
+        color_scale = color.interp(pressure=np.arange(100,1000,50)).data
+    elif this == &#39;ndarray&#39;:
+        color_scale=color
+    else:
+        color_scale=&#39;black&#39;
+        colorbar=False
+
+    #Eliminate extra dimensions
+    if len(datau.shape) &gt; 2:
+        datau = datau.squeeze()
+        datav = datav.squeeze()
+    #Interpolate on a pressure regular grid
+    U=datau.interp(pressure=np.arange(100,1000,50))
+    V=datav.interp(pressure=np.arange(100,1000,50))
+    
+    # Stream-plot the data
+    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can&#39;t
+    # pass xarray.DataArray objects directly: fetch NumPy arrays via &#39;data&#39; attribute&#39;
+    hc=ax.streamplot(U.lat.data, V.pressure.data, U.data, V.data, linewidth=1, density=density, color=color_scale, \
+                     zorder=1,cmap=cmap   )
+    #  Label the contours
+    #     ax.clabel
+    #         handles[&#34;contour&#34;], fontsize=8, fmt=&#34;%.0f&#34;,  # Turn off decimal points
+    #    )
+
+    lev=U.pressure.values
+    nlev=len(lev)
+    ax.set_ylim(lev[nlev-1], lev[0])  # Invert y axis
+    ax.set_xlim(90,-90)  # Invert x axis
+    #
+    set_titles_and_labels(ax, maintitle=maintitle, maintitlefontsize=18, \
+                          lefttitle=lefttitle, lefttitlefontsize=18, \
+                          righttitle=righttitle, righttitlefontsize=18,
+                          xlabel=&#39;Latitude&#39;, ylabel=&#39;Pressure&#39;, labelfontsize=16)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes(&#39;right&#39;,size=&#34;2.5%&#34;, pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(hc.lines, cax=cax,orientation=&#39;vertical&#39;)
+
+    return hc</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML img Tag</title>
+</head>
+<body>
+<img src="../resources/zap.png" alt="Simply Easy Learning" width="400"
+height="260">
+</body>
+</html>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="zapata" href="index.html">zapata</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="zapata.mapping.add_colorbar" href="#zapata.mapping.add_colorbar">add_colorbar</a></code></li>
+<li><code><a title="zapata.mapping.add_sttick" href="#zapata.mapping.add_sttick">add_sttick</a></code></li>
+<li><code><a title="zapata.mapping.add_ticklabels" href="#zapata.mapping.add_ticklabels">add_ticklabels</a></code></li>
+<li><code><a title="zapata.mapping.add_ticks" href="#zapata.mapping.add_ticks">add_ticks</a></code></li>
+<li><code><a title="zapata.mapping.choose_contour" href="#zapata.mapping.choose_contour">choose_contour</a></code></li>
+<li><code><a title="zapata.mapping.init_figure" href="#zapata.mapping.init_figure">init_figure</a></code></li>
+<li><code><a title="zapata.mapping.set_titles_and_labels" href="#zapata.mapping.set_titles_and_labels">set_titles_and_labels</a></code></li>
+<li><code><a title="zapata.mapping.xmap" href="#zapata.mapping.xmap">xmap</a></code></li>
+<li><code><a title="zapata.mapping.xsmap" href="#zapata.mapping.xsmap">xsmap</a></code></li>
+<li><code><a title="zapata.mapping.xstmap" href="#zapata.mapping.xstmap">xstmap</a></code></li>
+<li><code><a title="zapata.mapping.zonal_plot" href="#zapata.mapping.zonal_plot">zonal_plot</a></code></li>
+<li><code><a title="zapata.mapping.zonal_stream_plot" href="#zapata.mapping.zonal_stream_plot">zonal_stream_plot</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
