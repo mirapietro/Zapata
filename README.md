@@ -2,7 +2,7 @@
 ## Computational and Mapping Library   
 
 A revolutionary library for analysis and plotting of meteorological data. The mapping is based on cartopy and GEOCAT libraries from NCAR.
-It uses `xarray` as a basic data structure. `docs` contains documentaiton for the modules.
+It uses `xarray` as a basic data structure. `docs` contains documentation for the modules.
 
 The directory 
 
