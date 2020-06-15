@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>interp module &#8212; CMCC-Applications 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="klus package" href="klus.html" />
+    <link rel="prev" title="Applications" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="klus.html" title="klus package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Applications"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Applications</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-interp">
+<span id="interp-module"></span><h1>interp module<a class="headerlink" href="#module-interp" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="interp.Ocean_Interpolator">
+<em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Ocean_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_grid</span></em>, <em class="sig-param"><span class="n">tgt_grid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#interp.Ocean_Interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class creates weights for interpolation of ocean fields.</p>
+<p>This class create an interpolator operator from a <em>source grid</em>
+<cite>src_grid</cite> to a <em>target grid</em> <cite>tgt_grd</cite>. The interpolator then
+can be used to perform the actual interpolation.</p>
+<p>The <em>source grid</em> must be a <cite>xarray</cite> <cite>DataSet</cite> containing coordinates
+<cite>latitude</cite> and <cite>longitude</cite>.</p>
+<p>The <em>target grid</em> must be a <cite>xarray</cite> <cite>DataArray</cite> with variables <cite>lat</cite> and <cite>lon</cite></p>
+<p>Works only on single <cite>DataArray</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src_grid</strong> (<em>xarray</em>) – Source grid</p></li>
+<li><p><strong>tgt_grid</strong> (<em>xarray</em>) – Target grid</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.tgt_grid" title="interp.Ocean_Interpolator.tgt_grid"><strong>tgt_grid</strong></a> – Target grid</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.mask" title="interp.Ocean_Interpolator.mask"><strong>mask</strong></a> – Mask of the target grid</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.vt" title="interp.Ocean_Interpolator.vt"><strong>vt</strong></a> – Weights</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.wt" title="interp.Ocean_Interpolator.wt"><strong>wt</strong></a> – Weights</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create the weights for interpolation</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">=</span> <span class="n">zint</span><span class="o">.</span><span class="n">Ocean_Interpolator</span><span class="p">(</span><span class="n">src_grid</span><span class="p">,</span><span class="n">tgt_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Interpolate</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">src_xarray</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="interp.Ocean_Interpolator.interp">
+<code class="sig-name descname">interp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xdata</span></em><span class="sig-paren">)</span><a class="headerlink" href="#interp.Ocean_Interpolator.interp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform actual interpolation to the target grid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.mask">
+<code class="sig-name descname">mask</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.tgt_grid">
+<code class="sig-name descname">tgt_grid</code><a class="headerlink" href="#interp.Ocean_Interpolator.tgt_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.vt">
+<code class="sig-name descname">vt</code><a class="headerlink" href="#interp.Ocean_Interpolator.vt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.wt">
+<code class="sig-name descname">wt</code><a class="headerlink" href="#interp.Ocean_Interpolator.wt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/zap.png" alt="Logo"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Applications</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">interp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="klus.html">klus package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zapata.html">zapata package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">Applications</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="klus.html"
+                        title="next chapter">klus package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/interp.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="klus.html" title="klus package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Applications"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Applications</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, AN.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

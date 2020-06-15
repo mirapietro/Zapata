@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>klus.kernels module &#8212; CMCC-Applications 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="klus.observables module" href="klus.observables.html" />
+    <link rel="prev" title="klus.algorithms module" href="klus.algorithms.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="klus.observables.html" title="klus.observables module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="klus.algorithms.html" title="klus.algorithms module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Applications</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="klus.html" accesskey="U">klus package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-klus.kernels">
+<span id="klus-kernels-module"></span><h1>klus.kernels module<a class="headerlink" href="#module-klus.kernels" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="klus.kernels.Eigenfunction">
+<em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">Eigenfunction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">v</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.Eigenfunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="klus.kernels.Eigenfunction.fdfeval">
+<code class="sig-name descname">fdfeval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.Eigenfunction.fdfeval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function and gradient evaluation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="klus.kernels.Eigenfunction.feval">
+<code class="sig-name descname">feval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.Eigenfunction.feval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function evaluation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.covariance">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">covariance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Covariance matrix for training data X with kernel k.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.crosscov">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">crosscov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.crosscov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute crosscovariance matrix for training data X and Y with kernel k.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="klus.kernels.gaussianKernel">
+<em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gaussianKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.gaussianKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Gaussian kernel with bandwidth sigma.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.gramian">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gramian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.gramian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Gram matrix for training data X with kernel k.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.gramian2">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gramian2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.gramian2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Gram matrix for training data X and Y with kernel k.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="klus.kernels.laplacianKernel">
+<em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">laplacianKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.laplacianKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Laplacian kernel with bandwidth sigma.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="klus.kernels.polynomialKernel">
+<em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">polynomialKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">c</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.polynomialKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Polynomial kernel with degree p and inhomogeneity c.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="klus.kernels.stringKernel">
+<em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">stringKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kn</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">l</span><span class="o">=</span><span class="default_value">0.9</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.stringKernel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>String kernel implementation based on Marianna Madry’s C++ code, see
+<a class="reference external" href="https://github.com/mmadry/string_kernel">https://github.com/mmadry/string_kernel</a>.</p>
+<dl class="py method">
+<dt id="klus.kernels.stringKernel.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#klus.kernels.stringKernel.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unnormalized string kernel evaluation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/zap.png" alt="Logo"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Applications</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="klus.html">klus package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="klus.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="klus.html#module-klus">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="zapata.html">zapata package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="klus.algorithms.html"
+                        title="previous chapter">klus.algorithms module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="klus.observables.html"
+                        title="next chapter">klus.observables module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/klus.kernels.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="klus.observables.html" title="klus.observables module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="klus.algorithms.html" title="klus.algorithms module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Applications</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="klus.html" >klus package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, AN.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

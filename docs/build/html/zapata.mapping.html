@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>zapata.mapping module &#8212; CMCC-Applications 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zapata.things_to_do module" href="zapata.things_to_do.html" />
+    <link rel="prev" title="zapata.lib module" href="zapata.lib.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="zapata.things_to_do.html" title="zapata.things_to_do module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="zapata.lib.html" title="zapata.lib module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Applications</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-zapata.mapping">
+<span id="zapata-mapping-module"></span><h1>zapata.mapping module<a class="headerlink" href="#module-zapata.mapping" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="zapata.mapping.add_colorbar">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">add_colorbar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span></em>, <em class="sig-param"><span class="n">handle</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">colorbar_size</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">label_size</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">edges</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.add_colorbar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add colorbar to plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>handle</strong> – Handle to plot</p></li>
+<li><p><strong>ax</strong> – Axis to which to add the colorbar</p></li>
+<li><p><strong>colorbar_size</strong> – Size of colorbar as a fraxtion of the axis</p></li>
+<li><p><strong>label_size</strong> – Size of labels</p></li>
+<li><p><strong>edges</strong> – Draw edges of the color bar</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.add_sttick">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">add_sttick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">xt</span></em>, <em class="sig-param"><span class="n">yt</span></em>, <em class="sig-param"><span class="n">xlim</span></em>, <em class="sig-param"><span class="n">ylim</span></em>, <em class="sig-param"><span class="n">promap</span></em>, <em class="sig-param"><span class="n">Top_label</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">Lat_labels</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.add_sttick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function add ticks and labels to stereo plots</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – Current axes to the current figure</p></li>
+<li><p><strong>xt</strong> – Locations of desired Longitude labels</p></li>
+<li><p><strong>yt</strong> – Locations of desired Latitude labels</p></li>
+<li><p><strong>xlim</strong> – Longitudinal extent of the stereo map</p></li>
+<li><p><strong>ylim</strong> – Latitudinal extent of the stereo map</p></li>
+<li><p><strong>promap</strong> – Projection</p></li>
+<li><p><strong>Top_label</strong> – True/False  Turn off the top labels</p></li>
+<li><p><strong>Lat_labels</strong> – True/False  Turn off the latitude labels</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.add_ticklabels">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">add_ticklabels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">zero_direction_label</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dateline_direction_label</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.add_ticklabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to make plots look like NCL plots by using latitude, longitude tick labels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – Current axes to the current figure</p></li>
+<li><p><strong>zero_direction_label</strong> – Set True to get 0 E / O W or False to get 0 only.</p></li>
+<li><p><strong>dateline_direction_label</strong> – Set True to get 180 E / 180 W or False to get 180 only.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.add_ticks">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">add_ticks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">x_minor_per_major</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">y_minor_per_major</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">labelsize</span><span class="o">=</span><span class="default_value">'small'</span></em>, <em class="sig-param"><span class="n">length</span><span class="o">=</span><span class="default_value">6</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">0.9</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.add_ticks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to make plots look like NCL plots by adding minor and major tick lines</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – Current axes to the current figure</p></li>
+<li><p><strong>x_minor_per_major</strong> – Number of minor ticks between adjacent major ticks on x-axis</p></li>
+<li><p><strong>y_minor_per_major</strong> – Number of minor ticks between adjacent major ticks on y-axis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.choose_contour">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">choose_contour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cont</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.choose_contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose contours according to length of cont.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cont</strong> –</p>
+<ul class="simple">
+<li><p>[cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc</p></li>
+<li><p>[ c1,c2, …, cn]      fixed contours at [ c1,c2, …, cn]</p></li>
+<li><p>n                      n contours</p></li>
+<li><p>[]                     automatic choice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Levels of selected Contours</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>contour_levels</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">10</span><span class="p">]</span> <span class="c1"># Contours from 0 1000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span> <span class="c1"># Set Contours Leves</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.init_figure">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">init_figure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rows</span></em>, <em class="sig-param"><span class="n">cols</span></em>, <em class="sig-param"><span class="n">proview</span></em>, <em class="sig-param"><span class="n">constrained_layout</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">16, 8</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.init_figure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialization for the entire figure, choose projection and number of panels.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>rows</strong> – Number of rows in multiple picture</p></li>
+<li><p><strong>cols</strong> –    Number of columns in multiple picture</p>
+<dl class="simple">
+<dt>figsize :</dt><dd><p>Size of figure in inches (height, width)</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>proview</strong> – Projection for the map
+_”Pacific”_,   cartopy PlateCarree, central longitude 180
+_”Atlantic”_,  cartopy PlateCarree, central longitude 0
+_”NHStereoEurope”_,  NH Stereo, central longitude 0
+_”NHStereoAmerica”_,  NH Stereo, central longitude 90
+_”SHStereoAfrica”_,  NH Stereo, central longitude 0</p></li>
+<li><p><strong>constrained_layout</strong> – True/False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>fig</em> – fig handle</p></li>
+<li><p><em>ax</em> – Axes of the panels</p></li>
+<li><p><em>pro</em> – Projection chosen</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.set_titles_and_labels">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">set_titles_and_labels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maintitlefontsize</span><span class="o">=</span><span class="default_value">18</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lefttitlefontsize</span><span class="o">=</span><span class="default_value">18</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">righttitlefontsize</span><span class="o">=</span><span class="default_value">18</span></em>, <em class="sig-param"><span class="n">xlabel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylabel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">labelfontsize</span><span class="o">=</span><span class="default_value">16</span></em>, <em class="sig-param"><span class="n">ytitle</span><span class="o">=</span><span class="default_value">0.98</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.set_titles_and_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to handle axis titles, left/right aligned titles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – Current axes to the current figure</p></li>
+<li><p><strong>maintitle</strong> – Text to use for the maintitle</p></li>
+<li><p><strong>maintitlefontsize</strong> – Text font size for maintitle. A default value of 18 is used if nothing is set</p></li>
+<li><p><strong>lefttitle</strong> – Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,
+but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.</p></li>
+<li><p><strong>lefttitlefontsize</strong> – Text font size for lefttitle. A default value of 18 is used if nothing is set</p></li>
+<li><p><strong>righttitle</strong> – Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,
+but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.</p></li>
+<li><p><strong>righttitlefontsize</strong> – Text font size for righttitle. A default value of 18 is used if nothing is set</p></li>
+<li><p><strong>xlabel</strong> – Text for the x-axis label</p></li>
+<li><p><strong>ylabel</strong> – Text for the y-axis label</p></li>
+<li><p><strong>labelfontsize</strong> – Text font size for x- and y-axes. A default value of 16 is used if nothing is set</p></li>
+<li><p><strong>ytitle</strong> – Y position of the main title</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.xmap">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.xmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lat-Lon mapping function based on cartopy and NCAR GEOCAT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> – xarray  –  cyclic point added in the routine</p></li>
+<li><p><strong>cont</strong> –</p>
+<ul>
+<li><p>[cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc</p></li>
+<li><p>[ c1,c2, …, cn]      fixed contours at [ c1,c2, …, cn]</p></li>
+<li><p>n                      n contours</p></li>
+<li><p>[]                     automatic choice</p></li>
+</ul>
+</li>
+<li><p><strong>pro</strong> – Map Projection as initialized by init</p></li>
+<li><p><strong>ax</strong> – Plot axis to be used</p></li>
+<li><p><strong>fill</strong> – True/False flag to have filled contours or not</p></li>
+<li><p><strong>contour</strong> – True/False flag to have  contours or not</p></li>
+<li><p><strong>clabel</strong> – True/False flag to have labelled contours or not</p></li>
+<li><p><strong>c_format</strong> – Format for the contour labels</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>righttitle</strong> – Title string on the right</p></li>
+<li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>cmap</strong> – Colormap</p></li>
+<li><p><strong>coasts</strong> – False/True   Plotting or not empty coastlines</p></li>
+<li><p><strong>color_land</strong> – if coasts=False, use color_land for land</p></li>
+<li><p><strong>xlimit</strong> – Longitude limits of the map, if not set they are derived from the data</p></li>
+<li><p><strong>ylimit</strong> – Latitude limits of the map, if not set they are derived from the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary with matplotlib-like info on the plot</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>handle</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.xsmap">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xsmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em>, <em class="sig-param"><span class="n">Top_label</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Lat_labels</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.xsmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stereo mapping function for cartopy.</p>
+<p>Brief description. Internally assume data is always on a latlon projection
+with central longitude at Greenwich.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field</strong> – xarray  –  cyclic point added in the routine</p></li>
+<li><p><strong>cont</strong> –</p>
+<ul>
+<li><p>[cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc</p></li>
+<li><p>[ c1,c2, …, cn]      fixed contours at [ c1,c2, …, cn]</p></li>
+<li><p>n                      n contours</p></li>
+<li><p>[]                     automatic choice</p></li>
+</ul>
+</li>
+<li><p><strong>pro</strong> – Map Projection as initialized by init</p></li>
+<li><p><strong>ax</strong> – Plot axis to be used</p></li>
+<li><p><strong>fill</strong> – True/False flag to have filled contours or not</p></li>
+<li><p><strong>contour</strong> – True/False flag to have  contours or not</p></li>
+<li><p><strong>clabel</strong> – True/False flag to have labelled contours or not</p></li>
+<li><p><strong>c_format</strong> – Format for the contour labels</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>righttitle</strong> – Title string on the right</p></li>
+<li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>cmap</strong> – Colormap</p></li>
+<li><p><strong>coasts</strong> – False/True   Plotting or not empty coastlines</p></li>
+<li><p><strong>color_land</strong> – if coasts=False, use color_land for land</p></li>
+<li><p><strong>Top_label</strong> – True/False  Turn off the top labels</p></li>
+<li><p><strong>Lat_labels</strong> – True/False  Turn off the latitude labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary with matplotlib-like info on the plot</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>handle</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.xstmap">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xstmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">U</span></em>, <em class="sig-param"><span class="n">V</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'black'</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.xstmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot streamline for field U and V.</p>
+<p>This routine draws streamlines for the fields U,V, optionally colored with the field <code class="docutils literal notranslate"><span class="pre">color</span></code>. Internally assume data is always on a latlon projection with central longitude at Greenwich.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>U</strong> (<em>xarray</em>) – X component of the streamlines</p></li>
+<li><p><strong>V</strong> (<em>xarray</em>) – Y component of the streamlines</p></li>
+<li><p><strong>color</strong> – Color of the stremalines (‘black’). If it is xarray color the streamlines with the colormap <code class="docutils literal notranslate"><span class="pre">cmap</span></code></p></li>
+<li><p><strong>density</strong> – Density of the streamlines</p></li>
+<li><p><strong>ax</strong> – Plot axis to be used</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>righttitle</strong> – Title string on the right</p></li>
+<li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>cmap</strong> – Colormap</p></li>
+<li><p><strong>colorbar</strong> – False/True</p></li>
+<li><p><strong>xlimit</strong> – Limit of the map (lon)</p></li>
+<li><p><strong>ylimit</strong> – Limit of the map (lat)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.zonal_plot">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">zonal_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">cmap</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.zonal_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zonal mapping function for xarray (lat,pressure).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – xarray  –  cyclic point added in the routine (latitude, pressure)</p></li>
+<li><p><strong>cont</strong> – Choose contours according to length of _cont_</p></li>
+<li><p><strong>* [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_</strong></p></li>
+<li><p><strong>* [ c1,c2, …, cn]      _fixed contours at [ c1,c2, …, cn]_</strong></p></li>
+<li><p><strong>* n                      _n contours_</strong></p></li>
+<li><p><strong>* []                     _automatic choice_</strong></p></li>
+<li><p><strong>ax</strong> – Plot axis to be used</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>righttitle</strong> – Title string on the right</p></li>
+<li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>cmap</strong> – Colormap</p></li>
+<li><p><strong>zeroline</strong> – False/True if a zero line is desired</p></li>
+<li><p><strong>colorbar</strong> – False/True if a colorbar is desired</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict with plot parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>handle</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zonal_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">ax</span><span class="p">,[],</span><span class="s1">&#39;BYR&#39;</span><span class="p">,</span><span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">maintitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lefttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">righttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">zeroline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.zonal_stream_plot">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">zonal_stream_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datau</span></em>, <em class="sig-param"><span class="n">datav</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'black'</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'bwr'</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">special_value</span><span class="o">=</span><span class="default_value">9999</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.mapping.zonal_stream_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zonal mapping streamfunction.</p>
+<p>Plot zonal streamline for fielddatu e datav.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datau</strong> (<em>xarray</em>) – X component of the streamlines</p></li>
+<li><p><strong>datav</strong> (<em>xarray</em>) – Y component of the streamlines</p></li>
+<li><p><strong>color</strong> – Color of the stremalines (‘black’). If it is xarray color the streamlines with the colormap <code class="docutils literal notranslate"><span class="pre">cmap</span></code></p></li>
+<li><p><strong>density</strong> – Density of the streamlines</p></li>
+<li><p><strong>ax</strong> – Plot axis to be used</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>righttitle</strong> – Title string on the right</p></li>
+<li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>cmap</strong> – Colormap</p></li>
+<li><p><strong>smooth</strong> – False/True if smoothing is desired</p></li>
+<li><p><strong>colorbar</strong> – False/True if a colorbar is desired</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/zap.png" alt="Logo"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Applications</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="klus.html">klus package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="zapata.html">zapata package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="zapata.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zapata.html#module-zapata">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="zapata.lib.html"
+                        title="previous chapter">zapata.lib module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="zapata.things_to_do.html"
+                        title="next chapter">zapata.things_to_do module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/zapata.mapping.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="zapata.things_to_do.html" title="zapata.things_to_do module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="zapata.lib.html" title="zapata.lib module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Applications</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, AN.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>zapata.lib module &#8212; CMCC-Applications 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="zapata.mapping module" href="zapata.mapping.html" />
+    <link rel="prev" title="zapata.data module" href="zapata.data.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="zapata.mapping.html" title="zapata.mapping module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="zapata.data.html" title="zapata.data module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Applications</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-zapata.lib">
+<span id="zapata-lib-module"></span><h1>zapata.lib module<a class="headerlink" href="#module-zapata.lib" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="zapata.lib.adddir">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">adddir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">dir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.adddir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add <cite>dir</cite> directory name to <cite>name</cite> file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.chop">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">chop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">1e-10</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.chop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eliminate real small complex number converting to real</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.copyfile">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">copyfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oldfile</span></em>, <em class="sig-param"><span class="n">newdir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.copyfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy file from <cite>oldfile</cite> to <cite>newdir</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.date2year">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">date2year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">years</span></em>, <em class="sig-param"><span class="n">date</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.date2year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform index date [‘Jan’ ‘1989’ ] in index i.</p>
+<p>Years are from np.arange(1979,2018, 1/12)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.makedir">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">makedir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fndir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.makedir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Directory <cite>fndir</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.makefilename">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">makefilename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dir</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">lev</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em>, <em class="sig-param"><span class="n">ext</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.makefilename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generalize file name creation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.makemm">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">makemm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">lev</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.makemm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility to create names for ERA5 numpy files</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.makename">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">makename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">lev</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em>, <em class="sig-param"><span class="n">dd</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.makename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility to create names for ERA5 files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.movefile">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">movefile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">oldfile</span></em>, <em class="sig-param"><span class="n">newdir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.movefile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move file from <cite>oldfile</cite> to <cite>newdir</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.remove_values_from_list">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">remove_values_from_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">the_list</span></em>, <em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.remove_values_from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove value <cite>val</cite> from list <cite>the_list</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.showfig">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">showfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pic</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.showfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show picture in a widget.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.year2date">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">year2date</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">years</span></em>, <em class="sig-param"><span class="n">i</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.lib.year2date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform index i in string date yy/mm.</p>
+<p>Rounding requires the small shift
+Years are obtained from np.arange(1979,2018, 1/12)</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/zap.png" alt="Logo"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Applications</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="klus.html">klus package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="zapata.html">zapata package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="zapata.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zapata.html#module-zapata">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="zapata.data.html"
+                        title="previous chapter">zapata.data module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="zapata.mapping.html"
+                        title="next chapter">zapata.mapping module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/zapata.lib.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="zapata.mapping.html" title="zapata.mapping module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="zapata.data.html" title="zapata.data module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >Applications</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, AN.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+    </div>
+  </body>
+</html>
