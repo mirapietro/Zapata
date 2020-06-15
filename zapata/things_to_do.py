@@ -6,21 +6,27 @@ Issues
     
 **M1** :   
     Introduce checks for errors in xmap and xsmaps
->>> Solved  
+    >>> Solved  
 
 **M2** :  
     Adjust labels on the right in xsmap
->>> Solved -- Use `constrained layout = True`
+    >>> Solved -- Use `constrained layout = True`
 
 **M3** :    
     Adjust label spacing according to size of contour
->>> Done
+    >>> Done
 
 **M4** :    
     Introduce flexible formats for contour labels
->>> Done
+    >>> Done
 
 **M5** :
     Check Stmap for non PlateCarree projections
+
+**M6** :    
+    Modify algorithms so that they return xarrays
+
+**M7** :    
+    Add labeling option colorbar
 
 """

@@ -1,3 +1,8 @@
+'''
+A module to store and treat data
+================================
+'''
+
 import os
 import numpy as np
 import xarray as xr
@@ -8,13 +13,16 @@ import netCDF4 as net
 # NCEP Reanalysis standard pressure levels
 # 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10
 # 1000  925  850  700  600, 500  400  300, 250, 200, 150, 100      50          10
-# 
+#
+
+
+
 def read_month(dataset, vardir,var1,level,yy,mm,type,option,verbose=False):
     """
     A routine to read one month of data from various datasets.
     
     This routine will read data one month at a time from various data sets
-    described in _DataGrid()_
+    described in *DataGrid()*
     
     Parameters
     ----------
@@ -83,6 +91,7 @@ def date_param():
     --------
     >>> index = data_param()
     >>> mon=index['DJF']['month_index']
+
     """
     months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
     DJF ={'label':'DJF','month_index':[12,1,2]}
@@ -127,7 +136,7 @@ def date_param():
         }
     return out
 
-def DataGrid(verbose=False):
+def DataGrid(option=None):
     """
     Routine that returns a Dictionary with information on the reuqested Data Set.
 
@@ -141,20 +150,19 @@ def DataGrid(verbose=False):
 
     Parameters
     ----------
-
-    verbose :   
-        True/False      Tons of Output
-
+    Option :       
+        * 'Verbose'      Tons of Output   
+        * 'Info'         Info on data sets  
 
     Examples
     --------
 
-    >>> info = data_param()
-    >>> info = data_param(verbose=True)
+    >>> DataGrid('info')
+    >>> dat = DataGrid('verbose')
     """
 
     homedir = os.path.expanduser("~")
-    if verbose: print('Root Directory for Data ',homedir)
+    if option == 'verbose': print('Root Directory for Data ',homedir)
     
     U ={      'level': [10, 50, 100,150, 200,250,300,400,500,600,700,850,925,1000],
               'start': 1979,
@@ -234,6 +242,8 @@ def DataGrid(verbose=False):
               'lonnp': np.asarray([i for i in np.arange(0,360.1,0.25)]),
               'clim': homedir + '/Dropbox (CMCC)/ERA5/CLIM',
               'place': homedir +'/Dropbox (CMCC)/ERA5/DATA/ERA5_MM',
+              'source_url': 'http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings',
+              'desc':'ERA5 Monthly Mean for U,V,T,W,SLP 1979-2018',
               'special_value': 9999.,
               'U': U,
               'T': T,
@@ -262,27 +272,24 @@ def DataGrid(verbose=False):
               'lonnp': np.asarray([i for i in np.arange(1.25,360.,2.5)]),
               'precip': precip_gpcp,
               'place': homedir +'/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP',
-              'clim': homedir + '/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP'
+              'clim': homedir + '/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP',
+              'desc': 'Precipitation from the GPCP Project',
+              'source_url': 'http://gpcp.umd.edu/'
               }
 
 
     grid={'ERA5': dataera5,
           'GPCP': datagpcp
          }
+    if option == 'info':
+        for i in list(grid.keys()):
+            print(grid[i]['desc'])
+            print(grid[i]['place'])
+            print(grid[i]['source_url']+'\n')
+        return
+    
     return grid
 
-
-def GPCPInfo():
-    """Location data for the GPCP data set. """
-    source_url='http://gpcp.umd.edu/'
-    out = {'Info': source_url}
-    return out   
-
-def ERA5Info():
-    """Location data for the ERA5 data set. """
-    source_url='://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings'
-    out = {'Info': source_url}
-    return out
 
 def readvar_grid(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',Celsius=False,verbose=False):
     """
@@ -292,7 +299,7 @@ def readvar_grid(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',
     ----------
 
     region :    
-        'globe' for global maps, or [east, west, north, south]
+        *globe* for global maps, or [east, west, north, south]
         for limited region, longitude 0-360
     dataset :   
          name of data set
@@ -344,10 +351,10 @@ def readvar_grid(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',
     #Correct for longitude in ERA5
     if dataset =='ERA5':
         lon=lon[:-1]
-
+    sv=None
     try:
-        grid[dataset]['special_value']
-        if verbose: print('  Using Special Value ---->', grid[dataset]['special_value'])
+        sv=grid[dataset]['special_value']
+        if verbose: print('  Using Special Value ---->', sv)
     except:
         print('  Special Value not defined for dataset {}'.format(dataset))
         
@@ -381,7 +388,7 @@ def readvar_grid(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',
         else:
             xdat[:,:,itim]=read_month(dataset, vardir,var,level,tim,mon[0],'npy',[],verbose=verbose) 
 
-    return xdat,nlon, nlat,lat,lon
+    return xdat,nlon, nlat,lat,lon,sv
 
 def read_xarray(dataset='ERA5',region='globe',var='Z',level='500',season='DJF',verbose=False):
     '''
@@ -392,11 +399,11 @@ def read_xarray(dataset='ERA5',region='globe',var='Z',level='500',season='DJF',v
     Parameters
     ----------
     dataset :   
-        name of data set   
+        Name of data set   
     region: 
-        select region   
-        * 'globe', _Entire globe_
-        * [East, West, North, South], _Specific region_
+        Select region   
+        * *globe*, Entire globe
+        * [East, West, North, South], Specific Region
     var :   
          variable name
     level : 
@@ -409,23 +416,23 @@ def read_xarray(dataset='ERA5',region='globe',var='Z',level='500',season='DJF',v
 
     Returns
     -------
-
     out : xarray   
         array data 
     
     '''
     
     if season != 'ALL':
-        xdat,nlon, nlat,lat,lon=readvar_grid(region='globe',dataset=dataset, \
+        xdat,nlon, nlat,lat,lon,sv=readvar_grid(region='globe',dataset=dataset, \
                             var=var,level=level,season=season,Celsius=False,verbose=verbose)
         times = pd.date_range('1979-01-01', periods=40,freq='YS')
     elif season == 'ALL':
-        xdat,nlon, nlat,lat,lon=readvar_year(region='globe',dataset=dataset, \
+        xdat,nlon, nlat,lat,lon,sv=readvar_year(region='globe',dataset=dataset, \
                             var=var,level=level,period='all',Celsius=False,verbose=verbose)
         times = pd.date_range('1979-01-01', periods=480,freq='MS')
     
     out = xr.DataArray(xdat, coords=[lat, lon, times], dims=['lat','lon','time'])
-
+    if sv:
+        out=xr.where(out == sv, np.nan, out)
     if region != 'globe':
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
@@ -463,8 +470,8 @@ def readvar_year(region='globe',period='all',dataset='ERA5',var='Z',level='500',
 
     period :    
         Time period to be read  
-            * 'all' _Every time level in databank_  
-            * [start_year,end_year] _period in those years_
+            * 'all' Every time level in databank  
+            * [start_year,end_year] period in those years
      
     Celsius :   
         True/False for temperature transform to Celsius
@@ -506,10 +513,10 @@ def readvar_year(region='globe',period='all',dataset='ERA5',var='Z',level='500',
     #Correct for longitude in ERA5
     if dataset =='ERA5':
         lon=lon[:-1]
-
+    sv=None
     try:
-        grid[dataset]['special_value']
-        if verbose: print('  Using Special Value ---->', grid[dataset]['special_value'])
+        sv=grid[dataset]['special_value']
+        if verbose: print('  Using Special Value ---->', sv)
     except:
         print('  Special Value not defined for dataset {}'.format(dataset))
 
@@ -542,4 +549,4 @@ def readvar_year(region='globe',period='all',dataset='ERA5',var='Z',level='500',
             if verbose : print('Reading time  ', itim)
             itim = itim + 1
 
-    return xdat,nlon, nlat,lat,lon
+    return xdat,nlon, nlat,lat,lon,sv
