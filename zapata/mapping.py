@@ -23,15 +23,15 @@ import geocat.viz.util as gvutil
     
 def choose_contour(cont):
     """
-    Choose contours according to length of _cont_.
+    Choose contours according to length of cont.
 
     Parameters
     -----------
     cont :  
-        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
-        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
-        * n                      _n contours_  
-        * []                     _automatic choice_   
+        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc 
+        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  
+        * n                      n contours 
+        * []                     automatic choice   
 
     Returns
     --------
@@ -129,7 +129,7 @@ def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=Fals
 
     return
 
-def add_colorbar(fig, handle, ax, colorbar_size=0.01,label_size=10,edges=True):
+def add_colorbar(fig, handle, ax, colorbar_size=0.05,label_size=10,edges=True):
     """
     Add colorbar to plot.
     
@@ -150,7 +150,7 @@ def add_colorbar(fig, handle, ax, colorbar_size=0.01,label_size=10,edges=True):
     divider = tl.make_axes_locatable(ax)
     cax = divider.append_axes('bottom',size="2.5%", pad=0.4, axes_class=plt.Axes)
     ax.get_figure().colorbar(handle, cax=cax, orientation='horizontal',\
-                        ticks=handle.levels,fraction=0.05,drawedges=edges)
+                        ticks=handle.levels,fraction=colorbar_size,drawedges=edges)
     return
 
 def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_format = ' {:6.0f} ', \
@@ -160,10 +160,9 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
                       colorbar=False,cmap='coolwarm',
                       coasts=True,color_land='lightgray'):
     """
-    Lat-Lon mapping function for cartopy.
+    Lat-Lon mapping function based on cartopy and NCAR GEOCAT.
 
-    Brief description. Internally assume data is always on a latlon projection 
-    with central longitude at Greenwich.
+    
 
     Parameters 
     ----------
@@ -171,10 +170,10 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         xarray  --  cyclic point added in the routine
 
     cont :  
-        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
-        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
-        * n                      _n contours_  
-        * []                     _automatic choice_   
+        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc 
+        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn] 
+        * n                      n contours 
+        * []                     automatic choice  
     pro :   
         Map Projection as initialized by init
 
@@ -212,7 +211,14 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         False/True   Plotting or not empty coastlines 
 
     color_land: 
-         if coasts=False, use color_land for land
+        if coasts=False, use color_land for land
+
+    xlimit:     
+        Longitude limits of the map, if not set they are derived from the data
+
+    ylimit:     
+        Latitude limits of the map, if not set they are derived from the data
+
     
     Returns
     -------
@@ -226,9 +232,16 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
     if not this  in  ['PlateCarree']:
         print(' Wrong Projection in `xmap` {}'.format(this))
         raise SystemExit
-    
     #Special Values
     data=field.where(field != 9999.)
+    
+    #Add Cyclic point
+    data=gvutil.xr_add_cyclic_longitudes(data, 'lon')
+
+    #Check coordinate consistency
+    if data.lon.min() < 0:
+        data = data.roll(lon=180,roll_coords=True).assign_coords({'lon': (data.lon + 180.) })
+        print('Shifting data for consictency coordinates ')
 
     #Eliminate extra dimensions
     if len(data.shape) > 2:
@@ -242,8 +255,9 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         ax.add_feature(cfeature.LAND, facecolor='lightgray')
     
     #Set axes limits
+    # The extra 0.1 if a bizarre error of cartopy for equal limits
     if xlimit is  None:
-        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
+        xlim = (np.amin(data.lon.values)-180.,np.amax(data.lon.values)-180.01)
     else:
         xlim=xlimit
         
@@ -254,7 +268,7 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
     print(' Plotting with x limits {}  '.format(xlim)  ) 
     print(' Plotting with y limits {}  '.format(ylim) )
     
-    ax.set_extent(list(xlim+ylim),car.PlateCarree())
+    ax.set_extent(list(xlim+ylim),car.PlateCarree(central_longitude=0))
     add_ticks(ax)
     add_ticklabels(ax)
 
@@ -291,7 +305,7 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         add_labels=False  # again turn off automatic labels
         )
     # Label the contours
-    if clabel:
+    if clabel and contour:
         ax.clabel(handles['contours'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
                 fontsize=8, fmt=c_format.format )
         if zeroline:
@@ -319,27 +333,21 @@ def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose
     -----------
     ax :       
         Current axes to the current figure
-
     xt :    
         Locations of desired Longitude labels
-
     yt :     
         Locations of desired Latitude labels
-
     xlim :  
         Longitudinal extent of the stereo map
-    
     ylim :  
         Latitudinal extent of the stereo map
-
     promap :    
         Projection 
-
     Top_label :    
-        True/False  _Turn off the top labels_
+        True/False  Turn off the top labels
 
     Lat_labels :    
-        True/False  _Turn off the latitude labels_
+        True/False  Turn off the latitude labels
 
     """
     # Hardwire ticks for grid lines
@@ -434,10 +442,10 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
         xarray  --  cyclic point added in the routine
 
     cont :  
-        * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_  
-        * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_  
-        * n                      _n contours_  
-        * []                     _automatic choice_   
+        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc  
+        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  
+        * n                      n contours  
+        * []                     automatic choice   
     pro :   
         Map Projection as initialized by init
 
@@ -478,10 +486,10 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
          if coasts=False, use color_land for land
     
     Top_label :    
-        True/False  _Turn off the top labels_
+        True/False  Turn off the top labels
 
     Lat_labels :    
-        True/False  _Turn off the latitude labels_
+        True/False  Turn off the latitude labels
     
     Returns
     -------
