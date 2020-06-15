@@ -4,7 +4,7 @@
 A revolutionary library for analysis and plotting of meteorological data. The mapping is based on cartopy and GEOCAT libraries from NCAR.
 It uses `xarray` as a basic data structure. 
 
-The folder `docs` contains documentation for the modules. The subdirectory `htnl` contains the html file sfor the documentation produced by Sphinx. 
+The folder `docs` contains documentation for the modules. The subdirectory `html` contains the html file for the documentation produced by Sphinx. 
 
 The directory 
 
