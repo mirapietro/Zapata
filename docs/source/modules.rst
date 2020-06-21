@@ -1,5 +1,5 @@
-Applications
-============
+Zapata
+======
 
 .. toctree::
    :maxdepth: 4

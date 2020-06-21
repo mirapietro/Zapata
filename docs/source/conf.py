@@ -15,7 +15,7 @@
 import os
 import sys
 homedir = os.path.expanduser("~")
-root_path = homedir +'/Dropbox (CMCC)/Applications/Docs_sphinx'
+root_path = homedir +'/GitHub/Zapata/docs'
 os.chdir(root_path)
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))

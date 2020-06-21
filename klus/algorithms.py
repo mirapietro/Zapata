@@ -296,16 +296,35 @@ def kpca(X, k, evs=5):
     return (d, V,G)
 
 
-def kcca(X, Y, k, evs=5, epsilon=1e-6):
+def kcca(X, Y, k, option='CCA', evs=5, epsilon=1e-6):
     '''
-    Kernel CCA.
+    Kernel CCA. 
+
+    Perform kernel CCA ina simplified form for time series, 
+    otherwise applies KCCA to two different fields
+
+    Parameters
+    ----------
     
-    :param X:    data matrix, each column represents a data point
-    :param Y:    lime-lagged data, each column y_i is x_i mapped forward by the dynamical system
-    :param k:    kernel
-    :param evs:  number of eigenvalues/eigenvectors
-    :epsilon:    regularization parameter
-    :return:     nonlinear transformation of the data X
+    X:   
+        data matrix, each column represents a data point
+    Y:   
+        time-lagged data, each column y_i is x_i mapped forward by the dynamical system, 
+        or a different data magtrix
+    option:
+        * 'lagged', assume that the data matrix `Y` is the time lagged version of `X`
+        * 'CCA', assume `X` and `Y` to be independent fields  (default)
+    k:  
+        kernel
+    evs:  
+        number of eigenvalues/eigenvectors
+    epsilon:
+        regularization parameter
+
+    Returns
+    -------
+        CCA coefficients 
+
     '''
     G_0 = _kernels.gramian(X, k)
     G_1 = _kernels.gramian(Y, k)
@@ -317,12 +336,25 @@ def kcca(X, Y, k, evs=5, epsilon=1e-6):
     G_0 = N @ G_0 @ N
     G_1 = N @ G_1 @ N
     
-    A = _sp.linalg.solve(G_0 + epsilon*I, G_0, assume_a='sym') \
-      @ _sp.linalg.solve(G_1 + epsilon*I, G_1, assume_a='sym')
-    
-    d, V = sortEig(A, evs)
-    return (d, V)
+    if option == 'lagged':
+        print(' Computing kernel CCA with lagged data  \n')
+        A = _sp.linalg.solve(G_0 + epsilon*I, G_0, assume_a='sym') \
+                @ _sp.linalg.solve(G_1 + epsilon*I, G_1, assume_a='sym')
+        d, V = sortEig(A, evs)
 
+    elif option == 'CCA':
+        print(' Computing KCCA  \n')
+        zers = _np.zeros(G_0.shape) 
+        kdx = _np.concatenate(((G_0 + epsilon*I)@(G_0 + epsilon*I),zers),axis = 1)
+        kdy = _np.concatenate((zers,(G_1 + epsilon*I)@(G_1 + epsilon*I)),axis = 1)
+        KD = _np.concatenate((kdx,kdy))
+
+        kdxy = _np.concatenate(((G_0 + epsilon*I)@(G_1 + epsilon*I),zers),axis = 1)
+        kdyx = _np.concatenate((zers,(G_1 + epsilon*I)@(G_0 + epsilon*I)),axis = 1)
+        KO = _np.concatenate((kdxy,kdyx))
+        A = _sp.linalg.solve(KD, KO, assume_a='sym') 
+        d, V = sortEig(A, evs)
+    return (A, d, V)
 
 def cmd(X, Y, evs=5, epsilon=1e-6):
     '''
