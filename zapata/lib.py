@@ -111,12 +111,79 @@ def year2date(years,i):
     return date
 
 def date2year(years,date):
-    """Transform index date ['Jan' '1989' ] in index i.
-    
-    Years are from np.arange(1979,2018, 1/12)
+    """
+    Transform index date ['Jan' '1989' ] in index i.
+
+    Ad hoc routine for the ERA5 monthly data.
+    Years are from np.arange(1979,2018, 1/12).
+
     """
     mon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
     y=float(date[4:8])
     m=mon.index(str(date[0:3]))
     index = (y-1979)*12 + m
     return int(index)
+
+def order(w,option='magnitude',direction='up'):
+    '''
+    Order numpy vector `w` according to 
+    `option`
+
+    Parameters
+    ----------
+    w :
+        Input numpy vector (N,1). It can be either `real` or `complex`, but only certain options will apply
+    option : 
+
+        * 'magnitude'         abs(w)                    | Real, Complex
+        * 'frequency'         w.imag                    | Complex
+        * 'growth'            w.real                    | Complex
+        * 'ones'              abs(w) closest to 1.0     | Real, Complex
+    
+    direction :
+
+        * 'up'               descending
+        * 'down'             ascending
+    
+    Returns
+    -------
+    w :
+        Ordered numpy vector
+    ind : 
+        Index of ordered vector
+
+    '''
+    print(' Ordering Vector as ', option, ' with direction ', direction)
+    # Check inputs
+    if np.isrealobj(w):
+        if option == 'magnitude':
+            ind=abs(w).argsort()
+        elif option == 'one':
+            ind=np.abs(np.abs(w) - 1.0).argsort()
+        else:
+            str = f' Error in `order`, {option}, {direction}'
+            sys.exit(str) 
+        
+    if np.iscomplexobj(w):
+        w_cont = np.log(w)
+        if option == 'magnitude':
+            ind=abs(w).argsort()
+        elif option == 'frequency':
+            ind=abs(w_cont.imag).argsort()
+        elif option == 'growth':
+            ind=np.abs(w_cont.real - 0.0).argsort()
+        elif option == 'one':
+            ind=np.abs(np.abs(w) - 1.0).argsort()
+        else:
+            str = f' Error in `order`, {option}, {direction}'
+            sys.exit(str) 
+# Choose direction
+    if direction == 'up':
+        indu=ind[::-1]
+    else:
+        indu=ind
+    
+    
+    w0=w[indu]
+    return w0,indu
+    

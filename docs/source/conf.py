@@ -15,7 +15,7 @@
 import os
 import sys
 homedir = os.path.expanduser("~")
-root_path = homedir +'/Dropbox (CMCC)/Applications/Docs_sphinx'
+root_path = homedir +'/Dropbox (CMCC)/GitHub/Zapata/docs'
 os.chdir(root_path)
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
@@ -45,7 +45,7 @@ release = '0.1'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.coverage','sphinx.ext.napoleon'
+    'sphinx.ext.coverage','sphinx.ext.napoleon','sphinx.ext.viewcode',
 ]
 
 napoleon_google_docstring = False
@@ -89,7 +89,7 @@ pygments_style = None
 #
 html_theme = 'classic'
 html_theme_options = {
-    "relbarbgcolor": "black"
+    "relbarbgcolor": "black", 'bodyfont':'Times','headbgcolor': 'navajowhite'
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
