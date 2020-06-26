@@ -45,7 +45,7 @@ release = '0.1'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.coverage','sphinx.ext.napoleon'
+    'sphinx.ext.coverage','sphinx.ext.napoleon',    'sphinx.ext.viewcode',
 ]
 
 napoleon_google_docstring = False
