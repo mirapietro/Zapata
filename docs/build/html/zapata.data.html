@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zapata.data module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,7 +37,8 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.data module</a></li> 
       </ul>
     </div>  
 
@@ -51,7 +53,7 @@
 <h2>A module to store and treat data<a class="headerlink" href="#a-module-to-store-and-treat-data" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="zapata.data.DataGrid">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">DataGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.data.DataGrid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">DataGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#DataGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.DataGrid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Routine that returns a Dictionary with information on the reuqested Data Set.</p>
 <p>Currently two data sets are supported</p>
 <ul class="simple">
@@ -78,7 +80,7 @@ See source for full explanation of the content.</p>
 
 <dl class="py function">
 <dt id="zapata.data.date_param">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">date_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zapata.data.date_param" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">date_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#date_param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.date_param" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data Bank to resolve Month and Season averaging information</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="n">data_param</span><span class="p">()</span>
@@ -89,13 +91,13 @@ See source for full explanation of the content.</p>
 
 <dl class="py function">
 <dt id="zapata.data.read_dataset">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.data.read_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Similar to <cite>read_xarray</cite> but returns a <code class="docutils literal notranslate"><span class="pre">xarray</span> <span class="pre">DataSet</span></code></p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="zapata.data.read_month">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">vardir</span></em>, <em class="sig-param"><span class="n">var1</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.data.read_month" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">vardir</span></em>, <em class="sig-param"><span class="n">var1</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_month" title="Permalink to this definition">¶</a></dt>
 <dd><p>A routine to read one month of data from various datasets.</p>
 <p>This routine will read data one month at a time from various data sets
 described in <em>DataGrid()</em></p>
@@ -130,7 +132,7 @@ described in <em>DataGrid()</em></p>
 
 <dl class="py function">
 <dt id="zapata.data.read_xarray">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.data.read_xarray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_xarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read npy files from data and generates xarray.</p>
 <p>This a xarray implementation of read_var. It always grabs the global data.</p>
 <dl class="field-list simple">
@@ -157,7 +159,7 @@ described in <em>DataGrid()</em></p>
 
 <dl class="py function">
 <dt id="zapata.data.readvar_grid">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">readvar_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'JAN'</span></em>, <em class="sig-param"><span class="n">Celsius</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.data.readvar_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">readvar_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'JAN'</span></em>, <em class="sig-param"><span class="n">Celsius</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#readvar_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.readvar_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read Variable from data sets</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -192,7 +194,7 @@ for limited region, longitude 0-360</p></li>
 
 <dl class="py function">
 <dt id="zapata.data.readvar_year">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">readvar_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">Celsius</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.data.readvar_year" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">readvar_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">Celsius</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#readvar_year"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.readvar_year" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read Variable from data banks, all month, no averaging</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -237,6 +239,7 @@ for limited region, longitude 0-360</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -305,12 +308,13 @@ for limited region, longitude 0-360</p></li>
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.data module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
     </div>
   </body>
 </html>

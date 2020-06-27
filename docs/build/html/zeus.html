@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zeus module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -31,7 +32,8 @@
           <a href="zapata.work_in_progress.html" title="zapata.work_in_progress module"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Zapata</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Zapata</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zeus module</a></li> 
       </ul>
     </div>  
 
@@ -59,7 +61,7 @@ the dependencies run for example:</p>
 <p>Before calling any other function from this module run the <cite>init</cite> function.</p>
 <dl class="py function">
 <dt id="zeus.execute">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.execute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a command remotely on Zeus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -80,7 +82,7 @@ the dependencies run for example:</p>
 
 <dl class="py function">
 <dt id="zeus.get">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dst</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dst</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download a file from Zeus.</p>
 <p>Copy remote file specified in <cite>src</cite> from Zeus to the local path
 specified in <cite>dst</cite>.</p>
@@ -106,7 +108,7 @@ specified in <cite>dst</cite>.</p>
 
 <dl class="py function">
 <dt id="zeus.info">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jobid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jobid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get status of LSF jobs on Zeus.</p>
 <p>This function returns the list of the jobs the user submitted on LSF. If
 <cite>jobid</cite> argument is provided then only the status of that particular job
@@ -133,7 +135,7 @@ is shown, otherwise all recent jobs will be listed.</p>
 
 <dl class="py function">
 <dt id="zeus.init">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.init" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the module with the Zeus login username.</p>
 <p>This function must be called before any other function from the module.</p>
 <dl class="field-list simple">
@@ -155,7 +157,7 @@ is shown, otherwise all recent jobs will be listed.</p>
 
 <dl class="py function">
 <dt id="zeus.process">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">script_name</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">compress</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">frequency</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.process" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">process</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">script_name</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">compress</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">frequency</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Submit a script on LSF and download the output data.</p>
 <p>This function uploads the local script specified in <cite>script_name</cite>,
 executes the script on LSF (i.e., bsub &lt; script_name) and downloads the
@@ -191,7 +193,7 @@ wait for the job to end.</p>
 
 <dl class="py function">
 <dt id="zeus.put">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dst</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeus.put" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dst</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.put" title="Permalink to this definition">¶</a></dt>
 <dd><p>Upload a file to Zeus.</p>
 <p>Copy a local file specified in <cite>src</cite> to the remote path specified in
 <cite>dst</cite> on Zeus.</p>
@@ -218,6 +220,7 @@ wait for the job to end.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -275,12 +278,13 @@ wait for the job to end.</p>
           <a href="zapata.work_in_progress.html" title="zapata.work_in_progress module"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zeus module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
     </div>
   </body>
 </html>

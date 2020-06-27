@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zapata.computation module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,7 +37,8 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.computation module</a></li> 
       </ul>
     </div>  
 
@@ -49,7 +51,7 @@
 <span id="zapata-computation-module"></span><h1>zapata.computation module<a class="headerlink" href="#module-zapata.computation" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="zapata.computation.Xmat">
-<em class="property">class </em><code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">Xmat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">dims</span><span class="p">:</span> <span class="n">Union[Hashable, Sequence[Hashable], None]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.Xmat" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">Xmat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">dims</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>Hashable<span class="p">, </span>Sequence<span class="p">[</span>Hashable<span class="p">]</span><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class creates xarrays in vector mathematical form.</p>
 <p>The xarray is stacked along <cite>dims</cite> dimensions
@@ -82,14 +84,14 @@ number of columns</p>
 
 <dl class="py method">
 <dt id="zapata.computation.Xmat.anom">
-<code class="sig-name descname">anom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.Xmat.anom" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">anom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.anom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.anom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates anomalies.</p>
 <p>This is using the function <cite>anomaly</cite> from <cite>zapata.computation</cite></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="zapata.computation.Xmat.corr">
-<code class="sig-name descname">corr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Dim</span><span class="o">=</span><span class="default_value">'time'</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.Xmat.corr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">corr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Dim</span><span class="o">=</span><span class="default_value">'time'</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.corr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.corr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute correlation of data matrix <cite>A</cite> with index <cite>y</cite>.</p>
 <p>This method compute the correlation of the data matrix
 with an index of the same length of the <cite>time</cite> dimension of <cite>A</cite></p>
@@ -133,7 +135,7 @@ prob :  Significance array</p></li>
 
 <dl class="py method">
 <dt id="zapata.computation.Xmat.cov">
-<code class="sig-name descname">cov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Dim</span><span class="o">=</span><span class="default_value">'time'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.Xmat.cov" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">cov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">Dim</span><span class="o">=</span><span class="default_value">'time'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.cov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.cov" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute covariance of data matrix <cite>A</cite> with <cite>index</cite>.</p>
 <p>This method compute the correlation of the data matrix
 with an index of the same length of the <cite>time</cite> dimension of <cite>A</cite></p>
@@ -146,7 +148,7 @@ with an index of the same length of the <cite>time</cite> dimension of <cite>A</
 
 <dl class="py method">
 <dt id="zapata.computation.Xmat.svd">
-<code class="sig-name descname">svd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.Xmat.svd" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">svd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.svd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.svd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute SVD of Data Matrix A.</p>
 <p>The calculation is done in a way that the modes are equivalent to EOF</p>
 <dl class="field-list simple">
@@ -196,7 +198,7 @@ then it is set to the maximum</p>
 
 <dl class="py function">
 <dt id="zapata.computation.anomaly">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">anomaly</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'anom'</span></em>, <em class="sig-param"><span class="n">freq</span><span class="o">=</span><span class="default_value">'month'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.anomaly" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">anomaly</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'anom'</span></em>, <em class="sig-param"><span class="n">freq</span><span class="o">=</span><span class="default_value">'month'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#anomaly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.anomaly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute Anomalies according to <em>option</em></p>
 <p>Long description here.</p>
 <dl class="field-list">
@@ -242,7 +244,7 @@ then it is set to the maximum</p>
 
 <dl class="py function">
 <dt id="zapata.computation.feature_to_input">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">feature_to_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">num</span></em>, <em class="sig-param"><span class="n">PsiX</span></em>, <em class="sig-param"><span class="n">Proj</span></em>, <em class="sig-param"><span class="n">icstart</span><span class="o">=</span><span class="default_value">0.15</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.feature_to_input" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">feature_to_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">num</span></em>, <em class="sig-param"><span class="n">PsiX</span></em>, <em class="sig-param"><span class="n">Proj</span></em>, <em class="sig-param"><span class="n">icstart</span><span class="o">=</span><span class="default_value">0.15</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#feature_to_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.feature_to_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform from Feature space to input space.</p>
 <p>It computes an approximate back-image for the Gaussian kernels and
 and exact backimage for kernels based on scalar product whose nonlinear
@@ -269,7 +271,7 @@ map can be inverted.</p>
 
 <dl class="py function">
 <dt id="zapata.computation.smooth_xarray">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">smooth_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'wrap'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.smooth_xarray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">smooth_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'wrap'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#smooth_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.smooth_xarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Smooth xarray X with a gaussian filter .</p>
 <p>It uses a routine from scipy ndimage ( <code class="docutils literal notranslate"><span class="pre">ndimage.gaussian_filter</span></code>).
 The filter is applied to all dimensions.
@@ -317,7 +319,7 @@ The input is extended by wrapping around to the opposite edge.</p></li>
 
 <dl class="py function">
 <dt id="zapata.computation.zonal_var">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">zonal_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">season</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'LonTime'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zapata.computation.zonal_var" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">zonal_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">season</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'LonTime'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#zonal_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.zonal_var" title="Permalink to this definition">¶</a></dt>
 <dd><p>A routine to average xarray</p>
 <p>This routine will accept xarray up to four dimensions (lat,lon,pressure, time) and return the averaged arrays with compatible dimensions.</p>
 <dl class="field-list">
@@ -357,6 +359,7 @@ The input is extended by wrapping around to the opposite edge.</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -425,12 +428,13 @@ The input is extended by wrapping around to the opposite edge.</p></li>
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.computation module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
     </div>
   </body>
 </html>
