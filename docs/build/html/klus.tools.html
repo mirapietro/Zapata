@@ -4,7 +4,6 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>klus.tools module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -37,8 +36,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="klus.html" accesskey="U">klus package</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">klus.tools module</a></li> 
+          <li class="nav-item nav-item-2"><a href="klus.html" accesskey="U">klus package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -80,8 +78,12 @@ $ tmux new -s matlab “matlab -nodesktop”</p>
 
 <dl class="py method">
 <dt id="klus.tools.matmux.exportVars">
-<code class="sig-name descname">exportVars</code><span class="sig-paren">(</span><em class="sig-param">'x'</em>, <em class="sig-param">x</em>, <em class="sig-param">'y'</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.exportVars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.exportVars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">exportVars</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.exportVars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.exportVars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export variables to Matlab, e.g.:
+x = 1
+y = 2
+this.exportVars(‘x’, x, ‘y’, y)</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="klus.tools.matmux.figure">
@@ -153,7 +155,6 @@ x, y = this.importVars(‘x’, ‘y’)</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -222,13 +223,12 @@ x, y = this.importVars(‘x’, ‘y’)</p>
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="klus.html" >klus package</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">klus.tools module</a></li> 
+          <li class="nav-item nav-item-2"><a href="klus.html" >klus package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>

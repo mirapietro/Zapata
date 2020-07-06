@@ -4,7 +4,6 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>interp module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,8 +35,7 @@
           <a href="modules.html" title="Zapata"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Zapata</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">interp module</a></li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Zapata</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -115,7 +113,7 @@ can be used to perform the actual interpolation.</p>
 
 <dl class="py class">
 <dt id="interp.Ocean_Interpolator">
-<em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Ocean_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_grid</span></em>, <em class="sig-param"><span class="n">tgt_grid</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Ocean_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_grid</span></em>, <em class="sig-param"><span class="n">tgt_grid</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'Global'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class creates weights for interpolation of ocean fields.</p>
 <p>This class create an interpolator operator from a <em>source grid</em>
@@ -130,11 +128,12 @@ can be used to perform the actual interpolation.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>src_grid</strong> (<em>xarray</em>) – Source grid</p></li>
 <li><p><strong>tgt_grid</strong> (<em>xarray</em>) – Target grid</p></li>
+<li><p><strong>option</strong> (<em>str</em>) – ‘global’, for global grids (to be implemented regional )</p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.tgt_grid" title="interp.Ocean_Interpolator.tgt_grid"><strong>tgt_grid</strong></a> – Target grid</p></li>
+<li><p><strong>tgt_grid</strong> – Target grid</p></li>
 <li><p><a class="reference internal" href="#interp.Ocean_Interpolator.mask" title="interp.Ocean_Interpolator.mask"><strong>mask</strong></a> – Mask of the target grid</p></li>
 <li><p><a class="reference internal" href="#interp.Ocean_Interpolator.vt" title="interp.Ocean_Interpolator.vt"><strong>vt</strong></a> – Weights</p></li>
 <li><p><a class="reference internal" href="#interp.Ocean_Interpolator.wt" title="interp.Ocean_Interpolator.wt"><strong>wt</strong></a> – Weights</p></li>
@@ -146,8 +145,12 @@ can be used to perform the actual interpolation.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">=</span> <span class="n">zint</span><span class="o">.</span><span class="n">Ocean_Interpolator</span><span class="p">(</span><span class="n">src_grid</span><span class="p">,</span><span class="n">tgt_grid</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Interpolate</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">src_xarray</span><span class="p">)</span>
+<p>Interpolate temperature</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_T</span><span class="p">(</span><span class="n">src_xarray</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Interpolate U,V</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_UV</span><span class="p">(</span><span class="n">U_xarray</span><span class="p">,</span><span class="n">V_xarray</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -160,7 +163,7 @@ This methods can be used for scalar quantities.</p>
 <dd class="field-odd"><p><strong>xdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Iterpolated xarray on the target grid</p>
+<dd class="field-even"><p><strong>out</strong> – Interpolated xarray on the target grid</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>xarray</p>
@@ -170,10 +173,33 @@ This methods can be used for scalar quantities.</p>
 
 <dl class="py method">
 <dt id="interp.Ocean_Interpolator.interp_UV">
-<code class="sig-name descname">interp_UV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.interp_UV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.interp_UV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform actual interpolation to the target grid
-Under development</p>
+<code class="sig-name descname">interp_UV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">udata</span></em>, <em class="sig-param"><span class="n">vdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.interp_UV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.interp_UV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform interpolation for U,V Grid point to the target grid.
+This methods can be used for vector quantities.</p>
+<p>The present method interpolates the U,V points to the T points,
+rotates them and then interpolates to the target grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>udata,vdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Interpolated xarray on the target grid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.lath">
+<code class="sig-name descname">lath</code><a class="headerlink" href="#interp.Ocean_Interpolator.lath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.lonh">
+<code class="sig-name descname">lonh</code><a class="headerlink" href="#interp.Ocean_Interpolator.lonh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="interp.Ocean_Interpolator.mask">
@@ -181,8 +207,33 @@ Under development</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.tgt_grid">
-<code class="sig-name descname">tgt_grid</code><a class="headerlink" href="#interp.Ocean_Interpolator.tgt_grid" title="Permalink to this definition">¶</a></dt>
+<dt id="interp.Ocean_Interpolator.mask_H">
+<code class="sig-name descname">mask_H</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask_H" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.masku">
+<code class="sig-name descname">masku</code><a class="headerlink" href="#interp.Ocean_Interpolator.masku" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.maskv">
+<code class="sig-name descname">maskv</code><a class="headerlink" href="#interp.Ocean_Interpolator.maskv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.mdir">
+<code class="sig-name descname">mdir</code><a class="headerlink" href="#interp.Ocean_Interpolator.mdir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.option">
+<code class="sig-name descname">option</code><a class="headerlink" href="#interp.Ocean_Interpolator.option" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.tangle">
+<code class="sig-name descname">tangle</code><a class="headerlink" href="#interp.Ocean_Interpolator.tangle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -200,7 +251,6 @@ Under development</p>
 </div>
 
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -264,13 +314,12 @@ Under development</p>
           <a href="modules.html" title="Zapata"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">interp module</a></li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>

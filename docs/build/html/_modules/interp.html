@@ -4,7 +4,6 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>interp &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +27,7 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">interp</a></li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -167,7 +165,8 @@
 <span class="sd">        Source grid</span>
 <span class="sd">    tgt_grid : xarray</span>
 <span class="sd">        Target grid</span>
-<span class="sd">    </span>
+<span class="sd">    option : str</span>
+<span class="sd">        &#39;global&#39;, for global grids (to be implemented regional )</span>
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 
@@ -186,19 +185,54 @@
 
 <span class="sd">    &gt;&gt;&gt; w= zint.Ocean_Interpolator(src_grid,tgt_grid) </span>
 <span class="sd">    </span>
-<span class="sd">    Interpolate</span>
+<span class="sd">    Interpolate temperature</span>
 
-<span class="sd">    &gt;&gt;&gt; target_xarray=w.interp(src_xarray)</span>
+<span class="sd">    &gt;&gt;&gt; target_xarray=w.interp_T(src_xarray)</span>
+
+<span class="sd">    Interpolate U,V</span>
+
+<span class="sd">    &gt;&gt;&gt; target_xarray=w.interp_UV(U_xarray,V_xarray)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;vt&#39;</span><span class="p">,</span><span class="s1">&#39;wt&#39;</span><span class="p">,</span><span class="s1">&#39;mask&#39;</span><span class="p">,</span><span class="s1">&#39;tgt_grid&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;vt&#39;</span><span class="p">,</span><span class="s1">&#39;wt&#39;</span><span class="p">,</span><span class="s1">&#39;option&#39;</span><span class="p">,</span><span class="s1">&#39;mask&#39;</span><span class="p">,</span><span class="s1">&#39;masku&#39;</span><span class="p">,</span><span class="s1">&#39;maskv&#39;</span><span class="p">,</span><span class="s1">&#39;mask_H&#39;</span><span class="p">,</span><span class="s1">&#39;lath&#39;</span><span class="p">,</span><span class="s1">&#39;lonh&#39;</span><span class="p">,</span><span class="s1">&#39;mdir&#39;</span> \
+                     <span class="p">,</span><span class="s1">&#39;tangle&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_grid</span><span class="p">,</span> <span class="n">tgt_grid</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_grid</span><span class="p">,</span> <span class="n">tgt_grid</span><span class="p">,</span> <span class="n">option</span> <span class="o">=</span> <span class="s1">&#39;Global&#39;</span><span class="p">):</span>
         <span class="c1"># Put here info on grids to be obtained from __call__</span>
-        <span class="c1">#Source Grid</span>
-        <span class="n">lato</span><span class="o">=</span><span class="n">src_grid</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="n">lono</span><span class="o">=</span><span class="n">src_grid</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="c1"># This currently works with mask files</span>
+        <span class="c1"># &#39;masks_CMCC-CM2_VHR4_AGCM.nc&#39;</span>
+        <span class="c1"># and</span>
+        <span class="c1"># &#39;ORCA025L50_mesh_mask.nc&#39;</span>
+        
+        <span class="c1"># Path to auxiliary Ocean files</span>
+        <span class="n">homedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mdir</span> <span class="o">=</span> <span class="n">homedir</span> <span class="o">+</span> <span class="s1">&#39;/Dropbox (CMCC)/data_zapata&#39;</span>
+        <span class="n">da</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">mdir</span> <span class="o">+</span> <span class="s1">&#39;/ORCA025_angle.nc&#39;</span><span class="p">,</span><span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tangle</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">tangle</span><span class="o">.</span><span class="n">data</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.0</span>
+        
+        <span class="c1"># Global grid consider North Pole</span>
+        <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;Global&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s1">&#39;Global&#39;</span>
+
+        <span class="c1">#Source Grids for T, U, V</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">src_grid</span><span class="o">.</span><span class="n">tmask</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">masku</span> <span class="o">=</span> <span class="n">src_grid</span><span class="o">.</span><span class="n">umask</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maskv</span> <span class="o">=</span> <span class="n">src_grid</span><span class="o">.</span><span class="n">vmask</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span>
+
+        <span class="c1">#Fix Polar Fold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:,:]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:,:]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:,:]</span> <span class="o">=</span> <span class="kc">False</span>
+   
+        <span class="n">latou</span> <span class="o">=</span>  <span class="n">src_grid</span><span class="o">.</span><span class="n">gphiu</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">masku</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">lonou</span> <span class="o">=</span> <span class="p">(</span><span class="n">src_grid</span><span class="o">.</span><span class="n">glamu</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">masku</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">+</span> <span class="mi">360</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
+        
+        <span class="n">latov</span> <span class="o">=</span>  <span class="n">src_grid</span><span class="o">.</span><span class="n">gphiv</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maskv</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">lonov</span> <span class="o">=</span> <span class="p">(</span><span class="n">src_grid</span><span class="o">.</span><span class="n">glamv</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maskv</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">+</span> <span class="mi">360</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
+
+        <span class="n">lato</span> <span class="o">=</span>  <span class="n">src_grid</span><span class="o">.</span><span class="n">nav_lat</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">lono</span> <span class="o">=</span> <span class="p">(</span><span class="n">src_grid</span><span class="o">.</span><span class="n">nav_lon</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">+</span> <span class="mi">360</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
         <span class="n">latlon</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">lato</span><span class="p">,</span><span class="n">lono</span><span class="p">])</span>
 
         <span class="c1"># #Recognize Grid</span>
@@ -214,20 +248,27 @@
         <span class="c1">#     print(f&#39; Temperature Grid &#39;)</span>
         
         <span class="c1">#Target Grid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tgt_grid</span> <span class="o">=</span> <span class="n">tgt_grid</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">tgt_grid</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">ind</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="s1">&#39;ind&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span>
+        <span class="c1">#Get coordinates for output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lath</span><span class="o">=</span><span class="n">tgt_grid</span><span class="o">.</span><span class="n">yc</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lonh</span><span class="o">=</span><span class="n">tgt_grid</span><span class="o">.</span><span class="n">xc</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span>
+
+        <span class="c1">#Insert NaN for land</span>
+        <span class="n">temp1</span> <span class="o">=</span> <span class="n">tgt_grid</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">tgt_grid</span><span class="o">.</span><span class="n">mask</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_H</span> <span class="o">=</span> <span class="n">temp1</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">ind</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nj&#39;</span><span class="p">,</span><span class="s1">&#39;ni&#39;</span><span class="p">})</span>
+        
+        <span class="n">_maskt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_H</span><span class="p">[</span><span class="o">~</span><span class="n">xr</span><span class="o">.</span><span class="n">ufuncs</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_H</span><span class="p">)]</span> 
+        
         <span class="c1">#Order target coordinate</span>
-        <span class="n">latlon_to</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">mask</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">mask</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">data</span><span class="p">])</span>
+        <span class="n">latlon_to</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">_maskt</span><span class="o">.</span><span class="n">yc</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">_maskt</span><span class="o">.</span><span class="n">xc</span><span class="o">.</span><span class="n">data</span><span class="p">])</span>
         
         <span class="c1">#Generates Weights</span>
         <span class="n">tri</span> <span class="o">=</span> <span class="n">qhull</span><span class="o">.</span><span class="n">Delaunay</span><span class="p">(</span><span class="n">latlon</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="n">simplex</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">find_simplex</span><span class="p">(</span><span class="n">latlon_to</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">,</span> <span class="n">simplex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">tri</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">simplex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">delta</span> <span class="o">=</span> <span class="n">latlon_to</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">temp</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
-        <span class="n">bary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;njk,nk-&gt;nj&#39;</span><span class="p">,</span> <span class="n">temp</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">delta</span><span class="p">)</span>
+        <span class="n">_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">tri</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">simplex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">latlon_to</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">_temp</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="n">bary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;njk,nk-&gt;nj&#39;</span><span class="p">,</span> <span class="n">_temp</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">delta</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">bary</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">bary</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -250,27 +291,95 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        out :  xarray</span>
-<span class="sd">            Iterpolated xarray on the target grid</span>
+<span class="sd">            Interpolated xarray on the target grid</span>
 <span class="sd">        </span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">dat</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">xdata</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;nj,nj-&gt;n&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vt</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">wt</span><span class="p">)</span>
-        <span class="n">temp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">temp</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">new</span>
-        <span class="n">temp</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">xdata</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">return</span> <span class="n">temp</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span></div>
+        <span class="n">t_data</span> <span class="o">=</span> <span class="n">xdata</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interp_distance</span><span class="p">(</span><span class="n">t_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="Ocean_Interpolator.interp_UV"><a class="viewcode-back" href="../interp.html#interp.Ocean_Interpolator.interp_UV">[docs]</a>    <span class="k">def</span> <span class="nf">interp_UV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xdata</span><span class="p">):</span>
+<div class="viewcode-block" id="Ocean_Interpolator.interp_UV"><a class="viewcode-back" href="../interp.html#interp.Ocean_Interpolator.interp_UV">[docs]</a>    <span class="k">def</span> <span class="nf">interp_UV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">udata</span><span class="p">,</span> <span class="n">vdata</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; </span>
-<span class="sd">        Perform actual interpolation to the target grid</span>
-<span class="sd">        Under development</span>
+<span class="sd">        Perform interpolation for U,V Grid point to the target grid.</span>
+<span class="sd">        This methods can be used for vector quantities.</span>
+
+<span class="sd">        The present method interpolates the U,V points to the T points, </span>
+<span class="sd">        rotates them and then interpolates to the target grid.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        udata,vdata :  xarray</span>
+<span class="sd">            2D array to be interpolated, it must be on the `src_grid`</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out :  xarray</span>
+<span class="sd">            Interpolated xarray on the target grid</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
         
-        <span class="k">return</span> </div></div>
+
+        <span class="c1"># Allocate space</span>
+        <span class="n">uvelT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">udata</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">vvelT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">vdata</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="c1"># Interpolate zonal component from grid U to grid T</span>
+        <span class="n">tmpmsk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">masku</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">masku</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">utmp</span><span class="o">=</span><span class="n">udata</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">masku</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">udata</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">masku</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span>
+         
+        <span class="n">uvelT</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">!=</span><span class="mi">0</span><span class="p">,</span> <span class="n">utmp</span><span class="o">/</span><span class="n">tmpmsk</span><span class="p">,</span> <span class="n">utmp</span><span class="p">)</span>
+        <span class="n">uvelT</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">uvelT</span><span class="p">[:,</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># E-W periodicity</span>
+
+        <span class="c1"># Interpolate meridional component from grid V to grid T</span>
+        <span class="n">tmpmsk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maskv</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">maskv</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:]</span>
+        <span class="n">vtmp</span><span class="o">=</span><span class="n">vdata</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">maskv</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">+</span><span class="n">vdata</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">maskv</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:]</span>
+        <span class="n">vvelT</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">!=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vtmp</span><span class="o">/</span><span class="n">tmpmsk</span><span class="p">,</span> <span class="n">vtmp</span><span class="p">)</span>
+
+        <span class="c1"># rotate  velocity according their grid points</span>
+        <span class="n">uvel</span><span class="p">,</span><span class="n">vvel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotate_UV</span><span class="p">(</span><span class="n">uvelT</span><span class="p">,</span><span class="n">vvelT</span><span class="p">)</span>
+        <span class="c1">#print(f&#39;---uvelT---vvel--- {uvelT}  {uvel} {self.masku.shape} {utmp.shape}&#39;)</span>
+       
+        <span class="c1"># Interpolate to the new grid</span>
+        <span class="n">u1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interp_distance</span><span class="p">(</span><span class="n">uvel</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interp_distance</span><span class="p">(</span><span class="n">vvel</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">u1</span><span class="p">,</span><span class="n">v1</span></div>
+
+    <span class="k">def</span> <span class="nf">_interp_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">_data</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">        Internal Routine to perform interpolation</span>
+<span class="sd">        on T points according a simple distance method</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="c1"># Apply sum over weights</span>
+        <span class="n">dat</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;nj,nj-&gt;n&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vt</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">wt</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="n">temp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_H</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">temp</span><span class="p">[</span><span class="o">~</span><span class="n">xr</span><span class="o">.</span><span class="n">ufuncs</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">temp</span><span class="p">)]</span>  <span class="o">=</span> <span class="n">new</span>
+        <span class="c1"># The transpose is necessary for the ordering of variables in mask_H</span>
+        <span class="n">temp1</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+       
+        <span class="n">res</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">temp1</span><span class="p">,</span><span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">),</span><span class="n">coords</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lat&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">lath</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lonh</span><span class="p">})</span>
+        <span class="n">res</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">res</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Polar interpolation still problematic, mask values at the North Pole</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;Global&#39;</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">8</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">=</span> <span class="o">-</span><span class="mf">1.78</span>
+            
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">_rotate_UV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">        Internal Routine to perform rotation of vectors fields</span>
+<span class="sd">        on U,V points priori interpolation to the T points.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># </span>
+        <span class="n">uu</span> <span class="o">=</span> <span class="n">u</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tangle</span><span class="p">)</span> <span class="o">-</span> <span class="n">v</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tangle</span><span class="p">)</span>
+        <span class="n">vv</span> <span class="o">=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tangle</span><span class="p">)</span> <span class="o">+</span> <span class="n">u</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tangle</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">uu</span><span class="p">,</span><span class="n">vv</span></div>
 
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -309,13 +418,12 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">interp</a></li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
     </div>
   </body>
 </html>

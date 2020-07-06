@@ -59,7 +59,7 @@ def choose_contour(cont):
         print('Ten Contours automatic')
     return cc
 
-def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize="small",length=6,width=0.9):
+def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize="large",length=6,width=0.9):
     """
     Utility function to make plots look like NCL plots by adding minor and major tick lines
     
@@ -103,7 +103,7 @@ def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize="small",le
         right=True,
     )
     
-def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=False):
+def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=True):
     """
     Utility function to make plots look like NCL plots by using latitude, longitude tick labels
     
@@ -153,6 +153,34 @@ def add_colorbar(fig, handle, ax, colorbar_size=0.05,label_size=10,edges=True):
                         ticks=handle.levels,fraction=colorbar_size,drawedges=edges)
     return
 
+def make_ticks(xt,dt=20):
+    '''
+    Calculates nice tickes for the axes.
+    Selecting 20 or 10 intervals
+
+    Parameters
+    ----------
+
+    xt : 
+        Axes limit [west, east]
+    
+    dt:
+        Initial tick spacing
+
+    Returns
+    -------
+
+    ticks:
+        Nice ticks position
+    '''
+
+    res=1
+    dti=np.gcd(abs(xt[1]-xt[0]),dt)
+    print(f'Ticks set at {dti}  intervals')
+    n=len(np.arange(xt[0], xt[1],dti))
+    
+    return np.linspace(xt[0], xt[1], n+1)
+
 def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_format = ' {:6.0f} ', \
                       zeroline=False, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
@@ -161,6 +189,12 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
                       coasts=True,color_land='lightgray'):
     """
     Lat-Lon mapping function based on cartopy and NCAR GEOCAT.
+
+    Data must on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
+    referred to the projection chosen in `init`.
+
+    For the `Pacific` view it is assumed that the central longitude is at the daetline
+    whereas for the `Atlantic` view the central longitude is at Greenwich.
 
     
 
@@ -238,11 +272,6 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
     #Add Cyclic point
     data=gvutil.xr_add_cyclic_longitudes(data, 'lon')
 
-    #Check coordinate consistency
-    if data.lon.min() < 0:
-        data = data.roll(lon=180,roll_coords=True).assign_coords({'lon': (data.lon + 180.) })
-        print('Shifting data for consictency coordinates ')
-
     #Eliminate extra dimensions
     if len(data.shape) > 2:
         data = data.squeeze()
@@ -268,7 +297,7 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
     print(' Plotting with x limits {}  '.format(xlim)  ) 
     print(' Plotting with y limits {}  '.format(ylim) )
     
-    ax.set_extent(list(xlim+ylim),car.PlateCarree(central_longitude=0))
+    ax.set_extent(list(xlim+ylim),pro)
     add_ticks(ax)
     add_ticklabels(ax)
 
@@ -278,9 +307,8 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
             ax=ax,                            # this is the axes we want to plot to
             cmap=cmap,                        # our special colormap
             levels=choose_contour(cont),      # contour levels specified outside this function
-            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
-            xticks=np.arange(xlim[0],xlim[1], 30),  # nice x ticks
-            yticks=np.arange(ylim[0], ylim[1], 15),    # nice y ticks
+            xticks=make_ticks(xlim,dt=30),    # nice x ticks
+            yticks=make_ticks(ylim,dt=20),    # nice y ticks
             add_colorbar=False,               # don't add individual colorbars for each plot call
             add_labels=False,                 # turn off xarray's automatic Lat, lon labels
         )
@@ -400,7 +428,7 @@ def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose
     return
 
 def _set_label_location(tx,x, y, pro,ylim):
-    """ utility to find the location of labels on projection """
+    """ utility to find the location of labels on stereo projection """
 
     xu,yu = pro.transform_point(x,y,car.PlateCarree())
     xmin,xmax = pro.x_limits
@@ -433,8 +461,11 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
     """
     Stereo mapping function for cartopy.
 
-    Brief description. Internally assume data is always on a latlon projection 
-    with central longitude at Greenwich.
+    Data must on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
+    referred to the projection chosen in `init`.
+
+    For the `Pacific` view it is assumed that the central longitude is at the daetline
+    whereas for the `Atlantic` view the central longitude is at Greenwich.
 
     Parameters 
     ----------
@@ -659,7 +690,9 @@ def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
     else:
         print(' Error in init_figure projection {}'.format(proview))
         raise SystemExit
-    
+    #Store View in projection
+    projection.view = proview
+
     fig, ax = plt.subplots(rows, cols,figsize=figsize, constrained_layout=constrained_layout, \
                            subplot_kw={ "projection": projection})
     
@@ -716,7 +749,7 @@ def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
     
 
     if maintitle is not None:
-        ax.set_title(maintitle, fontsize=maintitlefontsize, loc='center', y=ytitle+0.01)
+        ax.set_title(maintitle, fontsize=maintitlefontsize, loc='center',pad=20)
 
     if lefttitle is not None:
         ax.set_title(lefttitle, fontsize=lefttitlefontsize, y=ytitle+0.01, loc='left')
@@ -731,15 +764,22 @@ def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
         ax.set_ylabel(ylabel, fontsize=labelfontsize)
 
     return
-def xstmap(U, V,  color='black', ax=None, \
+def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
                       density=2, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
-                      xlimit=None,ylimit=None,\
-                      colorbar=False,cmap='coolwarm'):
+                      xlimit=None,ylimit=None, \
+                      colorbar=False,cmap='coolwarm',cscale=None):
     """
     Plot streamline for field U and V.
 
     This routine draws streamlines for the fields U,V, optionally colored with the field ``color``. Internally assume data is always on a latlon projection with central longitude at Greenwich.
+
+    Data must on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
+    referred to the projection chosen in `init`.
+
+    For the `Pacific` view it is assumed that the central longitude is at the dateline
+    whereas for the `Atlantic` view the central longitude is at Greenwich.
+
 
     Parameters      
     ----------
@@ -751,6 +791,9 @@ def xstmap(U, V,  color='black', ax=None, \
     
     color :   
         Color of the stremalines ('black'). If it is xarray color the streamlines with the colormap ``cmap``       
+    
+    cscale :
+        If an array is used in `color`, it normalize to cscale = ( min, max)
     
     density :    
         Density of the streamlines      
@@ -785,14 +828,23 @@ def xstmap(U, V,  color='black', ax=None, \
     #Special Values
     U=U.where(U != 9999.)
     
-    #select color scale
+    #select color scale, color are normalized accordin to `cscale`
     this = type(color).__name__
+    normuv = None
+
     if this == 'str':
         color_scale=color
     elif this == 'DataArray':
-        print(this)
-        color_scale = color.data
+        print(f'Color set an xarray {color.name}')
+        if not cscale:
+            cscale= (color.min(), color.max() )
+        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
+        color_scale = color.data      
     elif this == 'ndarray':
+        print(f'Color set an array {color.name}')
+        if not cscale:
+            cscale= (color.max(), color.min() )
+        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
         color_scale=color
     else:
         color_scale='black'
@@ -801,31 +853,29 @@ def xstmap(U, V,  color='black', ax=None, \
     if len(U.shape) > 2:
         U = U.squeeze()
         V = V.squeeze()
-       
-    # Stream-plot the data
-    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can't
-    # pass xarray.DataArray objects directly: fetch NumPy arrays via 'data' attribute'
-    hc=ax.streamplot(U.lon.data, U.lat.data, U.data, V.data, linewidth=1, density=density, color=color_scale, \
-                     cmap=cmap,  zorder=1,transform=car.PlateCarree()    )
-
-    # # Label the contours
-    #     ax.clabel
-    #         handles["contour"], fontsize=8, fmt="%.0f",  # Turn off decimal points
-    #    )
-
+    
+    # Check longitude coordinates
+    # Because we are not using the integrated matplotlib with xarray, the coordinate must be 
+    # transformed to (-180,180) if necessary
+    
+    this_U = U.copy()
+    this_V = V.copy()
+    lont = this_U.lon.data
+    lont[lont>180] = lont[lont>180] - 360.
+    
     # Add coastlines
     ax.coastlines(linewidth=0.5)
     # Draw filled polygons for land
     ax.add_feature(cfeature.LAND, zorder=0, edgecolor='black', color='lightgray')
 
-    #Set axes limits a
+    #Set axes limits
     if xlimit is  None:
-        xlim = (np.amin(U.lon.values)-180.,np.amax(U.lon.values)-180.)
+        xlim = (np.amin(this_U.lon.data),np.amax(this_U.lon.data))
     else:
         xlim=xlimit
         
     if ylimit is  None:
-        ylim = (np.amin(U.lat.values),np.amax(U.lat.values))
+        ylim = (np.amin(this_U.lat.values),np.amax(this_U.lat.values))
     else:
         ylim=ylimit
     print(' Plotting with x limits {}  '.format(xlim)  ) 
@@ -833,11 +883,15 @@ def xstmap(U, V,  color='black', ax=None, \
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     
-    # Use libcartopy convenience function to add minor and major tick lines
-    add_ticks(ax)
-
-    # Use libcartopy convenience function to make plots look like NCL plots by using latitude, longitude tick labels
-    add_ticklabels(ax)
+    # Stream-plot the data
+    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can't
+    # pass xarray.DataArray objects directly: fetch NumPy arrays via 'data' attribute'
+    sp=ax.streamplot(lont, this_U.lat.data, this_U.data, this_V.data, linewidth=1, density=density, color=color_scale, \
+                      cmap=cmap,  zorder=1,norm = normuv)
+    
+    #ns=5
+    #ax.quiver(lont[::ns], this_U.lat.data[::ns], this_U.data[::ns,::ns], this_V.data[::ns,::ns])
+    #ax.quiverkey(self, Q, X, Y, U, label, **kw)[source]
 
     # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
     set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
@@ -849,9 +903,180 @@ def xstmap(U, V,  color='black', ax=None, \
     # of ax and the padding between cax and ax will be fixed at 0.05 inch.
         divider = tl.make_axes_locatable(ax)
         cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
-        ax.get_figure().colorbar(hc.lines, cax=cax,orientation='vertical')
+        ax.get_figure().colorbar(sp.lines, cax=cax,orientation='vertical')
+    # Use geocat.viz.util convenience function to set axes tick values
+    tx=make_ticks(xlim)
+    ty=make_ticks(ylim)
+    gvutil.set_axes_limits_and_ticks(ax, xlim=xlim, ylim=ylim, xticks=tx, yticks=ty)
 
-    return hc
+    #  add minor and major tick lines
+    add_ticks(ax)
+    # Use geocat.viz.util convenience function to make plots look like NCL plots by using latitude, longitude tick labels
+    gvutil.add_lat_lon_ticklabels(ax)
+
+    return sp
+def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
+                      stride=10, Special_Value = 9999.,\
+                      veckey=None,\
+                      lefttitle='',righttitle='',maintitle='',\
+                      xlimit=None,ylimit=None, \
+                      colorbar=False,cmap='coolwarm',cscale=None,**kw):
+    """
+    Vector plot for field U and V.
+
+    This routine draws streamlines for the fields U,V, optionally colored with the field ``color``. Internally assume data is always on a latlon projection with central longitude at Greenwich.
+
+    Data must on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
+    referred to the projection chosen in `init`.
+
+    For the `Pacific` view it is assumed that the central longitude is at the dateline
+    whereas for the `Atlantic` view the central longitude is at Greenwich.
+
+    It also takes all the other arguments for `quiver`
+
+
+    Parameters      
+    ----------
+    U : xarray
+        X component of the streamlines   
+    
+    V : xarray
+        Y component of the streamlines
+    
+    C : xarray, (optional)
+         xarray that color the streamlines with the colormap ``cmap``
+    
+    stride :
+        Stride in the vector drawing
+    
+    colvec :   
+        Color of the stremalines ('black').        
+    
+    cscale :
+        If an array is used in `C`, it normalize the color to cscale = ( min, max)
+    
+    veckey : 
+        It is a dictionary for the reference vector, the values are
+            * X, Y -- Location in figure coordinates
+            * U -- Reference Unit
+            * label -- Reference string, it can a latex string, i.e  r'$1 \\frac{m}{s}$'   
+
+    ax :          
+        Plot axis to be used        
+    
+    Special_Value :         
+        Values to be ignored       
+    
+    lefttitle :         
+        Title string on the left       
+    
+    righttitle :       
+        Title string on the right      
+    
+    maintitle :      
+        Title string at the center    
+    
+    cmap :  
+        Colormap    
+    
+    colorbar :   
+        False/True  
+    
+    xlimit :       
+        Limit of the map (lon)  
+    
+    ylimit :        
+        Limit of the map (lat)  
+    """
+    #Special Values
+    U=U.where(U != 9999.)
+    
+    #select color scale, color are normalized accordin to `cscale`
+    this = type(C).__name__
+    normuv = None
+
+    if this == 'DataArray':
+        print(f'Color set an xarray {C.name}')
+        if not cscale:
+            cscale= (C.min(), C.max() )
+        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
+        col_vec = C.data[::stride,::stride]      
+    elif this == 'ndarray':
+        print(f'Color set an array {C.name}')
+        if not cscale:
+            cscale= (C.max(), C.min() )
+        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
+        col_vec=C[::stride,::stride]
+    else:
+        col_vec = None
+
+    #Eliminate extra dimensions
+    if len(U.shape) > 2:
+        U = U.squeeze()
+        V = V.squeeze()
+    
+    # Check longitude coordinates
+    # Because we are not using the integrated matplotlib with xarray, the coordinate must be 
+    # transformed to (-180,180) if necessary
+    
+    this_U = U.copy()
+    this_V = V.copy()
+    lont = this_U.lon.data
+    lont[lont>180] = lont[lont>180] - 360.
+    
+    # Add coastlines
+    ax.coastlines(linewidth=0.5)
+    # Draw filled polygons for land
+    ax.add_feature(cfeature.LAND, zorder=0, edgecolor='black', color='lightgray')
+
+    #Set axes limits
+    if xlimit is  None:
+        xlim = (np.amin(this_U.lon.data),np.amax(this_U.lon.data))
+    else:
+        xlim=xlimit
+        
+    if ylimit is  None:
+        ylim = (np.amin(this_U.lat.values),np.amax(this_U.lat.values))
+    else:
+        ylim=ylimit
+    print(' Plotting with x limits {}  '.format(xlim)  ) 
+    print(' Plotting with y limits {}  '.format(ylim) )
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+
+    # Stream-plot the data
+    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can't
+    # pass xarray.DataArray objects directly: fetch NumPy arrays via 'data' attribute'
+    sp=ax.quiver(lont[::stride], this_U.lat.data[::stride], this_U.data[::stride,::stride], this_V.data[::stride,::stride],col_vec, \
+                        linewidth=1, color=color,\
+                        cmap=cmap,  zorder=1,norm = normuv,**kw)
+
+    if veckey:
+        ax.quiverkey( sp, veckey['X'], veckey['Y'], veckey['Unit'], veckey['label'], **kw)
+
+    # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
+    set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
+                                 maintitle=maintitle, maintitlefontsize=16,
+                                 righttitle=righttitle, righttitlefontsize=14)
+    # Add colorbar
+    if colorbar:
+    # create an axes on the right side of ax. The width of cax will be 5%
+    # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+        divider = tl.make_axes_locatable(ax)
+        cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
+        ax.get_figure().colorbar(sp, cax=cax,orientation='vertical')
+    # Use geocat.viz.util convenience function to set axes tick values
+    tx=make_ticks(xlim)
+    ty=make_ticks(ylim)
+    gvutil.set_axes_limits_and_ticks(ax, xlim=xlim, ylim=ylim, xticks=tx, yticks=ty)
+
+    #  add minor and major tick lines
+    add_ticks(ax)
+    # Use geocat.viz.util convenience function to make plots look like NCL plots by using latitude, longitude tick labels
+    gvutil.add_lat_lon_ticklabels(ax)
+
+    return sp
 def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True):
     """
     Zonal mapping function for xarray (lat,pressure). 
