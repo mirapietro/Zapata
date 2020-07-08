@@ -47,10 +47,10 @@
             
   <div class="section" id="module-klus.tools">
 <span id="klus-tools-module"></span><h1>klus.tools module<a class="headerlink" href="#module-klus.tools" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="klus.tools.Timer">
-<em class="property">class </em><code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">Timer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#Timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.Timer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py function">
+<dt id="klus.tools.indexS2M">
+<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">indexS2M</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sInd</span></em>, <em class="sig-param"><span class="n">dims</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#indexS2M"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.indexS2M" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single- to multi-index.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -60,9 +60,27 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="klus.tools.indexS2M">
-<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">indexS2M</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sInd</span></em>, <em class="sig-param"><span class="n">dims</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#indexS2M"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.indexS2M" title="Permalink to this definition">¶</a></dt>
-<dd><p>Single- to multi-index.</p>
+<dt id="klus.tools.printVector">
+<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">printVector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">8</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#printVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.printVector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the vector like Matlab.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.tools.printMatrix2">
+<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">printMatrix2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">8</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#printMatrix2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.printMatrix2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the matrix like Matlab.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.tools.printMatrix">
+<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">printMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">row</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">col</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#printMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.printMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the matrix like Matlab.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="klus.tools.Timer">
+<em class="property">class </em><code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">Timer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#Timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.Timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
 <dl class="py class">
@@ -71,11 +89,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Communicate with a running Matlab session, which needs to be started via:
 $ tmux new -s matlab “matlab -nodesktop”</p>
-<dl class="py method">
-<dt id="klus.tools.matmux.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt id="klus.tools.matmux.exportVars">
 <code class="sig-name descname">exportVars</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.exportVars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.exportVars" title="Permalink to this definition">¶</a></dt>
@@ -86,16 +99,6 @@ this.exportVars(‘x’, x, ‘y’, y)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="klus.tools.matmux.figure">
-<code class="sig-name descname">figure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.figure" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="klus.tools.matmux.imagesc">
-<code class="sig-name descname">imagesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.imagesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.imagesc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt id="klus.tools.matmux.importVars">
 <code class="sig-name descname">importVars</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.importVars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.importVars" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import variables from Matlab, e.g.:
@@ -103,8 +106,13 @@ x, y = this.importVars(‘x’, ‘y’)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="klus.tools.matmux.pcolor">
-<code class="sig-name descname">pcolor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.pcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.pcolor" title="Permalink to this definition">¶</a></dt>
+<dt id="klus.tools.matmux.figure">
+<code class="sig-name descname">figure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.figure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="klus.tools.matmux.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.close" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -113,8 +121,8 @@ x, y = this.importVars(‘x’, ‘y’)</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="klus.tools.matmux.plotDomain">
-<code class="sig-name descname">plotDomain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Omega</span></em>, <em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.plotDomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.plotDomain" title="Permalink to this definition">¶</a></dt>
+<dt id="klus.tools.matmux.surf">
+<code class="sig-name descname">surf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.surf" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -128,28 +136,20 @@ x, y = this.importVars(‘x’, ‘y’)</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="klus.tools.matmux.surf">
-<code class="sig-name descname">surf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.surf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.surf" title="Permalink to this definition">¶</a></dt>
+<dt id="klus.tools.matmux.pcolor">
+<code class="sig-name descname">pcolor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.pcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.pcolor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</dd></dl>
+<dl class="py method">
+<dt id="klus.tools.matmux.imagesc">
+<code class="sig-name descname">imagesc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.imagesc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.imagesc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="py function">
-<dt id="klus.tools.printMatrix">
-<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">printMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">row</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">col</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#printMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.printMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the matrix like Matlab.</p>
-</dd></dl>
+<dl class="py method">
+<dt id="klus.tools.matmux.plotDomain">
+<code class="sig-name descname">plotDomain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Omega</span></em>, <em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#matmux.plotDomain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.matmux.plotDomain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="py function">
-<dt id="klus.tools.printMatrix2">
-<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">printMatrix2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">8</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#printMatrix2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.printMatrix2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the matrix like Matlab.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.tools.printVector">
-<code class="sig-prename descclassname">klus.tools.</code><code class="sig-name descname">printVector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">8</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/tools.html#printVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.tools.printVector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the vector like Matlab.</p>
 </dd></dl>
 
 </div>

@@ -48,35 +48,34 @@
   <div class="section" id="module-klus.observables">
 <span id="klus-observables-module"></span><h1>klus.observables module<a class="headerlink" href="#module-klus.observables" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="klus.observables.allMonomialPowers">
-<code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">allMonomialPowers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#allMonomialPowers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.allMonomialPowers" title="Permalink to this definition">¶</a></dt>
-<dd><p>All monomials in d dimensions of order up to p.</p>
+<dt id="klus.observables.identity">
+<code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">identity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#identity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identity function.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="klus.observables.gaussians">
-<em class="property">class </em><code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">gaussians</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Omega</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#gaussians"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.gaussians" title="Permalink to this definition">¶</a></dt>
+<dt id="klus.observables.monomials">
+<em class="property">class </em><code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">monomials</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Gaussians whose centers are the centers of the box discretization Omega.</p>
-<p>sigma: width of Gaussians</p>
+<p>Computation of monomials in d dimensions.</p>
 <dl class="py method">
-<dt id="klus.observables.gaussians.ddiff">
-<code class="sig-name descname">ddiff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#gaussians.ddiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.gaussians.ddiff" title="Permalink to this definition">¶</a></dt>
+<dt id="klus.observables.monomials.diff">
+<code class="sig-name descname">diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials.diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials.diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute partial derivatives for all data points in x.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="klus.observables.monomials.ddiff">
+<code class="sig-name descname">ddiff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials.ddiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials.ddiff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute second order derivatives for all data points in x.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="klus.observables.gaussians.diff">
-<code class="sig-name descname">diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#gaussians.diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.gaussians.diff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute partial derivatives for all data points in x.</p>
+<dt id="klus.observables.monomials.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the polynomial with coefficients alpha.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.observables.identity">
-<code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">identity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#identity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.identity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Identity function.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -87,26 +86,21 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="klus.observables.monomials">
-<em class="property">class </em><code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">monomials</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials" title="Permalink to this definition">¶</a></dt>
+<dt id="klus.observables.gaussians">
+<em class="property">class </em><code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">gaussians</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Omega</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#gaussians"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.gaussians" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Computation of monomials in d dimensions.</p>
+<p>Gaussians whose centers are the centers of the box discretization Omega.</p>
+<p>sigma: width of Gaussians</p>
 <dl class="py method">
-<dt id="klus.observables.monomials.ddiff">
-<code class="sig-name descname">ddiff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials.ddiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials.ddiff" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute second order derivatives for all data points in x.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="klus.observables.monomials.diff">
-<code class="sig-name descname">diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials.diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials.diff" title="Permalink to this definition">¶</a></dt>
+<dt id="klus.observables.gaussians.diff">
+<code class="sig-name descname">diff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#gaussians.diff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.gaussians.diff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute partial derivatives for all data points in x.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="klus.observables.monomials.display">
-<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#monomials.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.monomials.display" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display the polynomial with coefficients alpha.</p>
+<dt id="klus.observables.gaussians.ddiff">
+<code class="sig-name descname">ddiff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#gaussians.ddiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.gaussians.ddiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute second order derivatives for all data points in x.</p>
 </dd></dl>
 
 </dd></dl>
@@ -122,6 +116,12 @@
 <code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">nextMonomialPowers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#nextMonomialPowers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.nextMonomialPowers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns powers for the next monomial. Implementation based on John Burkardt’s MONOMIAL toolbox, see
 <a class="reference external" href="http://people.sc.fsu.edu/~jburkardt/m_src/monomial/monomial.html">http://people.sc.fsu.edu/~jburkardt/m_src/monomial/monomial.html</a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.observables.allMonomialPowers">
+<code class="sig-prename descclassname">klus.observables.</code><code class="sig-name descname">allMonomialPowers</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/observables.html#allMonomialPowers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.observables.allMonomialPowers" title="Permalink to this definition">¶</a></dt>
+<dd><p>All monomials in d dimensions of order up to p.</p>
 </dd></dl>
 
 </div>

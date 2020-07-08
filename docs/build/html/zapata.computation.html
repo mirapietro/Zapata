@@ -47,6 +47,139 @@
             
   <div class="section" id="module-zapata.computation">
 <span id="zapata-computation-module"></span><h1>zapata.computation module<a class="headerlink" href="#module-zapata.computation" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="zapata.computation.zonal_var">
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">zonal_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">season</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'LonTime'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#zonal_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.zonal_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>A routine to average xarray</p>
+<p>This routine will accept xarray up to four dimensions (lat,lon,pressure, time) and return the averaged arrays with compatible dimensions.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>dataset</strong> – Name of the dataset, <code class="docutils literal notranslate"><span class="pre">ERA5</span></code>, <code class="docutils literal notranslate"><span class="pre">GPCP</span></code></p></li>
+<li><p><strong>var</strong> – Variable</p></li>
+<li><p><strong>season</strong> – Month or Season. Resolved from <cite>dat_param</cite></p></li>
+<li><p><strong>option</strong> –</p>
+<dl class="simple">
+<dt>Control Averaging</dt><dd><ul class="simple">
+<li><p>None        No Averaging</p></li>
+<li><p>‘LonTime’    Longitude and Time</p></li>
+<li><p>‘Lon’        Longitude</p></li>
+<li><p>‘Time’       Time averaging</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>verbose</strong> – Tons of Output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Average. The dimension is depending on the averaging option chosen</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>average</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zonal_var</span><span class="p">(</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;LonTime&#39;</span><span class="p">)</span>   <span class="c1">#Longitude and Time Average for Z from ERA5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zonal_var</span><span class="p">(</span><span class="s1">&#39;GPCP&#39;</span><span class="p">,</span><span class="s1">&#39;TPREP&#39;</span><span class="p">,</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># Time average</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.computation.smooth_xarray">
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">smooth_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'wrap'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#smooth_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.smooth_xarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth xarray X with a gaussian filter .</p>
+<p>It uses a routine from scipy ndimage ( <code class="docutils literal notranslate"><span class="pre">ndimage.gaussian_filter</span></code>).
+The filter is applied to all dimensions.
+See the doc page of ( <code class="docutils literal notranslate"><span class="pre">ndimage.gaussian_filter</span></code>) for a full documentation.
+The filter can be used for periodic fields, then the correct setting of <cite>mode</cite> is ‘wrap’</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>X</strong> – Input Xarray</p></li>
+<li><p><strong>sigma</strong> – Standard deviation for the Gaussian kernel</p></li>
+<li><p><strong>order</strong> – Order of the smoothing, 0 is a simple convolution</p></li>
+<li><p><strong>mode</strong> – <em>The mode parameter determines how the input array is extended when the filter overlaps a border.
+By passing a sequence of modes with length equal to the number of dimensions of the input array,
+different modes can be specified along each axis.
+Default value is ‘reflect’.</em></p>
+<p>The valid values and their behaviors are as follows:</p>
+<ul class="simple">
+<li><p>‘reflect’ (d c b a | a b c d | d c b a)
+The input is extended by reflecting about the edge of the last pixel.</p></li>
+<li><p>‘constant’ (k k k k | a b c d | k k k k)
+The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.</p></li>
+<li><p>‘nearest’ (a a a a | a b c d | d d d d)
+The input is extended by replicating the last pixel.</p></li>
+<li><p>‘mirror’ (d c b | a b c d | c b a)
+The input is extended by reflecting about the center of the last pixel.</p></li>
+<li><p>‘wrap’ (a b c d | a b c d | a b c d)
+The input is extended by wrapping around to the opposite edge.</p></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>numpy array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>smooth_array</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Smooth a X[lat,lon] array with nearest repetition in <em>lat</em> and periodicity in <em>lon</em></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">smooth_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">sigma</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="s1">&#39;wrap&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.computation.anomaly">
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">anomaly</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'anom'</span></em>, <em class="sig-param"><span class="n">freq</span><span class="o">=</span><span class="default_value">'month'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#anomaly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.anomaly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Anomalies according to <em>option</em></p>
+<p>Long description here.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>var</strong> (<em>xarray</em>) – array to compute anomalies</p></li>
+<li><p><strong>option</strong> –</p>
+<dl>
+<dt>Option controlling the type of anomaly calculation</dt><dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 82%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>deviation</p></td>
+<td><p>Subtract the time mean of the time series</p></td>
+</tr>
+<tr class="row-even"><td><p>deviation_std</p></td>
+<td><p>Subtract the time mean and normalize by standard deviation</p></td>
+</tr>
+<tr class="row-odd"><td><p>anom</p></td>
+<td><p>Compute anomalies from monthly climatology</p></td>
+</tr>
+<tr class="row-even"><td><p>anomstd</p></td>
+<td><p>Compute standardized anomalies from monthly climatology</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</li>
+<li><p><strong>freq</strong> – Frequency of data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>anom</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt id="zapata.computation.Xmat">
 <em class="property">class </em><code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">Xmat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">dims</span><span class="p">:</span> <span class="n">Union[Hashable, Sequence[Hashable], None]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat" title="Permalink to this definition">¶</a></dt>
@@ -81,10 +214,51 @@ number of columns</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="zapata.computation.Xmat.anom">
-<code class="sig-name descname">anom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.anom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.anom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates anomalies.</p>
-<p>This is using the function <cite>anomaly</cite> from <cite>zapata.computation</cite></p>
+<dt id="zapata.computation.Xmat.svd">
+<code class="sig-name descname">svd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.svd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.svd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute SVD of Data Matrix A.</p>
+<p>The calculation is done in a way that the modes are equivalent to EOF</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>N</strong> – Number of modes desired.
+If it is larger than the number of <cite>time</cite> levels
+then it is set to the maximum</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>out</strong> –</p>
+<dl>
+<dt>Dictionary including</dt><dd><table class="docutils align-default">
+<colgroup>
+<col style="width: 49%" />
+<col style="width: 51%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Pattern</p></td>
+<td><p>EOF patterns</p></td>
+</tr>
+<tr class="row-even"><td><p>Singular_Values</p></td>
+<td><p>Singular Values</p></td>
+</tr>
+<tr class="row-odd"><td><p>Coefficient</p></td>
+<td><p>Time Coefficients</p></td>
+</tr>
+<tr class="row-even"><td><p>Varex</p></td>
+<td><p>Variance Explained</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -145,99 +319,12 @@ with an index of the same length of the <cite>time</cite> dimension of <cite>A</
 </dd></dl>
 
 <dl class="py method">
-<dt id="zapata.computation.Xmat.svd">
-<code class="sig-name descname">svd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.svd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.svd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute SVD of Data Matrix A.</p>
-<p>The calculation is done in a way that the modes are equivalent to EOF</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>N</strong> – Number of modes desired.
-If it is larger than the number of <cite>time</cite> levels
-then it is set to the maximum</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><strong>out</strong> –</p>
-<dl>
-<dt>Dictionary including</dt><dd><table class="docutils align-default">
-<colgroup>
-<col style="width: 49%" />
-<col style="width: 51%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Pattern</p></td>
-<td><p>EOF patterns</p></td>
-</tr>
-<tr class="row-even"><td><p>Singular_Values</p></td>
-<td><p>Singular Values</p></td>
-</tr>
-<tr class="row-odd"><td><p>Coefficient</p></td>
-<td><p>Time Coefficients</p></td>
-</tr>
-<tr class="row-even"><td><p>Varex</p></td>
-<td><p>Variance Explained</p></td>
-</tr>
-</tbody>
-</table>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dictionary</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</pre></div>
-</div>
+<dt id="zapata.computation.Xmat.anom">
+<code class="sig-name descname">anom</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#Xmat.anom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.Xmat.anom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates anomalies.</p>
+<p>This is using the function <cite>anomaly</cite> from <cite>zapata.computation</cite></p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt id="zapata.computation.anomaly">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">anomaly</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'anom'</span></em>, <em class="sig-param"><span class="n">freq</span><span class="o">=</span><span class="default_value">'month'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#anomaly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.anomaly" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute Anomalies according to <em>option</em></p>
-<p>Long description here.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul>
-<li><p><strong>var</strong> (<em>xarray</em>) – array to compute anomalies</p></li>
-<li><p><strong>option</strong> –</p>
-<dl>
-<dt>Option controlling the type of anomaly calculation</dt><dd><table class="docutils align-default">
-<colgroup>
-<col style="width: 18%" />
-<col style="width: 82%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>deviation</p></td>
-<td><p>Subtract the time mean of the time series</p></td>
-</tr>
-<tr class="row-even"><td><p>deviation_std</p></td>
-<td><p>Subtract the time mean and normalize by standard deviation</p></td>
-</tr>
-<tr class="row-odd"><td><p>anom</p></td>
-<td><p>Compute anomalies from monthly climatology</p></td>
-</tr>
-<tr class="row-even"><td><p>anomstd</p></td>
-<td><p>Compute standardized anomalies from monthly climatology</p></td>
-</tr>
-</tbody>
-</table>
-</dd>
-</dl>
-</li>
-<li><p><strong>freq</strong> – Frequency of data</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>anom</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -265,93 +352,6 @@ map can be inverted.</p>
 <dd class="field-odd"><p>array(npoints, num)</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="zapata.computation.smooth_xarray">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">smooth_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'wrap'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#smooth_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.smooth_xarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Smooth xarray X with a gaussian filter .</p>
-<p>It uses a routine from scipy ndimage ( <code class="docutils literal notranslate"><span class="pre">ndimage.gaussian_filter</span></code>).
-The filter is applied to all dimensions.
-See the doc page of ( <code class="docutils literal notranslate"><span class="pre">ndimage.gaussian_filter</span></code>) for a full documentation.
-The filter can be used for periodic fields, then the correct setting of <cite>mode</cite> is ‘wrap’</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul>
-<li><p><strong>X</strong> – Input Xarray</p></li>
-<li><p><strong>sigma</strong> – Standard deviation for the Gaussian kernel</p></li>
-<li><p><strong>order</strong> – Order of the smoothing, 0 is a simple convolution</p></li>
-<li><p><strong>mode</strong> – <em>The mode parameter determines how the input array is extended when the filter overlaps a border.
-By passing a sequence of modes with length equal to the number of dimensions of the input array,
-different modes can be specified along each axis.
-Default value is ‘reflect’.</em></p>
-<p>The valid values and their behaviors are as follows:</p>
-<ul class="simple">
-<li><p>‘reflect’ (d c b a | a b c d | d c b a)
-The input is extended by reflecting about the edge of the last pixel.</p></li>
-<li><p>‘constant’ (k k k k | a b c d | k k k k)
-The input is extended by filling all values beyond the edge with the same constant value, defined by the cval parameter.</p></li>
-<li><p>‘nearest’ (a a a a | a b c d | d d d d)
-The input is extended by replicating the last pixel.</p></li>
-<li><p>‘mirror’ (d c b | a b c d | c b a)
-The input is extended by reflecting about the center of the last pixel.</p></li>
-<li><p>‘wrap’ (a b c d | a b c d | a b c d)
-The input is extended by wrapping around to the opposite edge.</p></li>
-</ul>
-</li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>numpy array</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>smooth_array</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<p>Smooth a X[lat,lon] array with nearest repetition in <em>lat</em> and periodicity in <em>lon</em></p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">smooth_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">sigma</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="s1">&#39;wrap&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="zapata.computation.zonal_var">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">zonal_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">season</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'LonTime'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#zonal_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.zonal_var" title="Permalink to this definition">¶</a></dt>
-<dd><p>A routine to average xarray</p>
-<p>This routine will accept xarray up to four dimensions (lat,lon,pressure, time) and return the averaged arrays with compatible dimensions.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul>
-<li><p><strong>dataset</strong> – Name of the dataset, <code class="docutils literal notranslate"><span class="pre">ERA5</span></code>, <code class="docutils literal notranslate"><span class="pre">GPCP</span></code></p></li>
-<li><p><strong>var</strong> – Variable</p></li>
-<li><p><strong>season</strong> – Month or Season. Resolved from <cite>dat_param</cite></p></li>
-<li><p><strong>option</strong> –</p>
-<dl class="simple">
-<dt>Control Averaging</dt><dd><ul class="simple">
-<li><p>None        No Averaging</p></li>
-<li><p>‘LonTime’    Longitude and Time</p></li>
-<li><p>‘Lon’        Longitude</p></li>
-<li><p>‘Time’       Time averaging</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p><strong>verbose</strong> – Tons of Output</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Average. The dimension is depending on the averaging option chosen</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>average</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zonal_var</span><span class="p">(</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;LonTime&#39;</span><span class="p">)</span>   <span class="c1">#Longitude and Time Average for Z from ERA5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">zonal_var</span><span class="p">(</span><span class="s1">&#39;GPCP&#39;</span><span class="p">,</span><span class="s1">&#39;TPREP&#39;</span><span class="p">,</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># Time average</span>
-</pre></div>
-</div>
 </dd></dl>
 
 </div>

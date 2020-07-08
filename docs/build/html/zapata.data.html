@@ -50,50 +50,6 @@
 <div class="section" id="a-module-to-store-and-treat-data">
 <h2>A module to store and treat data<a class="headerlink" href="#a-module-to-store-and-treat-data" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="zapata.data.DataGrid">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">DataGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#DataGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.DataGrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Routine that returns a Dictionary with information on the reuqested Data Set.</p>
-<p>Currently two data sets are supported</p>
-<ul class="simple">
-<li><p>ERA5 – Subset of monthly data of ERA5 (compiled by AN 2019)</p></li>
-<li><p>GPCP – Monthly data of precipitation data set</p></li>
-</ul>
-<p>Info can be retrieved as <code class="docutils literal notranslate"><span class="pre">grid[dataset][var]['start']</span></code> for the starting years.
-See source for full explanation of the content.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>Option</strong> –</p>
-<ul class="simple">
-<li><p>‘Verbose’      Tons of Output</p></li>
-<li><p>‘Info’         Info on data sets</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataGrid</span><span class="p">(</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">DataGrid</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="zapata.data.date_param">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">date_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#date_param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.date_param" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data Bank to resolve Month and Season averaging information</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="n">data_param</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mon</span><span class="o">=</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;DJF&#39;</span><span class="p">][</span><span class="s1">&#39;month_index&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="zapata.data.read_dataset">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Similar to <cite>read_xarray</cite> but returns a <code class="docutils literal notranslate"><span class="pre">xarray</span> <span class="pre">DataSet</span></code></p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="zapata.data.read_month">
 <code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">vardir</span></em>, <em class="sig-param"><span class="n">var1</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_month" title="Permalink to this definition">¶</a></dt>
 <dd><p>A routine to read one month of data from various datasets.</p>
@@ -129,30 +85,41 @@ described in <em>DataGrid()</em></p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="zapata.data.read_xarray">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_xarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read npy files from data and generates xarray.</p>
-<p>This a xarray implementation of read_var. It always grabs the global data.</p>
+<dt id="zapata.data.date_param">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">date_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#date_param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.date_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data Bank to resolve Month and Season averaging information</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="n">data_param</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mon</span><span class="o">=</span><span class="n">index</span><span class="p">[</span><span class="s1">&#39;DJF&#39;</span><span class="p">][</span><span class="s1">&#39;month_index&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.DataGrid">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">DataGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#DataGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.DataGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Routine that returns a Dictionary with information on the reuqested Data Set.</p>
+<p>Currently two data sets are supported</p>
+<ul class="simple">
+<li><p>ERA5 – Subset of monthly data of ERA5 (compiled by AN 2019)</p></li>
+<li><p>GPCP – Monthly data of precipitation data set</p></li>
+</ul>
+<p>Info can be retrieved as <code class="docutils literal notranslate"><span class="pre">grid[dataset][var]['start']</span></code> for the starting years.
+See source for full explanation of the content.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> – Name of data set</p></li>
-<li><p><strong>region</strong> – Select region
-* <em>globe</em>, Entire globe
-* [East, West, North, South], Specific Region</p></li>
-<li><p><strong>var</strong> – variable name</p></li>
-<li><p><strong>level</strong> – level, either a value or ‘SURF’ for surface fields</p></li>
-<li><p><strong>season</strong> – Month (‘JAN’) or season (,’DJF’) or annual ‘ANN’), or ‘ALL’ for every year</p></li>
-<li><p><strong>verbose</strong> – True/False – Tons of Output</p></li>
+<dd class="field-odd"><p><strong>Option</strong> –</p>
+<ul class="simple">
+<li><p>‘Verbose’      Tons of Output</p></li>
+<li><p>‘Info’         Info on data sets</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – array data</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray</p>
-</dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DataGrid</span><span class="p">(</span><span class="s1">&#39;info&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dat</span> <span class="o">=</span> <span class="n">DataGrid</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -188,6 +155,39 @@ for limited region, longitude 0-360</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">readvar_grid</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;SST&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;SURF&#39;</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="n">Celsius</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.read_xarray">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_xarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read npy files from data and generates xarray.</p>
+<p>This a xarray implementation of read_var. It always grabs the global data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – Name of data set</p></li>
+<li><p><strong>region</strong> – Select region
+* <em>globe</em>, Entire globe
+* [East, West, North, South], Specific Region</p></li>
+<li><p><strong>var</strong> – variable name</p></li>
+<li><p><strong>level</strong> – level, either a value or ‘SURF’ for surface fields</p></li>
+<li><p><strong>season</strong> – Month (‘JAN’) or season (,’DJF’) or annual ‘ANN’), or ‘ALL’ for every year</p></li>
+<li><p><strong>verbose</strong> – True/False – Tons of Output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – array data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.read_dataset">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to <cite>read_xarray</cite> but returns a <code class="docutils literal notranslate"><span class="pre">xarray</span> <span class="pre">DataSet</span></code></p>
 </dd></dl>
 
 <dl class="py function">

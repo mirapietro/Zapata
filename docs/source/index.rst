@@ -23,7 +23,6 @@ Happy Computing !
    modules
    
 
-
 Indices and tables
 ==================
 

@@ -48,46 +48,6 @@
   <div class="section" id="module-klus.algorithms">
 <span id="klus-algorithms-module"></span><h1>klus.algorithms module<a class="headerlink" href="#module-klus.algorithms" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="klus.algorithms.FeatureMatrix">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">FeatureMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#FeatureMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.FeatureMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the Feature Matrix Phi
-Computed on the support vectors x for the point z
-and the kernel k</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.amuse">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">amuse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#amuse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.amuse" title="Permalink to this definition">¶</a></dt>
-<dd><p>AMUSE implementation of TICA, see TICA documentation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>eigenvalues d and corresponding eigenvectors Phi containing the coefficients for the eigenfunctions</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.cmd">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.cmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Coherent mode decomposition.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – data matrix, each column represents a data point</p></li>
-<li><p><strong>Y</strong> – lime-lagged data, each column y_i is x_i mapped forward by the dynamical system</p></li>
-<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
-</ul>
-</dd>
-<dt class="field-even">Epsilon</dt>
-<dd class="field-even"><p>regularization parameter</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>eigenvalues and modes xi and eta</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt id="klus.algorithms.dmd">
 <code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">dmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'exact'</span></em>, <em class="sig-param"><span class="n">retain</span><span class="o">=</span><span class="default_value">19</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#dmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.dmd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exact and standard DMD of the data matrices X and Y.</p>
@@ -113,178 +73,12 @@ and the kernel k</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="klus.algorithms.edmd">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">edmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">psi</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'K'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#edmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.edmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Conventional EDMD for the Koopman or Perron-Frobenius operator. The matrices X and Y
-contain the input data.</p>
+<dt id="klus.algorithms.amuse">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">amuse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#amuse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.amuse" title="Permalink to this definition">¶</a></dt>
+<dd><p>AMUSE implementation of TICA, see TICA documentation.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>psi</strong> – set of basis functions, see d3s.observables</p></li>
-<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
-<li><p><strong>operator</strong> – ‘K’ for Koopman or ‘P’ for Perron-Frobenius</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>eigenvalues d and corresponding eigenvectors V containing the coefficients for the eigenfunctions</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.gedmd">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">gedmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">psi</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'K'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#gedmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.gedmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generator EDMD for the Koopman operator. The matrices X and Y
-contain the input data. For stochastic systems, Z contains the
-diffusion term evaluated in all data points X. If the system is
-deterministic, set Z = None.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.kcca">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kcca</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'CCA'</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kcca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kcca" title="Permalink to this definition">¶</a></dt>
-<dd><p>Kernel CCA.</p>
-<p>Perform kernel CCA ina simplified form for time series,
-otherwise applies KCCA to two different fields</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – data matrix, each column represents a data point</p></li>
-<li><p><strong>Y</strong> – time-lagged data, each column y_i is x_i mapped forward by the dynamical system,
-or a different data magtrix</p></li>
-<li><p><strong>option</strong> –</p>
-<ul>
-<li><p>‘lagged’, assume that the data matrix <cite>Y</cite> is the time lagged version of <cite>X</cite></p></li>
-<li><p>‘CCA’, assume <cite>X</cite> and <cite>Y</cite> to be independent fields  (default)</p></li>
-</ul>
-</li>
-<li><p><strong>k</strong> – kernel</p></li>
-<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
-<li><p><strong>epsilon</strong> – regularization parameter</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>CCA coefficients</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.kcovedmd">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kcovedmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'P'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kcovedmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kcovedmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Kernel Covariance EDMD for the Koopman or Perron-Frobenius operator.
-The matrices X and Y contain the input data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> – kernel, see d3s.kernels</p></li>
-<li><p><strong>epsilon</strong> – regularization parameter</p></li>
-<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
-<li><p><strong>operator</strong> – ‘K’ for Koopman or ‘P’ for Perron-Frobenius (note that the default is P here)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>eigenvalues d and eigenfunctions evaluated in X</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.kedmd">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kedmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'P'</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'kernel'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kedmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kedmd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Kernel EDMD for the Koopman or Perron-Frobenius operator. The matrices X and Y
-contain the input data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> – kernel, see d3s.kernels</p></li>
-<li><p><strong>epsilon</strong> – regularization parameter</p></li>
-<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
-<li><p><strong>operator</strong> – ‘K’ for Koopman or ‘P’ for Perron-Frobenius (note that the default is P here)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>eigenvalues d and eigenfunctions evaluated in X</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.kpca">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kpca</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kpca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kpca" title="Permalink to this definition">¶</a></dt>
-<dd><p>Kernel PCA.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>param X</strong> – data matrix, each column represents a data point</p></li>
-<li><p><strong>param k</strong> – kernel</p></li>
-<li><p><strong>param evs</strong> – number of eigenvalues/eigenvectors</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>d</em> – Eigenvalues</p></li>
-<li><p><em>V</em> – data X projected onto principal components</p></li>
-<li><p><em>G</em> – Gram Matrix</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.seba">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">seba</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">V</span></em>, <em class="sig-param"><span class="n">R0</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxIter</span><span class="o">=</span><span class="default_value">5000</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#seba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.seba" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sparse eigenbasis approximation as described in</p>
-<p>“Sparse eigenbasis approximation: Multiple feature extraction across spatiotemporal scales with
-application to coherent set identification” by G. Froyland, C. Rock, and K. Sakellariou.</p>
-<p>Based on the original Matlab implementation, see <a class="reference external" href="https://github.com/gfroyland/SEBA">https://github.com/gfroyland/SEBA</a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>V</strong> – eigenvectors</p></li>
-<li><p><strong>R0</strong> – optional initial rotation</p></li>
-<li><p><strong>maxIter</strong> – maximum number of iterations</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sparse basis output</p>
-</dd>
-</dl>
-<p>TODO: perturb near-constant vectors?</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.sindy">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">sindy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">psi</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">iterations</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#sindy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.sindy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sparse indentification of nonlinear dynamics for the data given by X and Y.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>psi</strong> – set of basis functions, see topy.observables</p></li>
-<li><p><strong>eps</strong> – cutoff threshold</p></li>
-<li><p><strong>iterations</strong> – number of sparsification steps</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>coefficient matrix Xi</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.algorithms.sortEig">
-<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">sortEig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">which</span><span class="o">=</span><span class="default_value">'LM'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#sortEig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.sortEig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes eigenvalues and eigenvectors of A and sorts them in decreasing lexicographic order.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>sorted eigenvalues and eigenvectors</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>eigenvalues d and corresponding eigenvectors Phi containing the coefficients for the eigenfunctions</p>
 </dd>
 </dl>
 </dd></dl>
@@ -321,6 +115,212 @@ the input data.</p>
 </dd>
 </dl>
 <p>TODO: Switch to sparse matrices.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.edmd">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">edmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">psi</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'K'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#edmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.edmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conventional EDMD for the Koopman or Perron-Frobenius operator. The matrices X and Y
+contain the input data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psi</strong> – set of basis functions, see d3s.observables</p></li>
+<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
+<li><p><strong>operator</strong> – ‘K’ for Koopman or ‘P’ for Perron-Frobenius</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>eigenvalues d and corresponding eigenvectors V containing the coefficients for the eigenfunctions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.gedmd">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">gedmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">psi</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'K'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#gedmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.gedmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator EDMD for the Koopman operator. The matrices X and Y
+contain the input data. For stochastic systems, Z contains the
+diffusion term evaluated in all data points X. If the system is
+deterministic, set Z = None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.kedmd">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kedmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'P'</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'kernel'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kedmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kedmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kernel EDMD for the Koopman or Perron-Frobenius operator. The matrices X and Y
+contain the input data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> – kernel, see d3s.kernels</p></li>
+<li><p><strong>epsilon</strong> – regularization parameter</p></li>
+<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
+<li><p><strong>operator</strong> – ‘K’ for Koopman or ‘P’ for Perron-Frobenius (note that the default is P here)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>eigenvalues d and eigenfunctions evaluated in X</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.sindy">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">sindy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">psi</span></em>, <em class="sig-param"><span class="n">eps</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">iterations</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#sindy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.sindy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sparse indentification of nonlinear dynamics for the data given by X and Y.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psi</strong> – set of basis functions, see topy.observables</p></li>
+<li><p><strong>eps</strong> – cutoff threshold</p></li>
+<li><p><strong>iterations</strong> – number of sparsification steps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>coefficient matrix Xi</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.kpca">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kpca</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kpca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kpca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kernel PCA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param X</strong> – data matrix, each column represents a data point</p></li>
+<li><p><strong>param k</strong> – kernel</p></li>
+<li><p><strong>param evs</strong> – number of eigenvalues/eigenvectors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>d</em> – Eigenvalues</p></li>
+<li><p><em>V</em> – data X projected onto principal components</p></li>
+<li><p><em>G</em> – Gram Matrix</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.kcca">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kcca</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'CCA'</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kcca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kcca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kernel CCA.</p>
+<p>Perform kernel CCA ina simplified form for time series,
+otherwise applies KCCA to two different fields</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – data matrix, each column represents a data point</p></li>
+<li><p><strong>Y</strong> – time-lagged data, each column y_i is x_i mapped forward by the dynamical system,
+or a different data magtrix</p></li>
+<li><p><strong>option</strong> –</p>
+<ul>
+<li><p>‘lagged’, assume that the data matrix <cite>Y</cite> is the time lagged version of <cite>X</cite></p></li>
+<li><p>‘CCA’, assume <cite>X</cite> and <cite>Y</cite> to be independent fields  (default)</p></li>
+</ul>
+</li>
+<li><p><strong>k</strong> – kernel</p></li>
+<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
+<li><p><strong>epsilon</strong> – regularization parameter</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>CCA coefficients</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.cmd">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">1e-06</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.cmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coherent mode decomposition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – data matrix, each column represents a data point</p></li>
+<li><p><strong>Y</strong> – lime-lagged data, each column y_i is x_i mapped forward by the dynamical system</p></li>
+<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
+</ul>
+</dd>
+<dt class="field-even">Epsilon</dt>
+<dd class="field-even"><p>regularization parameter</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>eigenvalues and modes xi and eta</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.seba">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">seba</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">V</span></em>, <em class="sig-param"><span class="n">R0</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">maxIter</span><span class="o">=</span><span class="default_value">5000</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#seba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.seba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sparse eigenbasis approximation as described in</p>
+<p>“Sparse eigenbasis approximation: Multiple feature extraction across spatiotemporal scales with
+application to coherent set identification” by G. Froyland, C. Rock, and K. Sakellariou.</p>
+<p>Based on the original Matlab implementation, see <a class="reference external" href="https://github.com/gfroyland/SEBA">https://github.com/gfroyland/SEBA</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>V</strong> – eigenvectors</p></li>
+<li><p><strong>R0</strong> – optional initial rotation</p></li>
+<li><p><strong>maxIter</strong> – maximum number of iterations</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sparse basis output</p>
+</dd>
+</dl>
+<p>TODO: perturb near-constant vectors?</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.kcovedmd">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">kcovedmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">epsilon</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">operator</span><span class="o">=</span><span class="default_value">'P'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#kcovedmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.kcovedmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kernel Covariance EDMD for the Koopman or Perron-Frobenius operator.
+The matrices X and Y contain the input data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> – kernel, see d3s.kernels</p></li>
+<li><p><strong>epsilon</strong> – regularization parameter</p></li>
+<li><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p></li>
+<li><p><strong>operator</strong> – ‘K’ for Koopman or ‘P’ for Perron-Frobenius (note that the default is P here)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>eigenvalues d and eigenfunctions evaluated in X</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.sortEig">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">sortEig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">evs</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">which</span><span class="o">=</span><span class="default_value">'LM'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#sortEig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.sortEig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes eigenvalues and eigenvectors of A and sorts them in decreasing lexicographic order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>evs</strong> – number of eigenvalues/eigenvectors</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sorted eigenvalues and eigenvectors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.algorithms.FeatureMatrix">
+<code class="sig-prename descclassname">klus.algorithms.</code><code class="sig-name descname">FeatureMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/algorithms.html#FeatureMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.algorithms.FeatureMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Feature Matrix Phi
+Computed on the support vectors x for the point z
+and the kernel k</p>
 </dd></dl>
 
 </div>

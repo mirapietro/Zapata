@@ -58,6 +58,28 @@ the dependencies run for example:</p>
 </div></blockquote>
 <p>Before calling any other function from this module run the <cite>init</cite> function.</p>
 <dl class="py function">
+<dt id="zeus.init">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the module with the Zeus login username.</p>
+<p>This function must be called before any other function from the module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user</strong> (<em>str</em>) – Username on Zeus.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt id="zeus.execute">
 <code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">execute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmd</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a command remotely on Zeus.</p>
@@ -105,15 +127,17 @@ specified in <cite>dst</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="zeus.info">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jobid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get status of LSF jobs on Zeus.</p>
-<p>This function returns the list of the jobs the user submitted on LSF. If
-<cite>jobid</cite> argument is provided then only the status of that particular job
-is shown, otherwise all recent jobs will be listed.</p>
+<dt id="zeus.put">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dst</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload a file to Zeus.</p>
+<p>Copy a local file specified in <cite>src</cite> to the remote path specified in
+<cite>dst</cite> on Zeus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>jobid</strong> (<em>int, optional</em>) – ID of LSF job.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>str</em>) – Path of the local file to be uploaded on Zeus.</p></li>
+<li><p><strong>dst</strong> (<em>str</em>) – Path/name where to copy the file on Zeus.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -123,32 +147,7 @@ is shown, otherwise all recent jobs will be listed.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="zeus.init">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize the module with the Zeus login username.</p>
-<p>This function must be called before any other function from the module.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>user</strong> (<em>str</em>) – Username on Zeus.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s1">&#39;username&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/home/user/file.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;/users_home/user/file.nc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -190,17 +189,15 @@ wait for the job to end.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="zeus.put">
-<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dst</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.put" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload a file to Zeus.</p>
-<p>Copy a local file specified in <cite>src</cite> to the remote path specified in
-<cite>dst</cite> on Zeus.</p>
+<dt id="zeus.info">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jobid</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get status of LSF jobs on Zeus.</p>
+<p>This function returns the list of the jobs the user submitted on LSF. If
+<cite>jobid</cite> argument is provided then only the status of that particular job
+is shown, otherwise all recent jobs will be listed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>src</strong> (<em>str</em>) – Path of the local file to be uploaded on Zeus.</p></li>
-<li><p><strong>dst</strong> (<em>str</em>) – Path/name where to copy the file on Zeus.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>jobid</strong> (<em>int, optional</em>) – ID of LSF job.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -210,7 +207,10 @@ wait for the job to end.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;/home/user/file.nc&#39;</span><span class="p">,</span> <span class="s1">&#39;/users_home/user/file.nc&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

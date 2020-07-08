@@ -37,7 +37,32 @@
           <div class="body" role="main">
             
   <h1>Source code for zapata.mapping</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">cartopy.crs</span> <span class="k">as</span> <span class="nn">car</span>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Contouring, stremlines and vector plots</span>
+<span class="sd">=======================================</span>
+
+<span class="sd">Latitude-Longitude Plotting </span>
+<span class="sd">---------------------------</span>
+<span class="sd">A set of routines for horizontal plotting</span>
+
+<span class="sd">**xmap, xsmap, xstmap, vecmap**</span>
+
+<span class="sd">Zonal Plotting</span>
+<span class="sd">--------------</span>
+<span class="sd">These routine split zonal sections in pressures and latitude.</span>
+
+<span class="sd">**zonal_plot, zonal_stream_plot**</span>
+
+<span class="sd">Utilities </span>
+<span class="sd">---------</span>
+<span class="sd">**choose_contour, add_ticks, add_ticklabels, add_colorbar, make_ticks, add_sttick, set_title_and_labels**</span>
+
+<span class="sd">Detailed Description:</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">cartopy.crs</span> <span class="k">as</span> <span class="nn">car</span>
 <span class="kn">import</span> <span class="nn">cartopy.util</span> <span class="k">as</span> <span class="nn">utl</span>
 <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">mticker</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> 
@@ -59,167 +84,68 @@
 <span class="kn">from</span> <span class="nn">geocat.viz</span> <span class="kn">import</span> <span class="n">cmaps</span> <span class="k">as</span> <span class="n">gvcmaps</span>
 <span class="kn">import</span> <span class="nn">geocat.viz.util</span> <span class="k">as</span> <span class="nn">gvutil</span>
 
-    
-<div class="viewcode-block" id="choose_contour"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.choose_contour">[docs]</a><span class="k">def</span> <span class="nf">choose_contour</span><span class="p">(</span><span class="n">cont</span><span class="p">):</span>
+
+<div class="viewcode-block" id="init_figure"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.init_figure">[docs]</a><span class="k">def</span> <span class="nf">init_figure</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span><span class="n">cols</span><span class="p">,</span><span class="n">proview</span><span class="p">,</span><span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">8</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Choose contours according to length of cont.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    -----------</span>
-<span class="sd">    cont :  </span>
-<span class="sd">        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc </span>
-<span class="sd">        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  </span>
-<span class="sd">        * n                      n contours </span>
-<span class="sd">        * []                     automatic choice   </span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    --------</span>
-<span class="sd">    </span>
-<span class="sd">    contour_levels :    </span>
-<span class="sd">        Levels of selected Contours</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; [0,1000,10] # Contours from 0 1000</span>
-<span class="sd">    &gt;&gt;&gt; [0.01, 0.05, 1.0, 2.0, 5.0, 10.0] # Set Contours Leves   </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting Fixed Contours&quot;</span><span class="p">)</span>
-        <span class="n">cc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">cont</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">cont</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Contouring from &#39;</span><span class="p">,</span> <span class="n">cont</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  to&#39;</span><span class="p">,</span> <span class="n">cont</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39; with interval  &#39;</span><span class="p">,</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  
-    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span><span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">cc</span><span class="o">=</span><span class="n">cont</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fixed Contours to..&#39;</span><span class="p">,</span><span class="n">cont</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">cc</span><span class="o">=</span><span class="n">cont</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of Contours &#39;</span><span class="p">,</span><span class="n">cc</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">cc</span><span class="o">=</span><span class="mi">10</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ten Contours automatic&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cc</span></div>
-
-<div class="viewcode-block" id="add_ticks"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_ticks">[docs]</a><span class="k">def</span> <span class="nf">add_ticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x_minor_per_major</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y_minor_per_major</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="s2">&quot;large&quot;</span><span class="p">,</span><span class="n">length</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Utility function to make plots look like NCL plots by adding minor and major tick lines</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    -----------</span>
-<span class="sd">    ax :       </span>
-<span class="sd">        Current axes to the current figure</span>
-
-<span class="sd">    x_minor_per_major :  </span>
-<span class="sd">        Number of minor ticks between adjacent major ticks on x-axis</span>
-
-<span class="sd">    y_minor_per_major :   </span>
-<span class="sd">        Number of minor ticks between adjacent major ticks on y-axis</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">tic</span>
-
-    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">labelsize</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">tic</span><span class="o">.</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">x_minor_per_major</span><span class="p">))</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">tic</span><span class="o">.</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">y_minor_per_major</span><span class="p">))</span>
-
-    <span class="c1"># length and width are in points and may need to change depending on figure size etc.</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
-        <span class="s2">&quot;both&quot;</span><span class="p">,</span>
-        <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
-        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
-        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span>
-        <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
-        <span class="s2">&quot;both&quot;</span><span class="p">,</span>
-        <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
-        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
-        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span>
-        <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span></div>
-    
-<div class="viewcode-block" id="add_ticklabels"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_ticklabels">[docs]</a><span class="k">def</span> <span class="nf">add_ticklabels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">zero_direction_label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dateline_direction_label</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Utility function to make plots look like NCL plots by using latitude, longitude tick labels</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ax :    </span>
-<span class="sd">        Current axes to the current figure</span>
-
-<span class="sd">    zero_direction_label :    </span>
-<span class="sd">        Set True to get 0 E / O W or False to get 0 only.</span>
-
-<span class="sd">    dateline_direction_label :      </span>
-<span class="sd">        Set True to get 180 E / 180 W or False to get 180 only.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">cartopy.mpl.ticker</span> <span class="kn">import</span> <span class="p">(</span><span class="n">LongitudeFormatter</span><span class="p">,</span> <span class="n">LatitudeFormatter</span><span class="p">,</span>
-                                <span class="n">LatitudeLocator</span><span class="p">)</span>
-    
-    <span class="n">lon_formatter</span> <span class="o">=</span> <span class="n">LongitudeFormatter</span><span class="p">(</span><span class="n">zero_direction_label</span><span class="o">=</span><span class="n">zero_direction_label</span><span class="p">,</span>
-                        <span class="n">dateline_direction_label</span><span class="o">=</span><span class="n">dateline_direction_label</span><span class="p">,</span><span class="n">degree_symbol</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">lat_formatter</span> <span class="o">=</span> <span class="n">LatitudeFormatter</span><span class="p">(</span><span class="n">degree_symbol</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">lon_formatter</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">lat_formatter</span><span class="p">)</span>
-
-    <span class="k">return</span></div>
-
-<div class="viewcode-block" id="add_colorbar"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_colorbar">[docs]</a><span class="k">def</span> <span class="nf">add_colorbar</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">colorbar_size</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span><span class="n">label_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">edges</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Add colorbar to plot.</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    -----------</span>
-<span class="sd">    </span>
-<span class="sd">    handle :   </span>
-<span class="sd">        Handle to plot</span>
-<span class="sd">    ax :   </span>
-<span class="sd">        Axis to which to add the colorbar</span>
-<span class="sd">    colorbar_size:    </span>
-<span class="sd">        Size of colorbar as a fraxtion of the axis</span>
-<span class="sd">    label_size:   </span>
-<span class="sd">        Size of labels</span>
-<span class="sd">    edges:   </span>
-<span class="sd">        Draw edges of the color bar</span>
-<span class="sd">    &quot;&quot;&quot;</span>    
-    <span class="n">divider</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
-    <span class="n">cax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="s2">&quot;2.5%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">axes_class</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>\
-                        <span class="n">ticks</span><span class="o">=</span><span class="n">handle</span><span class="o">.</span><span class="n">levels</span><span class="p">,</span><span class="n">fraction</span><span class="o">=</span><span class="n">colorbar_size</span><span class="p">,</span><span class="n">drawedges</span><span class="o">=</span><span class="n">edges</span><span class="p">)</span>
-    <span class="k">return</span></div>
-
-<div class="viewcode-block" id="make_ticks"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.make_ticks">[docs]</a><span class="k">def</span> <span class="nf">make_ticks</span><span class="p">(</span><span class="n">xt</span><span class="p">,</span><span class="n">dt</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Calculates nice tickes for the axes.</span>
-<span class="sd">    Selecting 20 or 10 intervals</span>
+<span class="sd">    Initialization for the entire figure, choose projection and number of panels.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    rows :  </span>
+<span class="sd">        Number of rows in multiple picture</span>
 
-<span class="sd">    xt : </span>
-<span class="sd">        Axes limit [west, east]</span>
-<span class="sd">    </span>
-<span class="sd">    dt:</span>
-<span class="sd">        Initial tick spacing</span>
+<span class="sd">    cols :       </span>
+<span class="sd">        Number of columns in multiple picture</span>
+
+<span class="sd">    figsize :    </span>
+<span class="sd">        Size of figure in inches (height, width)</span>
+
+<span class="sd">    proview :    </span>
+<span class="sd">        Projection for the map  </span>
+
+<span class="sd">        - *&quot;Pacific&quot;*,   cartopy PlateCarree, central longitude 180   </span>
+<span class="sd">        - *&quot;Atlantic&quot;*,  cartopy PlateCarree, central longitude 0      </span>
+<span class="sd">        - *&quot;NHStereoEurope&quot;*,  NH Stereo, central longitude 0     </span>
+<span class="sd">        - *&quot;NHStereoAmerica&quot;*,  NH Stereo, central longitude 90   </span>
+<span class="sd">        - *&quot;SHStereoAfrica&quot;*,  NH Stereo, central longitude 0     </span>
+<span class="sd">     </span>
+<span class="sd">    constrained_layout :    </span>
+<span class="sd">        True/False </span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-
-<span class="sd">    ticks:</span>
-<span class="sd">        Nice ticks position</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="n">res</span><span class="o">=</span><span class="mi">1</span>
-    <span class="n">dti</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">gcd</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">dt</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ticks set at </span><span class="si">{</span><span class="n">dti</span><span class="si">}</span><span class="s1">  intervals&#39;</span><span class="p">)</span>
-    <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">dti</span><span class="p">))</span>
+<span class="sd">    fig :   handle   </span>
+<span class="sd">        Dictionary with matplotlib-like info on the plot    </span>
+<span class="sd">    ax :     axes   </span>
+<span class="sd">        Axes of the panels  </span>
+<span class="sd">    pro :    projection</span>
+<span class="sd">        Projection chosen   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
+    <span class="c1"># This fixes the projection for the mapping: </span>
+    <span class="c1">#      Data Projection is then fixed in mapping routine</span>
+    <span class="k">if</span>   <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;Pacific&#39;</span><span class="p">:</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">180.</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;Atlantic&#39;</span><span class="p">:</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;NHStereoEurope&#39;</span><span class="p">:</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">NorthPolarStereo</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;NHStereoAmerica&#39;</span><span class="p">:</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">NorthPolarStereo</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=-</span><span class="mf">90.</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;SHStereoAfrica&#39;</span><span class="p">:</span>
+        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">SouthPolarStereo</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">90.</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Error in init_figure projection </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">proview</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">SystemExit</span>
+    <span class="c1">#Store View in projection</span>
+    <span class="n">projection</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">proview</span>
 
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="n">constrained_layout</span><span class="p">,</span> \
+                           <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="n">projection</span><span class="p">})</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Opening figure , </span><span class="si">%i</span><span class="s1"> rows and </span><span class="si">%i</span><span class="s1"> cols </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span><span class="n">cols</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">projection</span></div>
 <div class="viewcode-block" id="xmap"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.xmap">[docs]</a><span class="k">def</span> <span class="nf">xmap</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">cont</span><span class="p">,</span> <span class="n">pro</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">contour</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clabel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">c_format</span> <span class="o">=</span> <span class="s1">&#39; </span><span class="si">{:6.0f}</span><span class="s1"> &#39;</span><span class="p">,</span> \
                       <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Special_Value</span> <span class="o">=</span> <span class="mf">9999.</span><span class="p">,</span>\
                       <span class="n">lefttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">righttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">maintitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>\
@@ -391,103 +317,7 @@
         <span class="n">cax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="s2">&quot;2.5%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">axes_class</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">handles</span><span class="p">[</span><span class="s1">&#39;filled&#39;</span><span class="p">],</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span><span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">handles</span></div>
-<div class="viewcode-block" id="add_sttick"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_sttick">[docs]</a><span class="k">def</span> <span class="nf">add_sttick</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">xt</span><span class="p">,</span><span class="n">yt</span><span class="p">,</span><span class="n">xlim</span><span class="p">,</span><span class="n">ylim</span><span class="p">,</span> <span class="n">promap</span><span class="p">,</span><span class="n">Top_label</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">Lat_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Utility function add ticks and labels to stereo plots</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    -----------</span>
-<span class="sd">    ax :       </span>
-<span class="sd">        Current axes to the current figure</span>
-<span class="sd">    xt :    </span>
-<span class="sd">        Locations of desired Longitude labels</span>
-<span class="sd">    yt :     </span>
-<span class="sd">        Locations of desired Latitude labels</span>
-<span class="sd">    xlim :  </span>
-<span class="sd">        Longitudinal extent of the stereo map</span>
-<span class="sd">    ylim :  </span>
-<span class="sd">        Latitudinal extent of the stereo map</span>
-<span class="sd">    promap :    </span>
-<span class="sd">        Projection </span>
-<span class="sd">    Top_label :    </span>
-<span class="sd">        True/False  Turn off the top labels</span>
-
-<span class="sd">    Lat_labels :    </span>
-<span class="sd">        True/False  Turn off the latitude labels</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Hardwire ticks for grid lines</span>
-    <span class="n">xloc</span> <span class="o">=</span> <span class="n">xt</span>
-    <span class="n">yloc</span> <span class="o">=</span> <span class="n">yt</span>
-    <span class="n">xlab</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">ylab</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># use Geodetic</span>
-    <span class="n">pro</span><span class="o">=</span><span class="n">car</span><span class="o">.</span><span class="n">Geodetic</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xloc</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> 
-            <span class="n">xlab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39;E&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
-            <span class="n">xlab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;W&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-           <span class="n">xlab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yloc</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> 
-            <span class="n">ylab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span> <span class="o">+</span> <span class="s1">&#39;S&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
-            <span class="n">ylab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39;N&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ylab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-    <span class="k">if</span> <span class="n">verbose</span> <span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">xlab</span><span class="p">,</span><span class="n">ylab</span><span class="p">)</span>
-
-    <span class="c1"># Center plot is always at (0,0) in projected coordinate</span>
-    <span class="c1"># Choose border and label shift according to hemisphere</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span> <span class="o">-</span> <span class="mf">2.5</span>
-        <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span> <span class="o">+</span> <span class="mf">2.5</span>
-        <span class="n">shift</span> <span class="o">=</span> <span class="mi">1</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xloc</span><span class="p">)):</span>
-        <span class="n">tx</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">border</span><span class="p">,</span> <span class="n">xlab</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">transform</span><span class="o">=</span><span class="n">pro</span><span class="p">,</span>\
-            <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-        <span class="n">tx</span><span class="o">=</span><span class="n">_set_label_location</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">border</span> <span class="p">,</span><span class="n">promap</span><span class="p">,</span><span class="n">ylim</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">shift</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">tx</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Right&#39;</span><span class="p">:</span>
-            <span class="n">tx</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">border</span><span class="o">+</span><span class="n">shift</span><span class="p">])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">Top_label</span> <span class="ow">and</span> <span class="n">tx</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Top&#39;</span><span class="p">:</span>
-            <span class="n">tx</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">Lat_labels</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yloc</span><span class="p">)):</span>
-            <span class="n">tx</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ylab</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">transform</span><span class="o">=</span><span class="n">pro</span><span class="p">,</span>\
-                <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> 
-        
-
-    <span class="k">return</span></div>
-
-<span class="k">def</span> <span class="nf">_set_label_location</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pro</span><span class="p">,</span><span class="n">ylim</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; utility to find the location of labels on stereo projection &quot;&quot;&quot;</span>
-
-    <span class="n">xu</span><span class="p">,</span><span class="n">yu</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">transform_point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">car</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
-    <span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">x_limits</span>
-    <span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">y_limits</span>
-    <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ylim</span><span class="p">))</span><span class="o">/</span><span class="mf">180.</span>
-    <span class="c1">#print(xmin,xmax,ymin,ymax,xu,yu,x,y)</span>
-    <span class="k">if</span> <span class="n">xu</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">:</span>
-        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Left&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">xu</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">:</span>
-        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Right&#39;</span><span class="p">)</span>
-    <span class="k">elif</span>  <span class="n">yu</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">:</span>
-        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Top&#39;</span><span class="p">)</span>
-    <span class="k">elif</span>  <span class="n">yu</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">:</span>
-        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Bottom&#39;</span><span class="p">)</span>
-    <span class="c1">#print(xu,yu,ymax, ymin,tx.__getattribute__(&#39;Location&#39;))</span>
-
-    <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Left&#39;</span><span class="p">:</span>
-        <span class="n">tx</span><span class="o">.</span><span class="n">set_horizontalalignment</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">tx</span>
-
+    <span class="k">return</span> <span class="n">handles</span>    </div>
 <div class="viewcode-block" id="xsmap"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.xsmap">[docs]</a><span class="k">def</span> <span class="nf">xsmap</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">cont</span><span class="p">,</span> <span class="n">pro</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">contour</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clabel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>\
                       <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Special_Value</span> <span class="o">=</span> <span class="mf">9999.</span><span class="p">,</span>\
                       <span class="n">lefttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">righttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">maintitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>\
@@ -676,133 +506,6 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">handles</span><span class="p">[</span><span class="s1">&#39;filled&#39;</span><span class="p">],</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span><span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">handles</span></div>
-<div class="viewcode-block" id="init_figure"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.init_figure">[docs]</a><span class="k">def</span> <span class="nf">init_figure</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span><span class="n">cols</span><span class="p">,</span><span class="n">proview</span><span class="p">,</span><span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">8</span><span class="p">)):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Initialization for the entire figure, choose projection and number of panels.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    rows :  </span>
-<span class="sd">        Number of rows in multiple picture</span>
-
-<span class="sd">    cols :       </span>
-<span class="sd">        Number of columns in multiple picture</span>
-
-<span class="sd">     figsize :    </span>
-<span class="sd">        Size of figure in inches (height, width)</span>
-
-<span class="sd">    proview :    </span>
-<span class="sd">        Projection for the map  </span>
-<span class="sd">        _&quot;Pacific&quot;_,   cartopy PlateCarree, central longitude 180   </span>
-<span class="sd">        _&quot;Atlantic&quot;_,  cartopy PlateCarree, central longitude 0      </span>
-<span class="sd">        _&quot;NHStereoEurope&quot;_,  NH Stereo, central longitude 0     </span>
-<span class="sd">        _&quot;NHStereoAmerica&quot;_,  NH Stereo, central longitude 90   </span>
-<span class="sd">        _&quot;SHStereoAfrica&quot;_,  NH Stereo, central longitude 0 </span>
-<span class="sd">    constrained_layout :    </span>
-<span class="sd">        True/False </span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-
-<span class="sd">    fig :   </span>
-<span class="sd">        fig handle</span>
-<span class="sd">    </span>
-<span class="sd">    ax :    </span>
-<span class="sd">        Axes of the panels</span>
-<span class="sd">    </span>
-<span class="sd">    pro :   </span>
-<span class="sd">        Projection chosen</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="c1"># This fixes the projection for the mapping: </span>
-    <span class="c1">#      Data Projection is then fixed in mapping routine</span>
-    <span class="k">if</span>   <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;Pacific&#39;</span><span class="p">:</span>
-        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">180.</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;Atlantic&#39;</span><span class="p">:</span>
-        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;NHStereoEurope&#39;</span><span class="p">:</span>
-        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">NorthPolarStereo</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;NHStereoAmerica&#39;</span><span class="p">:</span>
-        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">NorthPolarStereo</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=-</span><span class="mf">90.</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">proview</span> <span class="o">==</span> <span class="s1">&#39;SHStereoAfrica&#39;</span><span class="p">:</span>
-        <span class="n">projection</span> <span class="o">=</span> <span class="n">car</span><span class="o">.</span><span class="n">SouthPolarStereo</span><span class="p">(</span><span class="n">central_longitude</span><span class="o">=</span><span class="mf">90.</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Error in init_figure projection </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">proview</span><span class="p">))</span>
-        <span class="k">raise</span> <span class="ne">SystemExit</span>
-    <span class="c1">#Store View in projection</span>
-    <span class="n">projection</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">proview</span>
-
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="n">constrained_layout</span><span class="p">,</span> \
-                           <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span> <span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="n">projection</span><span class="p">})</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Opening figure , </span><span class="si">%i</span><span class="s1"> rows and </span><span class="si">%i</span><span class="s1"> cols </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span><span class="n">cols</span><span class="p">))</span>
-    
-    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">projection</span></div>
-
-<div class="viewcode-block" id="set_titles_and_labels"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.set_titles_and_labels">[docs]</a><span class="k">def</span> <span class="nf">set_titles_and_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">maintitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maintitlefontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> \
-                          <span class="n">lefttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lefttitlefontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> \
-                          <span class="n">righttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">righttitlefontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span>
-                          <span class="n">xlabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labelfontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
-                          <span class="n">ytitle</span><span class="o">=</span><span class="mf">0.98</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Utility function to handle axis titles, left/right aligned titles.</span>
-
-<span class="sd">    Parameters  </span>
-<span class="sd">    ----------</span>
-
-<span class="sd">    ax :    </span>
-<span class="sd">        Current axes to the current figure  </span>
-<span class="sd">    </span>
-<span class="sd">    maintitle :   </span>
-<span class="sd">        Text to use for the maintitle   </span>
-
-<span class="sd">    maintitlefontsize :   </span>
-<span class="sd">        Text font size for maintitle. A default value of 18 is used if nothing is set</span>
-<span class="sd">    </span>
-<span class="sd">    lefttitle :  </span>
-<span class="sd">        Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,</span>
-<span class="sd">        but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.</span>
-<span class="sd">    </span>
-<span class="sd">    lefttitlefontsize :     </span>
-<span class="sd">        Text font size for lefttitle. A default value of 18 is used if nothing is set</span>
-<span class="sd">    </span>
-<span class="sd">    righttitle :        </span>
-<span class="sd">        Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,</span>
-<span class="sd">        but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.</span>
-<span class="sd">    </span>
-<span class="sd">    righttitlefontsize :    </span>
-<span class="sd">        Text font size for righttitle. A default value of 18 is used if nothing is set</span>
-
-<span class="sd">    xlabel :    </span>
-<span class="sd">        Text for the x-axis label</span>
-
-<span class="sd">    ylabel :    </span>
-<span class="sd">        Text for the y-axis label</span>
-
-<span class="sd">    labelfontsize :     </span>
-<span class="sd">        Text font size for x- and y-axes. A default value of 16 is used if nothing is set</span>
-<span class="sd">    </span>
-<span class="sd">    ytitle :    </span>
-<span class="sd">        Y position of the main title</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-
-    <span class="k">if</span> <span class="n">maintitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">maintitle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">maintitlefontsize</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">lefttitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">lefttitle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">lefttitlefontsize</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ytitle</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">righttitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">righttitle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">righttitlefontsize</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ytitle</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">xlabel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">labelfontsize</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ylabel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">labelfontsize</span><span class="p">)</span>
-
-    <span class="k">return</span></div>
 <div class="viewcode-block" id="xstmap"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.xstmap">[docs]</a><span class="k">def</span> <span class="nf">xstmap</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">proj</span><span class="o">=</span><span class="n">car</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span><span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> \
                       <span class="n">density</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">Special_Value</span> <span class="o">=</span> <span class="mf">9999.</span><span class="p">,</span>\
                       <span class="n">lefttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">righttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">maintitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>\
@@ -863,6 +566,13 @@
 <span class="sd">    </span>
 <span class="sd">    ylimit :        </span>
 <span class="sd">        Limit of the map (lat)  </span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    handle :    </span>
+<span class="sd">        Dictionary with matplotlib-like info on the plot</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#Special Values</span>
     <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">U</span> <span class="o">!=</span> <span class="mf">9999.</span><span class="p">)</span>
@@ -1025,7 +735,14 @@
 <span class="sd">        Limit of the map (lon)  </span>
 <span class="sd">    </span>
 <span class="sd">    ylimit :        </span>
-<span class="sd">        Limit of the map (lat)  </span>
+<span class="sd">        Limit of the map (lat)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    handle :    </span>
+<span class="sd">        Dictionary with matplotlib-like info on the plot</span>
+<span class="sd">      </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#Special Values</span>
     <span class="n">U</span><span class="o">=</span><span class="n">U</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">U</span> <span class="o">!=</span> <span class="mf">9999.</span><span class="p">)</span>
@@ -1116,6 +833,7 @@
     <span class="n">gvutil</span><span class="o">.</span><span class="n">add_lat_lon_ticklabels</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">sp</span></div>
+
 <div class="viewcode-block" id="zonal_plot"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.zonal_plot">[docs]</a><span class="k">def</span> <span class="nf">zonal_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">cont</span><span class="p">,</span><span class="n">cmap</span><span class="p">,</span><span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">maintitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lefttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">righttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">zeroline</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Zonal mapping function for xarray (lat,pressure). </span>
@@ -1298,6 +1016,324 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">hc</span><span class="o">.</span><span class="n">lines</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span><span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">hc</span></div>
+
+<div class="viewcode-block" id="choose_contour"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.choose_contour">[docs]</a><span class="k">def</span> <span class="nf">choose_contour</span><span class="p">(</span><span class="n">cont</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Choose contours according to length of cont.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    cont :  </span>
+<span class="sd">        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc </span>
+<span class="sd">        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  </span>
+<span class="sd">        * n                      n contours </span>
+<span class="sd">        * []                     automatic choice   </span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    </span>
+<span class="sd">    contour_levels :    </span>
+<span class="sd">        Levels of selected Contours</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; [0,1000,10] # Contours from 0 1000</span>
+<span class="sd">    &gt;&gt;&gt; [0.01, 0.05, 1.0, 2.0, 5.0, 10.0] # Set Contours Leves   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting Fixed Contours&quot;</span><span class="p">)</span>
+        <span class="n">cc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">cont</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">cont</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Contouring from &#39;</span><span class="p">,</span> <span class="n">cont</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  to&#39;</span><span class="p">,</span> <span class="n">cont</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39; with interval  &#39;</span><span class="p">,</span><span class="n">cont</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span><span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">cc</span><span class="o">=</span><span class="n">cont</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fixed Contours to..&#39;</span><span class="p">,</span><span class="n">cont</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cont</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">cc</span><span class="o">=</span><span class="n">cont</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of Contours &#39;</span><span class="p">,</span><span class="n">cc</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cc</span><span class="o">=</span><span class="mi">10</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Ten Contours automatic&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cc</span></div>
+<div class="viewcode-block" id="add_ticks"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_ticks">[docs]</a><span class="k">def</span> <span class="nf">add_ticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x_minor_per_major</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y_minor_per_major</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="s2">&quot;large&quot;</span><span class="p">,</span><span class="n">length</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to make plots look like NCL plots by adding minor and major tick lines</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    ax :       </span>
+<span class="sd">        Current axes to the current figure</span>
+
+<span class="sd">    x_minor_per_major :  </span>
+<span class="sd">        Number of minor ticks between adjacent major ticks on x-axis</span>
+
+<span class="sd">    y_minor_per_major :   </span>
+<span class="sd">        Number of minor ticks between adjacent major ticks on y-axis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">tic</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">labelsize</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">tic</span><span class="o">.</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">x_minor_per_major</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">tic</span><span class="o">.</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">y_minor_per_major</span><span class="p">))</span>
+
+    <span class="c1"># length and width are in points and may need to change depending on figure size etc.</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+        <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span>
+        <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>   </div>
+<div class="viewcode-block" id="add_ticklabels"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_ticklabels">[docs]</a><span class="k">def</span> <span class="nf">add_ticklabels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">zero_direction_label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dateline_direction_label</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to make plots look like NCL plots by using latitude, longitude tick labels</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax :    </span>
+<span class="sd">        Current axes to the current figure</span>
+
+<span class="sd">    zero_direction_label :    </span>
+<span class="sd">        Set True to get 0 E / O W or False to get 0 only.</span>
+
+<span class="sd">    dateline_direction_label :      </span>
+<span class="sd">        Set True to get 180 E / 180 W or False to get 180 only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">cartopy.mpl.ticker</span> <span class="kn">import</span> <span class="p">(</span><span class="n">LongitudeFormatter</span><span class="p">,</span> <span class="n">LatitudeFormatter</span><span class="p">,</span>
+                                <span class="n">LatitudeLocator</span><span class="p">)</span>
+    
+    <span class="n">lon_formatter</span> <span class="o">=</span> <span class="n">LongitudeFormatter</span><span class="p">(</span><span class="n">zero_direction_label</span><span class="o">=</span><span class="n">zero_direction_label</span><span class="p">,</span>
+                        <span class="n">dateline_direction_label</span><span class="o">=</span><span class="n">dateline_direction_label</span><span class="p">,</span><span class="n">degree_symbol</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">lat_formatter</span> <span class="o">=</span> <span class="n">LatitudeFormatter</span><span class="p">(</span><span class="n">degree_symbol</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">lon_formatter</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">lat_formatter</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+<div class="viewcode-block" id="add_colorbar"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_colorbar">[docs]</a><span class="k">def</span> <span class="nf">add_colorbar</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">colorbar_size</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span><span class="n">label_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">edges</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add colorbar to plot.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    </span>
+<span class="sd">    handle :   </span>
+<span class="sd">        Handle to plot</span>
+<span class="sd">    ax :   </span>
+<span class="sd">        Axis to which to add the colorbar</span>
+<span class="sd">    colorbar_size:    </span>
+<span class="sd">        Size of colorbar as a fraxtion of the axis</span>
+<span class="sd">    label_size:   </span>
+<span class="sd">        Size of labels</span>
+<span class="sd">    edges:   </span>
+<span class="sd">        Draw edges of the color bar</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">divider</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">cax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="s2">&quot;2.5%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">axes_class</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>\
+                        <span class="n">ticks</span><span class="o">=</span><span class="n">handle</span><span class="o">.</span><span class="n">levels</span><span class="p">,</span><span class="n">fraction</span><span class="o">=</span><span class="n">colorbar_size</span><span class="p">,</span><span class="n">drawedges</span><span class="o">=</span><span class="n">edges</span><span class="p">)</span>
+    <span class="k">return</span></div>
+
+<div class="viewcode-block" id="make_ticks"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.make_ticks">[docs]</a><span class="k">def</span> <span class="nf">make_ticks</span><span class="p">(</span><span class="n">xt</span><span class="p">,</span><span class="n">dt</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates nice tickes for the axes.</span>
+<span class="sd">    Selecting 20 or 10 intervals</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    xt : </span>
+<span class="sd">        Axes limit [west, east]</span>
+<span class="sd">    </span>
+<span class="sd">    dt:</span>
+<span class="sd">        Initial tick spacing</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    ticks:</span>
+<span class="sd">        Nice ticks position</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">res</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">dti</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">gcd</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ticks set at </span><span class="si">{</span><span class="n">dti</span><span class="si">}</span><span class="s1">  intervals&#39;</span><span class="p">)</span>
+    <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">dti</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_sttick"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.add_sttick">[docs]</a><span class="k">def</span> <span class="nf">add_sttick</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">xt</span><span class="p">,</span><span class="n">yt</span><span class="p">,</span><span class="n">xlim</span><span class="p">,</span><span class="n">ylim</span><span class="p">,</span> <span class="n">promap</span><span class="p">,</span><span class="n">Top_label</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">Lat_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function add ticks and labels to stereo plots</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    ax :       </span>
+<span class="sd">        Current axes to the current figure</span>
+<span class="sd">    xt :    </span>
+<span class="sd">        Locations of desired Longitude labels</span>
+<span class="sd">    yt :     </span>
+<span class="sd">        Locations of desired Latitude labels</span>
+<span class="sd">    xlim :  </span>
+<span class="sd">        Longitudinal extent of the stereo map</span>
+<span class="sd">    ylim :  </span>
+<span class="sd">        Latitudinal extent of the stereo map</span>
+<span class="sd">    promap :    </span>
+<span class="sd">        Projection </span>
+<span class="sd">    Top_label :    </span>
+<span class="sd">        True/False  Turn off the top labels</span>
+
+<span class="sd">    Lat_labels :    </span>
+<span class="sd">        True/False  Turn off the latitude labels</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Hardwire ticks for grid lines</span>
+    <span class="n">xloc</span> <span class="o">=</span> <span class="n">xt</span>
+    <span class="n">yloc</span> <span class="o">=</span> <span class="n">yt</span>
+    <span class="n">xlab</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ylab</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># use Geodetic</span>
+    <span class="n">pro</span><span class="o">=</span><span class="n">car</span><span class="o">.</span><span class="n">Geodetic</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xloc</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="n">xlab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39;E&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="n">xlab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;W&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+           <span class="n">xlab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yloc</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="n">ylab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span> <span class="o">+</span> <span class="s1">&#39;S&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> 
+            <span class="n">ylab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39;N&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ylab</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">verbose</span> <span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">xlab</span><span class="p">,</span><span class="n">ylab</span><span class="p">)</span>
+
+    <span class="c1"># Center plot is always at (0,0) in projected coordinate</span>
+    <span class="c1"># Choose border and label shift according to hemisphere</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">:</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span> <span class="o">-</span> <span class="mf">2.5</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span> <span class="o">+</span> <span class="mf">2.5</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xloc</span><span class="p">)):</span>
+        <span class="n">tx</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">border</span><span class="p">,</span> <span class="n">xlab</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">transform</span><span class="o">=</span><span class="n">pro</span><span class="p">,</span>\
+            <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+        <span class="n">tx</span><span class="o">=</span><span class="n">_set_label_location</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">border</span> <span class="p">,</span><span class="n">promap</span><span class="p">,</span><span class="n">ylim</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shift</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">tx</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Right&#39;</span><span class="p">:</span>
+            <span class="n">tx</span><span class="o">.</span><span class="n">set_position</span><span class="p">([</span><span class="n">xloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">border</span><span class="o">+</span><span class="n">shift</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Top_label</span> <span class="ow">and</span> <span class="n">tx</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Top&#39;</span><span class="p">:</span>
+            <span class="n">tx</span><span class="o">.</span><span class="n">_visible</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">Lat_labels</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">yloc</span><span class="p">)):</span>
+            <span class="n">tx</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">xloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ylab</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">transform</span><span class="o">=</span><span class="n">pro</span><span class="p">,</span>\
+                <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> 
+        
+
+    <span class="k">return</span></div>
+
+<span class="k">def</span> <span class="nf">_set_label_location</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">pro</span><span class="p">,</span><span class="n">ylim</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; utility to find the location of labels on stereo projection &quot;&quot;&quot;</span>
+
+    <span class="n">xu</span><span class="p">,</span><span class="n">yu</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">transform_point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">car</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
+    <span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">x_limits</span>
+    <span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span> <span class="o">=</span> <span class="n">pro</span><span class="o">.</span><span class="n">y_limits</span>
+    <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">ylim</span><span class="p">))</span><span class="o">/</span><span class="mf">180.</span>
+    <span class="c1">#print(xmin,xmax,ymin,ymax,xu,yu,x,y)</span>
+    <span class="k">if</span> <span class="n">xu</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">:</span>
+        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Left&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">xu</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">:</span>
+        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Right&#39;</span><span class="p">)</span>
+    <span class="k">elif</span>  <span class="n">yu</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">:</span>
+        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Top&#39;</span><span class="p">)</span>
+    <span class="k">elif</span>  <span class="n">yu</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">:</span>
+        <span class="n">tx</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">,</span><span class="s1">&#39;Bottom&#39;</span><span class="p">)</span>
+    <span class="c1">#print(xu,yu,ymax, ymin,tx.__getattribute__(&#39;Location&#39;))</span>
+
+    <span class="k">if</span> <span class="n">tx</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;Location&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Left&#39;</span><span class="p">:</span>
+        <span class="n">tx</span><span class="o">.</span><span class="n">set_horizontalalignment</span><span class="p">(</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tx</span>
+
+<div class="viewcode-block" id="set_titles_and_labels"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.set_titles_and_labels">[docs]</a><span class="k">def</span> <span class="nf">set_titles_and_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">maintitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maintitlefontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> \
+                          <span class="n">lefttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lefttitlefontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> \
+                          <span class="n">righttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">righttitlefontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span>
+                          <span class="n">xlabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labelfontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                          <span class="n">ytitle</span><span class="o">=</span><span class="mf">0.98</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to handle axis titles, left/right aligned titles.</span>
+
+<span class="sd">    Parameters  </span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    ax :    </span>
+<span class="sd">        Current axes to the current figure  </span>
+<span class="sd">    </span>
+<span class="sd">    maintitle :   </span>
+<span class="sd">        Text to use for the maintitle   </span>
+
+<span class="sd">    maintitlefontsize :   </span>
+<span class="sd">        Text font size for maintitle. A default value of 18 is used if nothing is set</span>
+<span class="sd">    </span>
+<span class="sd">    lefttitle :  </span>
+<span class="sd">        Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,</span>
+<span class="sd">        but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.</span>
+<span class="sd">    </span>
+<span class="sd">    lefttitlefontsize :     </span>
+<span class="sd">        Text font size for lefttitle. A default value of 18 is used if nothing is set</span>
+<span class="sd">    </span>
+<span class="sd">    righttitle :        </span>
+<span class="sd">        Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,</span>
+<span class="sd">        but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.</span>
+<span class="sd">    </span>
+<span class="sd">    righttitlefontsize :    </span>
+<span class="sd">        Text font size for righttitle. A default value of 18 is used if nothing is set</span>
+
+<span class="sd">    xlabel :    </span>
+<span class="sd">        Text for the x-axis label</span>
+
+<span class="sd">    ylabel :    </span>
+<span class="sd">        Text for the y-axis label</span>
+
+<span class="sd">    labelfontsize :     </span>
+<span class="sd">        Text font size for x- and y-axes. A default value of 16 is used if nothing is set</span>
+<span class="sd">    </span>
+<span class="sd">    ytitle :    </span>
+<span class="sd">        Y position of the main title</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+
+    <span class="k">if</span> <span class="n">maintitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">maintitle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">maintitlefontsize</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">pad</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lefttitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">lefttitle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">lefttitlefontsize</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ytitle</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">righttitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">righttitle</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">righttitlefontsize</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ytitle</span><span class="o">+</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">xlabel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">labelfontsize</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ylabel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">labelfontsize</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
 </pre></div>
 
           </div>

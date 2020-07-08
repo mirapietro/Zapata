@@ -12,77 +12,87 @@ import xarray as xr
 
 class Atmosphere_Interpolator():
     """ 
-    This class creates weights for interpolation for atmospheric fields.
+    This class creates weights for interpolation of atmospheric fields.
+    No mask is used.
 
-    This class create an interpolator operator from a *source grid* 
-    `src_grid` to a *target grid* `tgt_grd`. The interpolator then
+    This class create an interpolator operator to a *target grid* `tgt_grd`. The interpolator then
     can be used to perform the actual interpolation.
-
-    The *source grid* must be a `xarray` `DataSet` containing coordinates
-    `latitude` and `longitude`.
 
     The *target grid* must be a `xarray` `DataArray` with variables `lat` and `lon`
 
-    Works only on single `DataArray`
-    
     Parameters
     ----------
 
-    src_grid : xarray
-        Source grid
-    tgt_grid : xarray
-        Target grid
-    
+    grid : str
+        Choice of output grids  
+
+        * `1x1`  -- Regular 1 degree 
+        * `025x025`  -- Coupled model grid, nominally 0.25, 
+
+    option : str
+        'linear', interpolation method
+
     Attributes
     ----------
 
-    tgt_grid :
-        Target grid 
-    mask :
-        Mask of the target grid
-    vt :
-        Weights
-    wt :
-        Weights
+    name : str
+        Name of the interpolator
+    grid : str
+        Option for the grid
+    option : str
+        Interpolation method
+
+    
+    Note
+    ====
+
+    It is a thin wrapper around `xarray` `interp_like` method.
     
     Examples    
     --------    
     Create the weights for interpolation
 
-    >>> w= zint.Ocean_Interpolator(src_grid,tgt_grid) 
+    >>> w= zint.Atmosphere_Interpolator('1x1','linear') 
     
-    Interpolate
+    Interpolate temperature
 
-    >>> target_xarray=w.interp(src_xarray)
+    >>> target_xarray=w.interp_f(src_xarray)
 
+    
     """
 
-    __slots__ = ('vt','wt','mask','tgt_grid')
+    __slots__ = ('name','tgt','method')
 
-    def __init__(self, src_grid, tgt_grid):
-        # Put here info on grids to be obtained from __call__
-        #Source Grid
-        lato=src_grid.latitude.data.flatten()
-        lono=src_grid.longitude.data.flatten()
-        latlon=np.asarray([lato,lono])
+    
 
-        #Target Grid
-        self.tgt_grid = tgt_grid
-        mask = tgt_grid.stack(ind=('lat','lon')).dropna('ind')
-        self.mask = mask
-        #Order target coordinate
-        latlon_to=np.asarray([mask.lat.data,mask.lon.data])
+    def __init__(self, grid, option='linear'):
         
-        #Generates Weights
-        tri = qhull.Delaunay(latlon.T)
-        simplex = tri.find_simplex(latlon_to.T)
-        self.vt = np.take(tri.simplices, simplex, axis=0)
-
-        temp = np.take(tri.transform, simplex, axis=0)
-        delta = latlon_to.T - temp[:, 2]
-        bary = np.einsum('njk,nk->nj', temp[:, :2, :], delta)
-        self.wt = np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
-
+        self.method = option
+        ''' str: Interpolation method selected `linear` or `nearest`'''
+        # Put here info on grids to be obtained from __call__
+        self.name = 'Atmosphere_Interpolator'
+        '''str: Name of the Interpolator'''
+        if grid == '1x1':
+            # Selected regular 1 Degree grid
+            lon1x1 = np.linspace(0,359,360)
+            lat1x1 = np.linspace(-90,90,180)
+            mm=np.ones([lat1x1.shape[0],lon1x1.shape[0]])
+            tgt = xr.DataArray(mm,dims=['lat','lon'],\
+                            coords={'lat':lat1x1,'lon':lon1x1})  
+        elif grid == '025x025':
+            homedir = os.path.expanduser("~")
+            file = homedir + '/Dropbox (CMCC)/data_zapata/'+ 'masks_CMCC-CM2_VHR4_AGCM.nc'
+            dst=xr.open_dataset(file,decode_times=False)
+            lat25 = dst.yc.data[:,0]
+            lon25 = dst.xc.data[0,:]
+            tgt = xr.DataArray(dst.mask,dims=['lat','lon'],\
+                            coords={'lat':lat25,'lon':lon25})  
+        else:
+            SystemError(f'Wrong Option in {self.name} --> {grid}')  
+        self.tgt = tgt
+        '''xarray: Target grid'''    
+        return
+        
     def __call__(self):
         return
 
@@ -90,17 +100,25 @@ class Atmosphere_Interpolator():
         '''  Printing other info '''
         return '\n' 
     
-    def interp(self, xdata):
+    def interp_scalar(self, xdata):
         ''' 
-        Perform actual interpolation to the target grid
+        Perform interpolation  to the target grid.
+        This methods can be used for scalar quantities.
+
+        Parameters
+        ----------
+        xdata :  xarray
+            2D array to be interpolated, it must be on the `src_grid`
+        
+        Returns
+        -------
+        out :  xarray
+            Interpolated xarray on the target grid
         
         '''
-        dat= np.expand_dims(xdata.data.flatten(),axis=1)
-        new = np.einsum('nj,nj->n', np.take(dat, self.vt), self.wt)
-        temp=self.mask.copy()
-        temp.data = new
-        temp.name = xdata.name
-        return temp.unstack()
+        
+        res = xdata.interp_like(self.tgt,method=self.method)
+        return res
 
 
 
@@ -128,6 +146,7 @@ class Ocean_Interpolator():
         Target grid
     option : str
         'global', for global grids (to be implemented regional )
+
     Attributes
     ----------
 
@@ -169,17 +188,22 @@ class Ocean_Interpolator():
         # Path to auxiliary Ocean files
         homedir = os.path.expanduser("~")
         self.mdir = homedir + '/Dropbox (CMCC)/data_zapata'
+        ''' Mask Directory'''
         da=xr.open_dataset( self.mdir + '/ORCA025_angle.nc',decode_times=False)
         self.tangle = da.tangle.data*np.pi/180.0
-        
+        '''Angles at t-points in the ocean C-grid'''
         # Global grid consider North Pole
         if option == 'Global':
             self.option = 'Global'
+            '''Option for region (not implemented)'''
 
         #Source Grids for T, U, V
         self.mask = src_grid.tmask.data[0,0,...]>0
+        ''' T-mask'''
         self.masku = src_grid.umask.data[0,0,...]>0
+        ''' U-mask'''
         self.maskv = src_grid.vmask.data[0,0,...]>0
+        ''' V-mask'''
 
         #Fix Polar Fold
         self.mask[-1:,:] = False
@@ -211,11 +235,14 @@ class Ocean_Interpolator():
         #Target Grid
         #Get coordinates for output
         self.lath=tgt_grid.yc.data[:,0]
+        '''Latitudes of the target grid'''
         self.lonh=tgt_grid.xc.data[0,:]
+        '''Longitudes of the target grid'''
 
         #Insert NaN for land
         temp1 = tgt_grid.mask.where(tgt_grid.mask < 1)
         self.mask_H = temp1.stack(ind={'nj','ni'})
+        '''Land-sea mask of the target grid'''
         
         _maskt = self.mask_H[~xr.ufuncs.isnan(self.mask_H)] 
         
@@ -226,11 +253,12 @@ class Ocean_Interpolator():
         tri = qhull.Delaunay(latlon.T)
         simplex = tri.find_simplex(latlon_to.T)
         self.vt = np.take(tri.simplices, simplex, axis=0)
-
+        '''Weights'''
         _temp = np.take(tri.transform, simplex, axis=0)
         delta = latlon_to.T - _temp[:, 2]
         bary = np.einsum('njk,nk->nj', _temp[:, :2, :], delta)
         self.wt = np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
+        '''Weights'''
 
     def __call__(self):
         return

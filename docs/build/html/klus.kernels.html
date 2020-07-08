@@ -48,52 +48,10 @@
   <div class="section" id="module-klus.kernels">
 <span id="klus-kernels-module"></span><h1>klus.kernels module<a class="headerlink" href="#module-klus.kernels" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="klus.kernels.Eigenfunction">
-<em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">Eigenfunction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">v</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#Eigenfunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.Eigenfunction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="klus.kernels.Eigenfunction.fdfeval">
-<code class="sig-name descname">fdfeval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#Eigenfunction.fdfeval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.Eigenfunction.fdfeval" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function and gradient evaluation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="klus.kernels.Eigenfunction.feval">
-<code class="sig-name descname">feval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#Eigenfunction.feval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.Eigenfunction.feval" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function evaluation.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.kernels.covariance">
-<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">covariance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#covariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.covariance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute Covariance matrix for training data X with kernel k.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.kernels.crosscov">
-<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">crosscov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#crosscov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.crosscov" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute crosscovariance matrix for training data X and Y with kernel k.</p>
-</dd></dl>
-
-<dl class="py class">
 <dt id="klus.kernels.gaussianKernel">
 <em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gaussianKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sigma</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#gaussianKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.gaussianKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Gaussian kernel with bandwidth sigma.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.kernels.gramian">
-<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gramian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#gramian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.gramian" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute Gram matrix for training data X with kernel k.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="klus.kernels.gramian2">
-<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gramian2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#gramian2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.gramian2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute Gram matrix for training data X and Y with kernel k.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -120,6 +78,48 @@
 <dt id="klus.kernels.stringKernel.evaluate">
 <code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#stringKernel.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.stringKernel.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unnormalized string kernel evaluation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.gramian">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gramian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#gramian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.gramian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Gram matrix for training data X with kernel k.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.gramian2">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">gramian2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#gramian2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.gramian2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Gram matrix for training data X and Y with kernel k.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.covariance">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">covariance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#covariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Covariance matrix for training data X with kernel k.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="klus.kernels.crosscov">
+<code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">crosscov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">k</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#crosscov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.crosscov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute crosscovariance matrix for training data X and Y with kernel k.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="klus.kernels.Eigenfunction">
+<em class="property">class </em><code class="sig-prename descclassname">klus.kernels.</code><code class="sig-name descname">Eigenfunction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">v</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#Eigenfunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.Eigenfunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="klus.kernels.Eigenfunction.feval">
+<code class="sig-name descname">feval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#Eigenfunction.feval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.Eigenfunction.feval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function evaluation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="klus.kernels.Eigenfunction.fdfeval">
+<code class="sig-name descname">fdfeval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/klus/kernels.html#Eigenfunction.fdfeval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#klus.kernels.Eigenfunction.fdfeval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function and gradient evaluation.</p>
 </dd></dl>
 
 </dd></dl>

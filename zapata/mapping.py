@@ -1,3 +1,28 @@
+'''
+Contouring, stremlines and vector plots
+=======================================
+
+Latitude-Longitude Plotting 
+---------------------------
+A set of routines for horizontal plotting
+
+**xmap, xsmap, xstmap, vecmap**
+
+Zonal Plotting
+--------------
+These routine split zonal sections in pressures and latitude.
+
+**zonal_plot, zonal_stream_plot**
+
+Utilities 
+---------
+**choose_contour, add_ticks, add_ticklabels, add_colorbar, make_ticks, add_sttick, set_title_and_labels**
+
+Detailed Description:
+---------------------
+
+'''
+
 import cartopy.crs as car
 import cartopy.util as utl
 import matplotlib.ticker as mticker
@@ -20,167 +45,68 @@ import geocat.datafiles as gdf
 from geocat.viz import cmaps as gvcmaps
 import geocat.viz.util as gvutil
 
-    
-def choose_contour(cont):
+
+def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
     """
-    Choose contours according to length of cont.
-
-    Parameters
-    -----------
-    cont :  
-        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc 
-        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  
-        * n                      n contours 
-        * []                     automatic choice   
-
-    Returns
-    --------
-    
-    contour_levels :    
-        Levels of selected Contours
-
-    Examples
-    --------
-    >>> [0,1000,10] # Contours from 0 1000
-    >>> [0.01, 0.05, 1.0, 2.0, 5.0, 10.0] # Set Contours Leves   
-    """
-    if len(cont) == 3:
-        print("Setting Fixed Contours")
-        cc=np.arange(cont[0]-cont[2],cont[1]+2*cont[2],cont[2])
-        print(' Contouring from ', cont[0], '  to', cont[1],' with interval  ',cont[2])  
-    elif len(cont)> 3:
-        cc=cont
-        print('Fixed Contours to..',cont)
-    elif len(cont) == 1:
-        cc=cont[0]
-        print('Number of Contours ',cc)
-    else:
-        cc=10
-        print('Ten Contours automatic')
-    return cc
-
-def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize="large",length=6,width=0.9):
-    """
-    Utility function to make plots look like NCL plots by adding minor and major tick lines
-    
-    Parameters
-    -----------
-    ax :       
-        Current axes to the current figure
-
-    x_minor_per_major :  
-        Number of minor ticks between adjacent major ticks on x-axis
-
-    y_minor_per_major :   
-        Number of minor ticks between adjacent major ticks on y-axis
-    """
-    import matplotlib.ticker as tic
-
-    ax.tick_params(labelsize=labelsize)
-    ax.minorticks_on()
-    ax.xaxis.set_minor_locator(tic.AutoMinorLocator(n=x_minor_per_major))
-    ax.yaxis.set_minor_locator(tic.AutoMinorLocator(n=y_minor_per_major))
-
-    # length and width are in points and may need to change depending on figure size etc.
-    ax.tick_params(
-        "both",
-        length=length,
-        width=width,
-        which="major",
-        bottom=True,
-        top=False,
-        left=True,
-        right=True,
-    )
-    ax.tick_params(
-        "both",
-        length=length/2,
-        width=width/2,
-        which="minor",
-        bottom=True,
-        top=False,
-        left=True,
-        right=True,
-    )
-    
-def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=True):
-    """
-    Utility function to make plots look like NCL plots by using latitude, longitude tick labels
-    
-    Parameters
-    ----------
-    ax :    
-        Current axes to the current figure
-
-    zero_direction_label :    
-        Set True to get 0 E / O W or False to get 0 only.
-
-    dateline_direction_label :      
-        Set True to get 180 E / 180 W or False to get 180 only.
-    """
-    from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,
-                                LatitudeLocator)
-    
-    lon_formatter = LongitudeFormatter(zero_direction_label=zero_direction_label,
-                        dateline_direction_label=dateline_direction_label,degree_symbol='')
-    lat_formatter = LatitudeFormatter(degree_symbol='')
-    ax.xaxis.set_major_formatter(lon_formatter)
-    ax.yaxis.set_major_formatter(lat_formatter)
-
-    return
-
-def add_colorbar(fig, handle, ax, colorbar_size=0.05,label_size=10,edges=True):
-    """
-    Add colorbar to plot.
-    
-    Parameters
-    -----------
-    
-    handle :   
-        Handle to plot
-    ax :   
-        Axis to which to add the colorbar
-    colorbar_size:    
-        Size of colorbar as a fraxtion of the axis
-    label_size:   
-        Size of labels
-    edges:   
-        Draw edges of the color bar
-    """    
-    divider = tl.make_axes_locatable(ax)
-    cax = divider.append_axes('bottom',size="2.5%", pad=0.4, axes_class=plt.Axes)
-    ax.get_figure().colorbar(handle, cax=cax, orientation='horizontal',\
-                        ticks=handle.levels,fraction=colorbar_size,drawedges=edges)
-    return
-
-def make_ticks(xt,dt=20):
-    '''
-    Calculates nice tickes for the axes.
-    Selecting 20 or 10 intervals
+    Initialization for the entire figure, choose projection and number of panels.
 
     Parameters
     ----------
+    rows :  
+        Number of rows in multiple picture
 
-    xt : 
-        Axes limit [west, east]
-    
-    dt:
-        Initial tick spacing
+    cols :       
+        Number of columns in multiple picture
+
+    figsize :    
+        Size of figure in inches (height, width)
+
+    proview :    
+        Projection for the map  
+
+        - *"Pacific"*,   cartopy PlateCarree, central longitude 180   
+        - *"Atlantic"*,  cartopy PlateCarree, central longitude 0      
+        - *"NHStereoEurope"*,  NH Stereo, central longitude 0     
+        - *"NHStereoAmerica"*,  NH Stereo, central longitude 90   
+        - *"SHStereoAfrica"*,  NH Stereo, central longitude 0     
+     
+    constrained_layout :    
+        True/False 
 
     Returns
     -------
-
-    ticks:
-        Nice ticks position
-    '''
-
-    res=1
-    dti=np.gcd(abs(xt[1]-xt[0]),dt)
-    print(f'Ticks set at {dti}  intervals')
-    n=len(np.arange(xt[0], xt[1],dti))
+    fig :   handle   
+        Dictionary with matplotlib-like info on the plot    
+    ax :     axes   
+        Axes of the panels  
+    pro :    projection
+        Projection chosen   
+    """
     
-    return np.linspace(xt[0], xt[1], n+1)
+    # This fixes the projection for the mapping: 
+    #      Data Projection is then fixed in mapping routine
+    if   proview == 'Pacific':
+        projection = car.PlateCarree(central_longitude=180.)
+    elif proview == 'Atlantic':
+        projection = car.PlateCarree(central_longitude=0.)
+    elif proview == 'NHStereoEurope':
+        projection = car.NorthPolarStereo(central_longitude=0.)
+    elif proview == 'NHStereoAmerica':
+        projection = car.NorthPolarStereo(central_longitude=-90.)
+    elif proview == 'SHStereoAfrica':
+        projection = car.SouthPolarStereo(central_longitude=90.)
+    else:
+        print(' Error in init_figure projection {}'.format(proview))
+        raise SystemExit
+    #Store View in projection
+    projection.view = proview
 
+    fig, ax = plt.subplots(rows, cols,figsize=figsize, constrained_layout=constrained_layout, \
+                           subplot_kw={ "projection": projection})
+    
+    print(' Opening figure , %i rows and %i cols \n' % (rows,cols))
+    
+    return fig,ax,projection
 def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_format = ' {:6.0f} ', \
                       zeroline=False, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
@@ -352,103 +278,7 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
         ax.get_figure().colorbar(handles['filled'], cax=cax,orientation='vertical')
 
-    return handles
-def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose=False):
-    """
-    Utility function add ticks and labels to stereo plots
-    
-    Parameters
-    -----------
-    ax :       
-        Current axes to the current figure
-    xt :    
-        Locations of desired Longitude labels
-    yt :     
-        Locations of desired Latitude labels
-    xlim :  
-        Longitudinal extent of the stereo map
-    ylim :  
-        Latitudinal extent of the stereo map
-    promap :    
-        Projection 
-    Top_label :    
-        True/False  Turn off the top labels
-
-    Lat_labels :    
-        True/False  Turn off the latitude labels
-
-    """
-    # Hardwire ticks for grid lines
-    xloc = xt
-    yloc = yt
-    xlab = []
-    ylab = []
-    # use Geodetic
-    pro=car.Geodetic()
-
-    for i in range(len(xloc)):
-        if xloc[i] < 0: 
-            xlab.append(str(abs(xloc[i])) + 'E')
-        elif xloc[i] > 0: 
-            xlab.append(str(xloc[i]) + 'W')
-        else:
-           xlab.append(str(xloc[i]))
-    for i in range(len(yloc)):
-        if yloc[i] < 0: 
-            ylab.append(str(int(abs(yloc[i]))) + 'S')
-        elif yloc[i] > 0: 
-            ylab.append(str(int(yloc[i])) + 'N')
-        else:
-            ylab.append(str(yloc[i]))
-    if verbose : print(xlab,ylab)
-
-    # Center plot is always at (0,0) in projected coordinate
-    # Choose border and label shift according to hemisphere
-    if np.min(ylim) >= 0 :
-        border = np.min(ylim) - 2.5
-        shift = 0
-    else:
-        border = np.max(ylim) + 2.5
-        shift = 1
-
-    for i in range(len(xloc)):
-        tx=ax.text(xloc[i], border, xlab[i], transform=pro,\
-            horizontalalignment='center', verticalalignment='center',fontsize=16)
-        tx=_set_label_location(tx,xloc[i], border ,promap,ylim)
-        if shift > 0 and tx.__getattribute__('Location') == 'Right':
-            tx.set_position([xloc[i],border+shift])
-        if not Top_label and tx.__getattribute__('Location') == 'Top':
-            tx._visible = False
-    if Lat_labels:
-        for i in range(len(yloc)):
-            tx=ax.text(xloc[0], yloc[i], ylab[i], transform=pro,\
-                horizontalalignment='center', verticalalignment='center',fontsize=16) 
-        
-
-    return
-
-def _set_label_location(tx,x, y, pro,ylim):
-    """ utility to find the location of labels on stereo projection """
-
-    xu,yu = pro.transform_point(x,y,car.PlateCarree())
-    xmin,xmax = pro.x_limits
-    ymin,ymax = pro.y_limits
-    ymax=ymax*abs(np.max(ylim)-np.min(ylim))/180.
-    #print(xmin,xmax,ymin,ymax,xu,yu,x,y)
-    if xu < 0 and abs(xu) > 0.001:
-        tx.__setattr__('Location','Left')
-    elif xu > 0 and abs(xu) > 0.001:
-        tx.__setattr__('Location','Right')
-    elif  yu > 0 and abs(xu) < 0.001:
-        tx.__setattr__('Location','Top')
-    elif  yu < 0 and abs(xu) < 0.001:
-        tx.__setattr__('Location','Bottom')
-    #print(xu,yu,ymax, ymin,tx.__getattribute__('Location'))
-
-    if tx.__getattribute__('Location') == 'Left':
-        tx.set_horizontalalignment('right')
-    return tx
-
+    return handles    
 def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
                       zeroline=False, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
@@ -637,133 +467,6 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
         ax.get_figure().colorbar(handles['filled'], cax=cax,orientation='vertical')
 
     return handles
-def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
-    """
-    Initialization for the entire figure, choose projection and number of panels.
-
-    Parameters
-    ----------
-    rows :  
-        Number of rows in multiple picture
-
-    cols :       
-        Number of columns in multiple picture
-
-     figsize :    
-        Size of figure in inches (height, width)
-
-    proview :    
-        Projection for the map  
-        _"Pacific"_,   cartopy PlateCarree, central longitude 180   
-        _"Atlantic"_,  cartopy PlateCarree, central longitude 0      
-        _"NHStereoEurope"_,  NH Stereo, central longitude 0     
-        _"NHStereoAmerica"_,  NH Stereo, central longitude 90   
-        _"SHStereoAfrica"_,  NH Stereo, central longitude 0 
-    constrained_layout :    
-        True/False 
-
-    Returns
-    -------
-
-    fig :   
-        fig handle
-    
-    ax :    
-        Axes of the panels
-    
-    pro :   
-        Projection chosen
-    """
-    
-    # This fixes the projection for the mapping: 
-    #      Data Projection is then fixed in mapping routine
-    if   proview == 'Pacific':
-        projection = car.PlateCarree(central_longitude=180.)
-    elif proview == 'Atlantic':
-        projection = car.PlateCarree(central_longitude=0.)
-    elif proview == 'NHStereoEurope':
-        projection = car.NorthPolarStereo(central_longitude=0.)
-    elif proview == 'NHStereoAmerica':
-        projection = car.NorthPolarStereo(central_longitude=-90.)
-    elif proview == 'SHStereoAfrica':
-        projection = car.SouthPolarStereo(central_longitude=90.)
-    else:
-        print(' Error in init_figure projection {}'.format(proview))
-        raise SystemExit
-    #Store View in projection
-    projection.view = proview
-
-    fig, ax = plt.subplots(rows, cols,figsize=figsize, constrained_layout=constrained_layout, \
-                           subplot_kw={ "projection": projection})
-    
-    print(' Opening figure , %i rows and %i cols \n' % (rows,cols))
-    
-    return fig,ax,projection
-
-def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
-                          lefttitle=None, lefttitlefontsize=18, \
-                          righttitle=None, righttitlefontsize=18,
-                          xlabel=None, ylabel=None, labelfontsize=16,
-                          ytitle=0.98):
-    """
-    Utility function to handle axis titles, left/right aligned titles.
-
-    Parameters  
-    ----------
-
-    ax :    
-        Current axes to the current figure  
-    
-    maintitle :   
-        Text to use for the maintitle   
-
-    maintitlefontsize :   
-        Text font size for maintitle. A default value of 18 is used if nothing is set
-    
-    lefttitle :  
-        Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,
-        but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.
-    
-    lefttitlefontsize :     
-        Text font size for lefttitle. A default value of 18 is used if nothing is set
-    
-    righttitle :        
-        Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,
-        but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.
-    
-    righttitlefontsize :    
-        Text font size for righttitle. A default value of 18 is used if nothing is set
-
-    xlabel :    
-        Text for the x-axis label
-
-    ylabel :    
-        Text for the y-axis label
-
-    labelfontsize :     
-        Text font size for x- and y-axes. A default value of 16 is used if nothing is set
-    
-    ytitle :    
-        Y position of the main title
-    """
-    
-
-    if maintitle is not None:
-        ax.set_title(maintitle, fontsize=maintitlefontsize, loc='center',pad=20)
-
-    if lefttitle is not None:
-        ax.set_title(lefttitle, fontsize=lefttitlefontsize, y=ytitle+0.01, loc='left')
-
-    if righttitle is not None:
-        ax.set_title(righttitle, fontsize=righttitlefontsize, y=ytitle+0.01, loc='right')
-
-    if xlabel is not None:
-        ax.set_xlabel(xlabel, fontsize=labelfontsize)
-
-    if ylabel is not None:
-        ax.set_ylabel(ylabel, fontsize=labelfontsize)
-
-    return
 def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
                       density=2, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
@@ -824,6 +527,13 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
     
     ylimit :        
         Limit of the map (lat)  
+
+    Returns
+    -------
+
+    handle :    
+        Dictionary with matplotlib-like info on the plot
+    
     """
     #Special Values
     U=U.where(U != 9999.)
@@ -986,7 +696,14 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
         Limit of the map (lon)  
     
     ylimit :        
-        Limit of the map (lat)  
+        Limit of the map (lat)
+
+    Returns
+    -------
+
+    handle :    
+        Dictionary with matplotlib-like info on the plot
+      
     """
     #Special Values
     U=U.where(U != 9999.)
@@ -1077,6 +794,7 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
     gvutil.add_lat_lon_ticklabels(ax)
 
     return sp
+
 def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True):
     """
     Zonal mapping function for xarray (lat,pressure). 
@@ -1259,3 +977,321 @@ def zonal_stream_plot(datau,datav,ax,color='black',\
         ax.get_figure().colorbar(hc.lines, cax=cax,orientation='vertical')
 
     return hc
+
+def choose_contour(cont):
+    """
+    Choose contours according to length of cont.
+
+    Parameters
+    -----------
+    cont :  
+        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc 
+        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  
+        * n                      n contours 
+        * []                     automatic choice   
+
+    Returns
+    --------
+    
+    contour_levels :    
+        Levels of selected Contours
+
+    Examples
+    --------
+    >>> [0,1000,10] # Contours from 0 1000
+    >>> [0.01, 0.05, 1.0, 2.0, 5.0, 10.0] # Set Contours Leves   
+    """
+    if len(cont) == 3:
+        print("Setting Fixed Contours")
+        cc=np.arange(cont[0]-cont[2],cont[1]+2*cont[2],cont[2])
+        print(' Contouring from ', cont[0], '  to', cont[1],' with interval  ',cont[2])  
+    elif len(cont)> 3:
+        cc=cont
+        print('Fixed Contours to..',cont)
+    elif len(cont) == 1:
+        cc=cont[0]
+        print('Number of Contours ',cc)
+    else:
+        cc=10
+        print('Ten Contours automatic')
+    return cc
+def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize="large",length=6,width=0.9):
+    """
+    Utility function to make plots look like NCL plots by adding minor and major tick lines
+    
+    Parameters
+    -----------
+    ax :       
+        Current axes to the current figure
+
+    x_minor_per_major :  
+        Number of minor ticks between adjacent major ticks on x-axis
+
+    y_minor_per_major :   
+        Number of minor ticks between adjacent major ticks on y-axis
+    """
+    import matplotlib.ticker as tic
+
+    ax.tick_params(labelsize=labelsize)
+    ax.minorticks_on()
+    ax.xaxis.set_minor_locator(tic.AutoMinorLocator(n=x_minor_per_major))
+    ax.yaxis.set_minor_locator(tic.AutoMinorLocator(n=y_minor_per_major))
+
+    # length and width are in points and may need to change depending on figure size etc.
+    ax.tick_params(
+        "both",
+        length=length,
+        width=width,
+        which="major",
+        bottom=True,
+        top=False,
+        left=True,
+        right=True,
+    )
+    ax.tick_params(
+        "both",
+        length=length/2,
+        width=width/2,
+        which="minor",
+        bottom=True,
+        top=False,
+        left=True,
+        right=True,
+    )   
+def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=True):
+    """
+    Utility function to make plots look like NCL plots by using latitude, longitude tick labels
+    
+    Parameters
+    ----------
+    ax :    
+        Current axes to the current figure
+
+    zero_direction_label :    
+        Set True to get 0 E / O W or False to get 0 only.
+
+    dateline_direction_label :      
+        Set True to get 180 E / 180 W or False to get 180 only.
+    """
+    from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,
+                                LatitudeLocator)
+    
+    lon_formatter = LongitudeFormatter(zero_direction_label=zero_direction_label,
+                        dateline_direction_label=dateline_direction_label,degree_symbol='')
+    lat_formatter = LatitudeFormatter(degree_symbol='')
+    ax.xaxis.set_major_formatter(lon_formatter)
+    ax.yaxis.set_major_formatter(lat_formatter)
+
+    return
+def add_colorbar(fig, handle, ax, colorbar_size=0.05,label_size=10,edges=True):
+    """
+    Add colorbar to plot.
+    
+    Parameters
+    -----------
+    
+    handle :   
+        Handle to plot
+    ax :   
+        Axis to which to add the colorbar
+    colorbar_size:    
+        Size of colorbar as a fraxtion of the axis
+    label_size:   
+        Size of labels
+    edges:   
+        Draw edges of the color bar
+    """    
+    divider = tl.make_axes_locatable(ax)
+    cax = divider.append_axes('bottom',size="2.5%", pad=0.4, axes_class=plt.Axes)
+    ax.get_figure().colorbar(handle, cax=cax, orientation='horizontal',\
+                        ticks=handle.levels,fraction=colorbar_size,drawedges=edges)
+    return
+
+def make_ticks(xt,dt=20):
+    '''
+    Calculates nice tickes for the axes.
+    Selecting 20 or 10 intervals
+
+    Parameters
+    ----------
+
+    xt : 
+        Axes limit [west, east]
+    
+    dt:
+        Initial tick spacing
+
+    Returns
+    -------
+
+    ticks:
+        Nice ticks position
+    '''
+
+    res=1
+    dti=np.gcd(abs(xt[1]-xt[0]),dt)
+    print(f'Ticks set at {dti}  intervals')
+    n=len(np.arange(xt[0], xt[1],dti))
+    
+    return np.linspace(xt[0], xt[1], n+1)
+
+def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose=False):
+    """
+    Utility function add ticks and labels to stereo plots
+    
+    Parameters
+    -----------
+    ax :       
+        Current axes to the current figure
+    xt :    
+        Locations of desired Longitude labels
+    yt :     
+        Locations of desired Latitude labels
+    xlim :  
+        Longitudinal extent of the stereo map
+    ylim :  
+        Latitudinal extent of the stereo map
+    promap :    
+        Projection 
+    Top_label :    
+        True/False  Turn off the top labels
+
+    Lat_labels :    
+        True/False  Turn off the latitude labels
+
+    """
+    # Hardwire ticks for grid lines
+    xloc = xt
+    yloc = yt
+    xlab = []
+    ylab = []
+    # use Geodetic
+    pro=car.Geodetic()
+
+    for i in range(len(xloc)):
+        if xloc[i] < 0: 
+            xlab.append(str(abs(xloc[i])) + 'E')
+        elif xloc[i] > 0: 
+            xlab.append(str(xloc[i]) + 'W')
+        else:
+           xlab.append(str(xloc[i]))
+    for i in range(len(yloc)):
+        if yloc[i] < 0: 
+            ylab.append(str(int(abs(yloc[i]))) + 'S')
+        elif yloc[i] > 0: 
+            ylab.append(str(int(yloc[i])) + 'N')
+        else:
+            ylab.append(str(yloc[i]))
+    if verbose : print(xlab,ylab)
+
+    # Center plot is always at (0,0) in projected coordinate
+    # Choose border and label shift according to hemisphere
+    if np.min(ylim) >= 0 :
+        border = np.min(ylim) - 2.5
+        shift = 0
+    else:
+        border = np.max(ylim) + 2.5
+        shift = 1
+
+    for i in range(len(xloc)):
+        tx=ax.text(xloc[i], border, xlab[i], transform=pro,\
+            horizontalalignment='center', verticalalignment='center',fontsize=16)
+        tx=_set_label_location(tx,xloc[i], border ,promap,ylim)
+        if shift > 0 and tx.__getattribute__('Location') == 'Right':
+            tx.set_position([xloc[i],border+shift])
+        if not Top_label and tx.__getattribute__('Location') == 'Top':
+            tx._visible = False
+    if Lat_labels:
+        for i in range(len(yloc)):
+            tx=ax.text(xloc[0], yloc[i], ylab[i], transform=pro,\
+                horizontalalignment='center', verticalalignment='center',fontsize=16) 
+        
+
+    return
+
+def _set_label_location(tx,x, y, pro,ylim):
+    """ utility to find the location of labels on stereo projection """
+
+    xu,yu = pro.transform_point(x,y,car.PlateCarree())
+    xmin,xmax = pro.x_limits
+    ymin,ymax = pro.y_limits
+    ymax=ymax*abs(np.max(ylim)-np.min(ylim))/180.
+    #print(xmin,xmax,ymin,ymax,xu,yu,x,y)
+    if xu < 0 and abs(xu) > 0.001:
+        tx.__setattr__('Location','Left')
+    elif xu > 0 and abs(xu) > 0.001:
+        tx.__setattr__('Location','Right')
+    elif  yu > 0 and abs(xu) < 0.001:
+        tx.__setattr__('Location','Top')
+    elif  yu < 0 and abs(xu) < 0.001:
+        tx.__setattr__('Location','Bottom')
+    #print(xu,yu,ymax, ymin,tx.__getattribute__('Location'))
+
+    if tx.__getattribute__('Location') == 'Left':
+        tx.set_horizontalalignment('right')
+    return tx
+
+def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
+                          lefttitle=None, lefttitlefontsize=18, \
+                          righttitle=None, righttitlefontsize=18,
+                          xlabel=None, ylabel=None, labelfontsize=16,
+                          ytitle=0.98):
+    """
+    Utility function to handle axis titles, left/right aligned titles.
+
+    Parameters  
+    ----------
+
+    ax :    
+        Current axes to the current figure  
+    
+    maintitle :   
+        Text to use for the maintitle   
+
+    maintitlefontsize :   
+        Text font size for maintitle. A default value of 18 is used if nothing is set
+    
+    lefttitle :  
+        Text to use for an optional left-aligned title, if any. For most plots, only a maintitle is enough,
+        but for some plot types, a lefttitle likely with a right-aligned title, righttitle, can be used together.
+    
+    lefttitlefontsize :     
+        Text font size for lefttitle. A default value of 18 is used if nothing is set
+    
+    righttitle :        
+        Text to use for an optional right-aligned title, if any. For most plots, only a maintitle is enough,
+        but for some plot types, a righttitle likely with a left-aligned title, lefttitle, can be used together.
+    
+    righttitlefontsize :    
+        Text font size for righttitle. A default value of 18 is used if nothing is set
+
+    xlabel :    
+        Text for the x-axis label
+
+    ylabel :    
+        Text for the y-axis label
+
+    labelfontsize :     
+        Text font size for x- and y-axes. A default value of 16 is used if nothing is set
+    
+    ytitle :    
+        Y position of the main title
+    """
+    
+
+    if maintitle is not None:
+        ax.set_title(maintitle, fontsize=maintitlefontsize, loc='center',pad=20)
+
+    if lefttitle is not None:
+        ax.set_title(lefttitle, fontsize=lefttitlefontsize, y=ytitle+0.01, loc='left')
+
+    if righttitle is not None:
+        ax.set_title(righttitle, fontsize=righttitlefontsize, y=ytitle+0.01, loc='right')
+
+    if xlabel is not None:
+        ax.set_xlabel(xlabel, fontsize=labelfontsize)
+
+    if ylabel is not None:
+        ax.set_ylabel(ylabel, fontsize=labelfontsize)
+
+    return

@@ -51,6 +51,9 @@ extensions = [
 napoleon_google_docstring = False
 napoleon_use_param = False
 napoleon_use_ivar = True
+#
+# Select order in the docs,this is the same as it in the source files.
+autodoc_member_order = 'bysource'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['ytemplates']

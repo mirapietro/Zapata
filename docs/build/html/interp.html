@@ -48,66 +48,96 @@
 <span id="interp-module"></span><h1>interp module<a class="headerlink" href="#module-interp" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="interp.Atmosphere_Interpolator">
-<em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Atmosphere_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_grid</span></em>, <em class="sig-param"><span class="n">tgt_grid</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Atmosphere_Interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Atmosphere_Interpolator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Atmosphere_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'linear'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Atmosphere_Interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Atmosphere_Interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class creates weights for interpolation for atmospheric fields.</p>
-<p>This class create an interpolator operator from a <em>source grid</em>
-<cite>src_grid</cite> to a <em>target grid</em> <cite>tgt_grd</cite>. The interpolator then
+<p>This class creates weights for interpolation of atmospheric fields.
+No mask is used.</p>
+<p>This class create an interpolator operator to a <em>target grid</em> <cite>tgt_grd</cite>. The interpolator then
 can be used to perform the actual interpolation.</p>
-<p>The <em>source grid</em> must be a <cite>xarray</cite> <cite>DataSet</cite> containing coordinates
-<cite>latitude</cite> and <cite>longitude</cite>.</p>
 <p>The <em>target grid</em> must be a <cite>xarray</cite> <cite>DataArray</cite> with variables <cite>lat</cite> and <cite>lon</cite></p>
-<p>Works only on single <cite>DataArray</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>src_grid</strong> (<em>xarray</em>) – Source grid</p></li>
-<li><p><strong>tgt_grid</strong> (<em>xarray</em>) – Target grid</p></li>
+<li><p><strong>grid</strong> (<em>str</em>) – Choice of output grids</p>
+<ul>
+<li><p><cite>1x1</cite>  – Regular 1 degree</p></li>
+<li><p><cite>025x025</cite>  – Coupled model grid, nominally 0.25,</p></li>
+</ul>
+</li>
+<li><p><strong>option</strong> (<em>str</em>) – ‘linear’, interpolation method</p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="#interp.Atmosphere_Interpolator.tgt_grid" title="interp.Atmosphere_Interpolator.tgt_grid"><strong>tgt_grid</strong></a> – Target grid</p></li>
-<li><p><a class="reference internal" href="#interp.Atmosphere_Interpolator.mask" title="interp.Atmosphere_Interpolator.mask"><strong>mask</strong></a> – Mask of the target grid</p></li>
-<li><p><a class="reference internal" href="#interp.Atmosphere_Interpolator.vt" title="interp.Atmosphere_Interpolator.vt"><strong>vt</strong></a> – Weights</p></li>
-<li><p><a class="reference internal" href="#interp.Atmosphere_Interpolator.wt" title="interp.Atmosphere_Interpolator.wt"><strong>wt</strong></a> – Weights</p></li>
+<li><p><a class="reference internal" href="#interp.Atmosphere_Interpolator.name" title="interp.Atmosphere_Interpolator.name"><strong>name</strong></a> (<em>str</em>) – Name of the interpolator</p></li>
+<li><p><strong>grid</strong> (<em>str</em>) – Option for the grid</p></li>
+<li><p><strong>option</strong> (<em>str</em>) – Interpolation method</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is a thin wrapper around <cite>xarray</cite> <cite>interp_like</cite> method.</p>
+</div>
 <p class="rubric">Examples</p>
 <p>Create the weights for interpolation</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">=</span> <span class="n">zint</span><span class="o">.</span><span class="n">Ocean_Interpolator</span><span class="p">(</span><span class="n">src_grid</span><span class="p">,</span><span class="n">tgt_grid</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">=</span> <span class="n">zint</span><span class="o">.</span><span class="n">Atmosphere_Interpolator</span><span class="p">(</span><span class="s1">&#39;1x1&#39;</span><span class="p">,</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Interpolate</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">src_xarray</span><span class="p">)</span>
+<p>Interpolate temperature</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_f</span><span class="p">(</span><span class="n">src_xarray</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="py method">
-<dt id="interp.Atmosphere_Interpolator.interp">
-<code class="sig-name descname">interp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Atmosphere_Interpolator.interp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Atmosphere_Interpolator.interp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform actual interpolation to the target grid</p>
+<dl class="py attribute">
+<dt id="interp.Atmosphere_Interpolator.method">
+<code class="sig-name descname">method</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation method selected <cite>linear</cite> or <cite>nearest</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Atmosphere_Interpolator.mask">
-<code class="sig-name descname">mask</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.mask" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="interp.Atmosphere_Interpolator.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the Interpolator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Atmosphere_Interpolator.tgt_grid">
-<code class="sig-name descname">tgt_grid</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.tgt_grid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="interp.Atmosphere_Interpolator.tgt">
+<code class="sig-name descname">tgt</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.tgt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Target grid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>xarray</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py attribute">
-<dt id="interp.Atmosphere_Interpolator.vt">
-<code class="sig-name descname">vt</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.vt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Atmosphere_Interpolator.wt">
-<code class="sig-name descname">wt</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.wt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py method">
+<dt id="interp.Atmosphere_Interpolator.interp_scalar">
+<code class="sig-name descname">interp_scalar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Atmosphere_Interpolator.interp_scalar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Atmosphere_Interpolator.interp_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform interpolation  to the target grid.
+This methods can be used for scalar quantities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>xdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Interpolated xarray on the target grid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>xarray</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -153,6 +183,72 @@ can be used to perform the actual interpolation.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_UV</span><span class="p">(</span><span class="n">U_xarray</span><span class="p">,</span><span class="n">V_xarray</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.mdir">
+<code class="sig-name descname">mdir</code><a class="headerlink" href="#interp.Ocean_Interpolator.mdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask Directory</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.tangle">
+<code class="sig-name descname">tangle</code><a class="headerlink" href="#interp.Ocean_Interpolator.tangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Angles at t-points in the ocean C-grid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.option">
+<code class="sig-name descname">option</code><a class="headerlink" href="#interp.Ocean_Interpolator.option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Option for region (not implemented)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.mask">
+<code class="sig-name descname">mask</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>T-mask</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.masku">
+<code class="sig-name descname">masku</code><a class="headerlink" href="#interp.Ocean_Interpolator.masku" title="Permalink to this definition">¶</a></dt>
+<dd><p>U-mask</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.maskv">
+<code class="sig-name descname">maskv</code><a class="headerlink" href="#interp.Ocean_Interpolator.maskv" title="Permalink to this definition">¶</a></dt>
+<dd><p>V-mask</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.lath">
+<code class="sig-name descname">lath</code><a class="headerlink" href="#interp.Ocean_Interpolator.lath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Latitudes of the target grid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.lonh">
+<code class="sig-name descname">lonh</code><a class="headerlink" href="#interp.Ocean_Interpolator.lonh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Longitudes of the target grid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.mask_H">
+<code class="sig-name descname">mask_H</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask_H" title="Permalink to this definition">¶</a></dt>
+<dd><p>Land-sea mask of the target grid</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.vt">
+<code class="sig-name descname">vt</code><a class="headerlink" href="#interp.Ocean_Interpolator.vt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weights</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.wt">
+<code class="sig-name descname">wt</code><a class="headerlink" href="#interp.Ocean_Interpolator.wt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Weights</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="interp.Ocean_Interpolator.interp_T">
 <code class="sig-name descname">interp_T</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.interp_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.interp_T" title="Permalink to this definition">¶</a></dt>
@@ -190,61 +286,6 @@ rotates them and then interpolates to the target grid.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.lath">
-<code class="sig-name descname">lath</code><a class="headerlink" href="#interp.Ocean_Interpolator.lath" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.lonh">
-<code class="sig-name descname">lonh</code><a class="headerlink" href="#interp.Ocean_Interpolator.lonh" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.mask">
-<code class="sig-name descname">mask</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.mask_H">
-<code class="sig-name descname">mask_H</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask_H" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.masku">
-<code class="sig-name descname">masku</code><a class="headerlink" href="#interp.Ocean_Interpolator.masku" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.maskv">
-<code class="sig-name descname">maskv</code><a class="headerlink" href="#interp.Ocean_Interpolator.maskv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.mdir">
-<code class="sig-name descname">mdir</code><a class="headerlink" href="#interp.Ocean_Interpolator.mdir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.option">
-<code class="sig-name descname">option</code><a class="headerlink" href="#interp.Ocean_Interpolator.option" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.tangle">
-<code class="sig-name descname">tangle</code><a class="headerlink" href="#interp.Ocean_Interpolator.tangle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.vt">
-<code class="sig-name descname">vt</code><a class="headerlink" href="#interp.Ocean_Interpolator.vt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.wt">
-<code class="sig-name descname">wt</code><a class="headerlink" href="#interp.Ocean_Interpolator.wt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
