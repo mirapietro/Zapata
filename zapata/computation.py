@@ -255,6 +255,10 @@ class Xmat():
         X,
         dims: Union[Hashable, Sequence[Hashable], None] = None,
         ):
+
+        if not dims:
+            SystemError('Xmat needs some dimensions')
+            
         self.A = X.stack(z=dims).transpose()
         self._ntime = len(X.time.data)
         self._npoints = len(X.stack(z=dims).z.data)

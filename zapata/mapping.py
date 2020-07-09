@@ -1185,9 +1185,9 @@ def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose
 
     for i in range(len(xloc)):
         if xloc[i] < 0: 
-            xlab.append(str(abs(xloc[i])) + 'E')
+            xlab.append(str(abs(xloc[i])) + 'W')
         elif xloc[i] > 0: 
-            xlab.append(str(xloc[i]) + 'W')
+            xlab.append(str(xloc[i]) + 'E')
         else:
            xlab.append(str(xloc[i]))
     for i in range(len(yloc)):
