@@ -209,21 +209,23 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         ax.coastlines(linewidths=0.5)
         ax.add_feature(cfeature.LAND, facecolor='lightgray')
     
-    #Set axes limits
-    # The extra 0.1 if a bizarre error of cartopy for equal limits
-    if xlimit is  None:
-        xlim = (np.amin(data.lon.values)-180.,np.amax(data.lon.values)-180.01)
-    else:
-        xlim=xlimit
-        
     if ylimit is  None:
         ylim = (np.amin(data.lat.values),np.amax(data.lat.values))
     else:
         ylim=ylimit
+    if xlimit is  None:
+        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
+    else:
+        xlim=xlimit
+
+
     print(' Plotting with x limits {}  '.format(xlim)  ) 
     print(' Plotting with y limits {}  '.format(ylim) )
     
-    ax.set_extent(list(xlim+ylim),pro)
+     #Set axes limits
+    if xlimit is not None and  ylimit is not None:
+        ax.set_extent(list(xlim+ylim),pro)
+    
     add_ticks(ax)
     add_ticklabels(ax)
 
@@ -235,6 +237,7 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
             levels=choose_contour(cont),      # contour levels specified outside this function
             xticks=make_ticks(xlim,dt=30),    # nice x ticks
             yticks=make_ticks(ylim,dt=20),    # nice y ticks
+            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
             add_colorbar=False,               # don't add individual colorbars for each plot call
             add_labels=False,                 # turn off xarray's automatic Lat, lon labels
         )
@@ -1058,7 +1061,7 @@ def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize="large",le
         left=True,
         right=True,
     )   
-def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=True):
+def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=False):
     """
     Utility function to make plots look like NCL plots by using latitude, longitude tick labels
     
@@ -1127,13 +1130,25 @@ def make_ticks(xt,dt=20):
     ticks:
         Nice ticks position
     '''
-
-    res=1
-    dti=np.gcd(abs(xt[1]-xt[0]),dt)
-    print(f'Ticks set at {dti}  intervals')
-    n=len(np.arange(xt[0], xt[1],dti))
+    nmin = 6 
+    nmax = 12
     
-    return np.linspace(xt[0], xt[1], n+1)
+    intv=np.round(abs(xt[1]-xt[0]))
+    flag=1
+    dti=dt
+    n=intv/dti
+    while flag > 0 :
+        n = intv/dti
+        if n < nmin:
+            dti =dti/2
+            flag=1
+        elif n > nmax:
+            dti=dti*2
+            flag=1
+        else:
+            flag=0
+    print(f'Ticks set at {dti}   intervals') 
+    return np.linspace(xt[0], xt[1], int(n+1))
 
 def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose=False):
     """
