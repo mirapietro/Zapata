@@ -1,0 +1,54 @@
+C-GLORSv7:
+  remote: True
+  path: /data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY 
+  structure: <year>
+  source_url: http://c-glors.cmcc.it/index/index.html
+  description: Ocean Global Reanalyses at 1/4° resolution monthly means
+  year_range: [1986, 2019]
+  frequencies: ['1m',]
+  # data
+  components:
+    ocn:
+      model: 'NEMO 3.6'
+      filename: NEMO_1m_<year>_<data_stream>.nc
+      grid: {'x':1442, 'y':1050, 'z':75}
+      data_stream:
+         grid_T:
+           3D: [vosaline votemper]
+           2D: [botemper sobotpre sofmmflx soheatc3 soheatct sohefldo sohfdamp solatent solongwa somixhgt somxl010 soqempoc sosaline sosaltco sosensib soshfldo sossheig sosstmax sosstmin sosstsst sowaflup sowfdamp sowindsp]
+         grid_U:
+           3D: [vozocrtx]
+           2D: [sozocrtx sozotaux]
+         grid_V:
+           3D: [vomecrty]
+           2D: [somecrty sometauy]
+         icemod:
+           3D: []
+           2D: [icethic iicevelu iicevelv isnowthi qla_ai_cea qns_ai_cea qns_io_cea qsr_ai_cea qsr_io_cea soicecov]
+  # contained in <path>
+  masks:
+    landsea: 'MESHMASK/mesh_mask.nc'
+
+#
+ERA5:
+  remote: False
+  path: <HOME>/Dropbox (CMCC)/ERA5/CLIM
+  structure: 
+  source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
+  description: ERA5 Monthly Mean fields
+  year_range: [1979, 2018]
+  frequencies: ['1m',]
+  # data
+  components:
+    atm:
+      model: 'IFS'
+      grid: {'x':1440, 'y':721, 'z':14}
+      filename: ERA5_clim_1979-2018.nc
+      data_stream:
+         clim: 
+           3D: [U, V, T, W]
+           2D: [SLP]
+
+  # assumed to be contained in <path> 
+  masks:
+    landsea: 'landsea_mask.nc'
