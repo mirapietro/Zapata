@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>interp module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -35,7 +36,8 @@
           <a href="modules.html" title="Zapata"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Zapata</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">Zapata</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">interp module</a></li> 
       </ul>
     </div>  
 
@@ -46,6 +48,13 @@
             
   <div class="section" id="module-interp">
 <span id="interp-module"></span><h1>interp module<a class="headerlink" href="#module-interp" title="Permalink to this headline">¶</a></h1>
+<p>Documentation for interpolation of ocean and atmospheric model
+field, either on regular grids or rotated, multi-pole grids.
+Actually is set for the CMCC Ocean model at the nominal resolution of 0.25 and 1 degree
+respectively.</p>
+<p>The staggering requires different interpolators operators for scalar points at T-points
+and vector quantities carried at (u,v) points. For the moment a simple interpolation is carried out
+but a more accurate vector interpolation is under development.</p>
 <dl class="py class">
 <dt id="interp.Atmosphere_Interpolator">
 <em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Atmosphere_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'linear'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Atmosphere_Interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Atmosphere_Interpolator" title="Permalink to this definition">¶</a></dt>
@@ -75,10 +84,8 @@ can be used to perform the actual interpolation.</p>
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<p class="rubric">Notes</p>
 <p>It is a thin wrapper around <cite>xarray</cite> <cite>interp_like</cite> method.</p>
-</div>
 <p class="rubric">Examples</p>
 <p>Create the weights for interpolation</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">=</span> <span class="n">zint</span><span class="o">.</span><span class="n">Atmosphere_Interpolator</span><span class="p">(</span><span class="s1">&#39;1x1&#39;</span><span class="p">,</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
@@ -89,8 +96,8 @@ can be used to perform the actual interpolation.</p>
 </pre></div>
 </div>
 <dl class="py attribute">
-<dt id="interp.Atmosphere_Interpolator.method">
-<code class="sig-name descname">method</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.method" title="Permalink to this definition">¶</a></dt>
+<dt id="interp.Atmosphere_Interpolator.choice">
+<code class="sig-name descname">choice</code><a class="headerlink" href="#interp.Atmosphere_Interpolator.choice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolation method selected <cite>linear</cite> or <cite>nearest</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -148,7 +155,12 @@ This methods can be used for scalar quantities.</p>
 <p>This class creates weights for interpolation of ocean fields.</p>
 <p>This class create an interpolator operator from a <em>source grid</em>
 <cite>src_grid</cite> to a <em>target grid</em> <cite>tgt_grd</cite>. The interpolator then
-can be used to perform the actual interpolation.</p>
+can be used to perform the actual interpolation. The model uses
+an Arakawa C-grid, that is shown in the following picture. The f-points
+correspond to the points where the Coriolis terms are carried.</p>
+<a class="reference internal image-reference" href="_images/NEMOgrid.png"><img alt="_images/NEMOgrid.png" class="align-right" src="_images/NEMOgrid.png" style="width: 308.0px; height: 304.5px;" /></a>
+<p>The Arakawa C-grid used in the ocean model show also the ordering
+of the points, indicating which points correspond to the (i,j) index.</p>
 <p>The <em>source grid</em> must be a <cite>xarray</cite> <cite>DataSet</cite> containing coordinates
 <cite>latitude</cite> and <cite>longitude</cite>.</p>
 <p>The <em>target grid</em> must be a <cite>xarray</cite> <cite>DataArray</cite> with variables <cite>lat</cite> and <cite>lon</cite></p>
@@ -170,6 +182,18 @@ can be used to perform the actual interpolation.</p>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">Interp_T :</code></dt>
+<dd><p>Interpolate Scalar quantities at T points</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">Interp_UV :</code></dt>
+<dd><p>Interpolate Vector Velocities at (U,V)</p>
+</dd></dl>
+
 <p class="rubric">Examples</p>
 <p>Create the weights for interpolation</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">=</span> <span class="n">zint</span><span class="o">.</span><span class="n">Ocean_Interpolator</span><span class="p">(</span><span class="n">src_grid</span><span class="p">,</span><span class="n">tgt_grid</span><span class="p">)</span>
@@ -292,6 +316,7 @@ rotates them and then interpolates to the target grid.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -355,12 +380,13 @@ rotates them and then interpolates to the target grid.</p>
           <a href="modules.html" title="Zapata"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">interp module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
     </div>
   </body>
 </html>
