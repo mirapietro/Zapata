@@ -10,6 +10,13 @@ The directory
 
 The module `data` contains the information on the data banks. The routine `data_grid` in `data` must be modified to the location of the basic data for each installation.
 
+## Setup working environemt
+Python working environment can be setup using the provided conda environment.yml file:
+
+`conda env create -f environment.yml`
+
+`conda activate zapata`
+
 # Packages
 
 ## zapata
