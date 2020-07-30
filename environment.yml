@@ -10,9 +10,15 @@ dependencies:
   - numpy
   - scipy
   - matplotlib
+  - netcdf4
   - xarray
+  - dask
   - pandas
   - cartopy
   - geocat-comp
   - geocat-datafiles
   - geocat-viz
+  - ipywidgets
+  - pygrib
+  - tqdm
+  - pudb
