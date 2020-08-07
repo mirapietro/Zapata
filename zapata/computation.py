@@ -30,7 +30,7 @@ import pandas as pd
 import scipy.ndimage as ndimage
 
 import zapata.lib as lib
-import zapata.data as era
+import zapata.data as zdat
 import klus.kernels as ker
 
 from geocat.viz import cmaps as gvcmaps
@@ -39,7 +39,7 @@ from geocat.viz import util as gvutil
 import tqdm as tm
 import mpl_toolkits.axes_grid1 as tl
 
-def zonal_var(dataset,var,season,option='LonTime',verbose=False):
+def zonal_var(dataset,var,season,level=None, option='LonTime',verbose=False):
     """
     A routine to average xarray 
     
@@ -53,6 +53,8 @@ def zonal_var(dataset,var,season,option='LonTime',verbose=False):
         Variable
     season :     
         Month or Season. Resolved from `dat_param`
+    level : float
+        Vertical level to extract
     option :       
         Control Averaging   
             -  None        No Averaging   
@@ -75,10 +77,7 @@ def zonal_var(dataset,var,season,option='LonTime',verbose=False):
     >>> zonal_var('GPCP','TPREP','DJF',option='Time',verbose=True)   # Time average 
     """
 
-    info=era.DataGrid()
-    lev=info[dataset][var]['level']
-    nlev=len(lev)
-    xx=era.read_xarray(dataset='ERA5',var=var,level=str(lev[0]),season=season,verbose=verbose)
+    xx=zdat.read_xarray(dataset=dataset,var=var,level=level,season=season,verbose=verbose)
     
     if option == 'LonTime':
         zon=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[0]])
@@ -93,7 +92,7 @@ def zonal_var(dataset,var,season,option='LonTime',verbose=False):
         zon=xr.DataArray.expand_dims(xx,dim='pressure').assign_coords(pressure=[lev[0]])
 
     for i in tm.tnrange(1,nlev):
-        xx=era.read_xarray(dataset='ERA5',var=var,level=str(lev[i]),season=season)
+        xx=zdat.read_xarray(dataset=dataset,var=var,level=str(lev[i]),season=season)
         if option == 'LonTime':
             xx1=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[i]])
         elif option == 'Time':
