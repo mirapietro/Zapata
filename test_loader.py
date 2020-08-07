@@ -17,7 +17,7 @@ from geocat.viz import util as gvutil
 
 
 # Read data and compose zonal means¶
-ud=zcom.zonal_var('ERA5','U','DJF')
+ud=zcom.zonal_var('ERA5_MM','T','DJF',level=100)
 
 print('Done')
 

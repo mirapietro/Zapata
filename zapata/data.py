@@ -3,13 +3,13 @@ A module to store and treat data
 ================================
 '''
 
-import os, sys
+import os, sys, re
 import numpy as np
 import xarray as xr
 import pandas as pd
 import zapata.lib as lib
 import netCDF4 as net
-import yaml
+import yaml, glob
 
 
 # NCEP Reanalysis standard pressure levels
@@ -51,7 +51,7 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     '''
     datacat = get_dataset(dataset, level, period)
 
-    files = get_data_files(datacat, var)
+    files = get_data_files(datacat, var, level, period)
     
     # check region
 
@@ -75,7 +75,7 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     return out
 
 
-def get_data_files(datacat, var, period):
+def get_data_files(datacat, var, level, period):
     '''
     Retrieve list of input files for the requested dataset and variable.
 
@@ -86,6 +86,8 @@ def get_data_files(datacat, var, period):
         Dataset structure information
     var : string
          variable name
+    level : float
+        vertical levels float value
     period : list
         Might be None or a two element list with initial and final year
 
@@ -105,6 +107,7 @@ def get_data_files(datacat, var, period):
                  thevars = datacat['components'][cc]['data_stream'][dd][xy]
                  if var in thevars:
                      vmatch.append([cc, dd, xy])
+    del cc, dd, xy, thevars
 
     if len(vmatch) > 1:
         print('Requested variable ' + var + ' is available from multiple data stream. Something is wrong.')
@@ -120,9 +123,38 @@ def get_data_files(datacat, var, period):
     datapath = datacat['path']
     datatree = datacat['subtree']
     filename = datacat['components'][vmatch[0]]['filename']
-        
+    if period is None:
+        period = datacat['year_bounds']
 
+    # replace wildcards
+    if datatree is not None:
+        # check if year in subtree
+        subyear = True if re.search('year',datatree) else False
+
+    nameyear = True if re.search('year',filename) else False
+        
+    # standard set of wildcards
+    wildcards={'var':var, 'lev':str(level), 'mon':'*', 'comp':vmatch[0], 'stream':vmatch[1]}
+    for ii in wildcards.keys():
+        datatree = datatree.replace('<' + ii +'>',wildcards[ii])
+        filename = filename.replace('<' + ii +'>',wildcards[ii])
     
+    # compose files list
+    files=[]
+    for yy in np.arange(period[0], period[1]+1):
+        thispath = '/'.join([datapath, datatree])
+        if subyear:
+            thispath = thispath.replace('<year>',str(yy))
+        thisname = filename
+        if nameyear:
+            thisname = thisname.replace('<year>',str(yy))
+        tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
+        files.extend(tmpfile)
+    
+    if not files:
+        print('Input files not found for ' + dataset + ' located in ' + datapath)
+        sys.exit(1)
+      
 
     return files
 
@@ -138,7 +170,7 @@ def get_dataset(dataset, level, period):
     dataset : string
         Name of data set
     level : float
-        level float value
+        vertical levels float value
     period : list
         Might be None or a two element list with initial and final year
 
