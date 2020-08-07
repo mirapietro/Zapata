@@ -22,7 +22,7 @@ Detailed Description:
 ---------------------
 
 '''
-
+import math as mp
 import cartopy.crs as car
 import cartopy.util as utl
 import matplotlib.ticker as mticker
@@ -110,6 +110,7 @@ def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
 def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_format = ' {:6.0f} ', \
                       zeroline=False, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
+                      d_xtick=30,d_ytick=30,\
                       xlimit=None,ylimit=None,\
                       colorbar=False,cmap='coolwarm',
                       coasts=True,color_land='lightgray'):
@@ -151,6 +152,12 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
     
     c_format :  
         Format for the contour labels
+    
+    d_xtick : 
+        Tick interval for longitudes
+
+    d_ytick :
+        Tick interval for latitudes
 
     Special_Value : 
         Values to be ignored
@@ -187,6 +194,8 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         Dictionary with matplotlib-like info on the plot
     
     """
+    
+
     #Check right projection
     this = pro.__class__.__name__
     if not this  in  ['PlateCarree']:
@@ -213,6 +222,11 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         ylim = (np.amin(data.lat.values),np.amax(data.lat.values))
     else:
         ylim=ylimit
+    
+    #Bring coordinates within -180,180 that Cartopy likes.
+    if np.min(data.lon.values) > 0 and np.max(data.lon.values) > 180:
+        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
+
     if xlimit is  None:
         xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
     else:
@@ -222,9 +236,10 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
     print(' Plotting with x limits {}  '.format(xlim)  ) 
     print(' Plotting with y limits {}  '.format(ylim) )
     
-     #Set axes limits
+    #Set axes limits
+    #set_extent is very buggy, for the moment it is not used.
     if xlimit is not None and  ylimit is not None:
-        ax.set_extent(list(xlim+ylim),pro)
+       ax.set_extent(list(xlim+ylim),pro)
     
     add_ticks(ax)
     add_ticklabels(ax)
@@ -235,8 +250,8 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
             ax=ax,                            # this is the axes we want to plot to
             cmap=cmap,                        # our special colormap
             levels=choose_contour(cont),      # contour levels specified outside this function
-            xticks=make_ticks(xlim,dt=30),    # nice x ticks
-            yticks=make_ticks(ylim,dt=20),    # nice y ticks
+            xticks=make_ticks(xlim,dt=d_xtick),    # nice x ticks
+            yticks=make_ticks(ylim,dt=d_ytick),    # nice y ticks
             transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
             add_colorbar=False,               # don't add individual colorbars for each plot call
             add_labels=False,                 # turn off xarray's automatic Lat, lon labels
@@ -280,7 +295,7 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         divider = tl.make_axes_locatable(ax)
         cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
         ax.get_figure().colorbar(handles['filled'], cax=cax,orientation='vertical')
-
+    
     return handles    
 def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
                       zeroline=False, Special_Value = 9999.,\
@@ -473,6 +488,7 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
 def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
                       density=2, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
+                      d_xtick=30,d_ytick=30,\
                       xlimit=None,ylimit=None, \
                       colorbar=False,cmap='coolwarm',cscale=None):
     """
@@ -517,7 +533,13 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
         Title string on the right      
     
     maintitle :      
-        Title string at the center    
+        Title string at the center
+
+    d_xtick : 
+        Tick interval for longitudes
+        
+    d_ytick :
+        Tick interval for latitudes   
     
     cmap :  
         Colormap    
@@ -618,8 +640,8 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
         cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
         ax.get_figure().colorbar(sp.lines, cax=cax,orientation='vertical')
     # Use geocat.viz.util convenience function to set axes tick values
-    tx=make_ticks(xlim)
-    ty=make_ticks(ylim)
+    tx=make_ticks(xlim,dt=d_xtick)
+    ty=make_ticks(ylim,dt=d_ytick)
     gvutil.set_axes_limits_and_ticks(ax, xlim=xlim, ylim=ylim, xticks=tx, yticks=ty)
 
     #  add minor and major tick lines
@@ -631,6 +653,7 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
 def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
                       stride=10, Special_Value = 9999.,\
                       veckey=None,\
+                      d_xtick=30,d_ytick=30,\
                       lefttitle='',righttitle='',maintitle='',\
                       xlimit=None,ylimit=None, \
                       colorbar=False,cmap='coolwarm',cscale=None,**kw):
@@ -687,7 +710,13 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
         Title string on the right      
     
     maintitle :      
-        Title string at the center    
+        Title string at the center   
+    
+    d_xtick : 
+        Tick interval for longitudes
+        
+    d_ytick :
+        Tick interval for latitudes 
     
     cmap :  
         Colormap    
@@ -787,8 +816,8 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
         cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
         ax.get_figure().colorbar(sp, cax=cax,orientation='vertical')
     # Use geocat.viz.util convenience function to set axes tick values
-    tx=make_ticks(xlim)
-    ty=make_ticks(ylim)
+    tx=make_ticks(xlim,dt=d_xtick)
+    ty=make_ticks(ylim,dt=d_ytick)
     gvutil.set_axes_limits_and_ticks(ax, xlim=xlim, ylim=ylim, xticks=tx, yticks=ty)
 
     #  add minor and major tick lines
@@ -1122,7 +1151,7 @@ def make_ticks(xt,dt=20):
         Axes limit [west, east]
     
     dt:
-        Initial tick spacing
+        Tick spacing
 
     Returns
     -------
@@ -1130,24 +1159,8 @@ def make_ticks(xt,dt=20):
     ticks:
         Nice ticks position
     '''
-    nmin = 6 
-    nmax = 12
-    
-    intv=np.round(abs(xt[1]-xt[0]))
-    flag=1
-    dti=dt
-    n=intv/dti
-    while flag > 0 :
-        n = intv/dti
-        if n < nmin:
-            dti =dti/2
-            flag=1
-        elif n > nmax:
-            dti=dti*2
-            flag=1
-        else:
-            flag=0
-    print(f'Ticks set at {dti}   intervals') 
+    n = (xt[1]-xt[0])/dt
+    print(f' {n} Ticks set at {dt}   intervals') 
     return np.linspace(xt[0], xt[1], int(n+1))
 
 def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose=False):

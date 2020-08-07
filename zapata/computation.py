@@ -415,8 +415,8 @@ class Xmat():
         This method compute the correlation of the data matrix
         with an index of the same length of the `time` dimension of `A`
 
-        Example
-        -------
+        Examples
+        --------
         Covariance of data matrix `Z` with `index`
 
         >>> cov = Z.cov(index)

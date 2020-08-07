@@ -1,3 +1,14 @@
+'''
+Documentation for interpolation of ocean and atmospheric model
+field, either on regular grids or rotated, multi-pole grids.
+Actually is set for the CMCC Ocean model at the nominal resolution of 0.25 and 1 degree
+respectively.
+
+The staggering requires different interpolators operators for scalar points at T-points 
+and vector quantities carried at (u,v) points. For the moment a simple interpolation is carried out
+but a more accurate vector interpolation is under development.
+'''
+
 import os
 import math
 import numpy as np
@@ -43,8 +54,8 @@ class Atmosphere_Interpolator():
         Interpolation method
 
     
-    Note
-    ====
+    Notes
+    =====
 
     It is a thin wrapper around `xarray` `interp_like` method.
     
@@ -61,13 +72,12 @@ class Atmosphere_Interpolator():
     
     """
 
-    __slots__ = ('name','tgt','method')
+    __slots__ = ('name','tgt','choice')
 
     
 
     def __init__(self, grid, option='linear'):
-        
-        self.method = option
+        self.choice = option
         ''' str: Interpolation method selected `linear` or `nearest`'''
         # Put here info on grids to be obtained from __call__
         self.name = 'Atmosphere_Interpolator'
@@ -117,18 +127,24 @@ class Atmosphere_Interpolator():
         
         '''
         
-        res = xdata.interp_like(self.tgt,method=self.method)
+        res = xdata.interp_like(self.tgt,method=self.choice)
         return res
 
-
-
 class Ocean_Interpolator():
-    """ 
-    This class creates weights for interpolation of ocean fields.
+    """This class creates weights for interpolation of ocean fields.
 
     This class create an interpolator operator from a *source grid* 
     `src_grid` to a *target grid* `tgt_grd`. The interpolator then
-    can be used to perform the actual interpolation.
+    can be used to perform the actual interpolation. The model uses
+    an Arakawa C-grid, that is shown in the following picture. The f-points
+    correspond to the points where the Coriolis terms are carried.
+
+    .. image:: ../resources/NEMOgrid.png
+        :scale: 25 %
+        :align: right
+
+    The Arakawa C-grid used in the ocean model show also the ordering
+    of the points, indicating which points correspond to the (i,j) index.
 
     The *source grid* must be a `xarray` `DataSet` containing coordinates
     `latitude` and `longitude`.
@@ -158,6 +174,15 @@ class Ocean_Interpolator():
         Weights
     wt :
         Weights
+
+    Methods
+    -------
+
+    Interp_T :
+        Interpolate Scalar quantities at T points
+    
+    Interp_UV :
+        Interpolate Vector Velocities at (U,V)
     
     Examples    
     --------    
@@ -172,6 +197,7 @@ class Ocean_Interpolator():
     Interpolate U,V
 
     >>> target_xarray=w.interp_UV(U_xarray,V_xarray)
+
 
     """
 
@@ -220,18 +246,6 @@ class Ocean_Interpolator():
         lono = (src_grid.nav_lon.data[self.mask].flatten() + 360) % 360
         latlon=np.asarray([lato,lono])
 
-        # #Recognize Grid
-        # if 'CMCC-CM2-HR4' in src_grid.name :
-        #     print(f'Interpolating from high resolution 1/4 grid \t {src_grid.name}')
-
-        # else: 
-        #     sys.exit('Unrecognized Grid')
-
-        # if 'grid_V' or 'grid_U' in src_grid.name :
-        #     print(f' Velocity Grid ')
-        # else:
-        #     print(f' Temperature Grid ')
-        
         #Target Grid
         #Get coordinates for output
         self.lath=tgt_grid.yc.data[:,0]
@@ -268,8 +282,7 @@ class Ocean_Interpolator():
         return '\n' 
     
     def interp_T(self, xdata):
-        ''' 
-        Perform interpolation for T Grid point to the target grid.
+        '''Perform interpolation for T Grid point to the target grid.
         This methods can be used for scalar quantities.
 
         Parameters
@@ -281,15 +294,13 @@ class Ocean_Interpolator():
         -------
         out :  xarray
             Interpolated xarray on the target grid
-        
         '''
         t_data = xdata.data[self.mask].flatten()
         res = self._interp_distance(t_data)
         return res
 
     def interp_UV(self, udata, vdata):
-        ''' 
-        Perform interpolation for U,V Grid point to the target grid.
+        '''Perform interpolation for U,V Grid point to the target grid.
         This methods can be used for vector quantities.
 
         The present method interpolates the U,V points to the T points, 
@@ -304,7 +315,6 @@ class Ocean_Interpolator():
         -------
         out :  xarray
             Interpolated xarray on the target grid
-
         '''
         
 
@@ -347,9 +357,10 @@ class Ocean_Interpolator():
         temp=self.mask_H.copy()
         temp[~xr.ufuncs.isnan(temp)]  = new
         # The transpose is necessary for the ordering of variables in mask_H
-        temp1 = temp.unstack().data
-       
-        res = xr.DataArray(temp1,dims=('lat','lon'),coords = {'lat':self.lath,'lon': self.lonh})
+        # Maybe not
+        temp2 = temp.unstack().data
+        print(temp2.shape)
+        res = xr.DataArray(temp2,dims=('lat','lon'),coords = {'lat':self.lath,'lon': self.lonh})
         res[:,0]=res[:,-1]
         # Polar interpolation still problematic, mask values at the North Pole
         if self.option == 'Global':

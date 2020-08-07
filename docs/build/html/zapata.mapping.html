@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>zapata.mapping module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -36,7 +37,8 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.mapping module</a></li> 
       </ul>
     </div>  
 
@@ -100,7 +102,7 @@
 
 <dl class="py function">
 <dt id="zapata.mapping.xmap">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xmap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">d_xtick</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">d_ytick</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lat-Lon mapping function based on cartopy and NCAR GEOCAT.</p>
 <p>Data must on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
 referred to the projection chosen in <cite>init</cite>.</p>
@@ -124,6 +126,8 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 <li><p><strong>contour</strong> – True/False flag to have  contours or not</p></li>
 <li><p><strong>clabel</strong> – True/False flag to have labelled contours or not</p></li>
 <li><p><strong>c_format</strong> – Format for the contour labels</p></li>
+<li><p><strong>d_xtick</strong> – Tick interval for longitudes</p></li>
+<li><p><strong>d_ytick</strong> – Tick interval for latitudes</p></li>
 <li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
 <li><p><strong>lefttitle</strong> – Title string on the left</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
@@ -192,7 +196,7 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.xstmap">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xstmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">density=2</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">cscale=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xstmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xstmap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xstmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">density=2</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">d_xtick=30</em>, <em class="sig-param">d_ytick=30</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">cscale=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xstmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xstmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot streamline for field U and V.</p>
 <p>This routine draws streamlines for the fields U,V, optionally colored with the field <code class="docutils literal notranslate"><span class="pre">color</span></code>. Internally assume data is always on a latlon projection with central longitude at Greenwich.</p>
 <p>Data must on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
@@ -212,6 +216,8 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 <li><p><strong>lefttitle</strong> – Title string on the left</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
 <li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>d_xtick</strong> – Tick interval for longitudes</p></li>
+<li><p><strong>d_ytick</strong> – Tick interval for latitudes</p></li>
 <li><p><strong>cmap</strong> – Colormap</p></li>
 <li><p><strong>colorbar</strong> – False/True</p></li>
 <li><p><strong>xlimit</strong> – Limit of the map (lon)</p></li>
@@ -229,7 +235,7 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.vecmap">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">vecmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">C</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">stride=10</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">veckey=None</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">cscale=None</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#vecmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.vecmap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">vecmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">C</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">stride=10</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">veckey=None</em>, <em class="sig-param">d_xtick=30</em>, <em class="sig-param">d_ytick=30</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">cscale=None</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#vecmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.vecmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vector plot for field U and V.</p>
 <p>This routine draws streamlines for the fields U,V, optionally colored with the field <code class="docutils literal notranslate"><span class="pre">color</span></code>. Internally assume data is always on a latlon projection with central longitude at Greenwich.</p>
 <p>Data must on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
@@ -261,6 +267,8 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 <li><p><strong>lefttitle</strong> – Title string on the left</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
 <li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>d_xtick</strong> – Tick interval for longitudes</p></li>
+<li><p><strong>d_ytick</strong> – Tick interval for latitudes</p></li>
 <li><p><strong>cmap</strong> – Colormap</p></li>
 <li><p><strong>colorbar</strong> – False/True</p></li>
 <li><p><strong>xlimit</strong> – Limit of the map (lon)</p></li>
@@ -382,7 +390,7 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.add_ticklabels">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">add_ticklabels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">zero_direction_label</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dateline_direction_label</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#add_ticklabels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.add_ticklabels" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">add_ticklabels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">zero_direction_label</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dateline_direction_label</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#add_ticklabels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.add_ticklabels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Utility function to make plots look like NCL plots by using latitude, longitude tick labels</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -421,7 +429,7 @@ Selecting 20 or 10 intervals</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>xt</strong> – Axes limit [west, east]</p></li>
-<li><p><strong>dt</strong> – Initial tick spacing</p></li>
+<li><p><strong>dt</strong> – Tick spacing</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -483,6 +491,7 @@ but for some plot types, a righttitle likely with a left-aligned title, lefttitl
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -551,12 +560,13 @@ but for some plot types, a righttitle likely with a left-aligned title, lefttitl
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.mapping module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
     </div>
   </body>
 </html>
