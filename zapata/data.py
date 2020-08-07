@@ -3,18 +3,177 @@ A module to store and treat data
 ================================
 '''
 
-import os
+import os, sys
 import numpy as np
 import xarray as xr
 import pandas as pd
 import zapata.lib as lib
 import netCDF4 as net
+import yaml
+
 
 # NCEP Reanalysis standard pressure levels
 # 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10
 # 1000  925  850  700  600, 500  400  300, 250, 200, 150, 100      50          10
 #
 
+
+def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=None,verbose=False):
+    '''
+    Read npy files from data and generates xarray.
+
+    This a xarray implementation of read_var. It always grabs the global data.
+
+    Parameters
+    ----------
+    dataset : string
+        Name of data set
+    region:
+        Select region
+        * *globe*, Entire globe
+        * [East, West, North, South], Specific Region
+    var : string
+         variable name
+    level : float
+        level, either a value or 'SURF' for surface fields
+    period : list
+        Might be None or a two element list with initial and final yea
+    season : string
+        Month ('JAN') or season (,'DJF') or annual 'ANN'), or 'ALL' for every year
+    verbose: Boolean
+        True/False -- Tons of Output
+
+    Returns
+    -------
+    out : xarray
+        array data
+
+    '''
+    datacat = get_dataset(dataset, level, period)
+
+    files = get_data_files(datacat, var)
+    
+    # check region
+
+
+    if season != 'ALL':
+        xdat,nlon, nlat,lat,lon,sv=readvar_grid(region='globe',dataset=dataset, \
+                            var=var,level=level,season=season,Celsius=False,verbose=verbose)
+        times = pd.date_range('1979-01-01', periods=40,freq='YS')
+    elif season == 'ALL':
+        xdat,nlon, nlat,lat,lon,sv=readvar_year(region='globe',dataset=dataset, \
+                            var=var,level=level,period='all',Celsius=False,verbose=verbose)
+        times = pd.date_range('1979-01-01', periods=480,freq='MS')
+
+    out = xr.DataArray(xdat, coords=[lat, lon, times], dims=['lat','lon','time'])
+    if sv:
+        out=xr.where(out == sv, np.nan, out)
+    if region != 'globe':
+        out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
+
+
+    return out
+
+
+def get_data_files(datacat, var, period):
+    '''
+    Retrieve list of input files for the requested dataset and variable.
+
+
+    Parameters
+    ----------
+    datacat : dict
+        Dataset structure information
+    var : string
+         variable name
+    period : list
+        Might be None or a two element list with initial and final year
+
+    Returns
+    -------
+    files: list
+        dataset input files
+
+    '''
+    file_wildcards=['year', 'data_stream', 'frequencies']
+
+    # find matching variable
+    vmatch=[]
+    for cc in datacat['components'].keys():
+        for dd in datacat['components'][cc]['data_stream'].keys():
+             for xy in datacat['components'][cc]['data_stream'][dd].keys():
+                 thevars = datacat['components'][cc]['data_stream'][dd][xy]
+                 if var in thevars:
+                     vmatch.append([cc, dd, xy])
+
+    if len(vmatch) > 1:
+        print('Requested variable ' + var + ' is available from multiple data stream. Something is wrong.')
+        sys.exit(1)
+    elif len(vmatch) == 0:
+        print('Requested variable ' + var + ' is not available in the dataset %s', dataset)
+        sys.exit(1)
+    else:
+        print('Retrieve variable ' + var + ' from component %s of data stream %s as %s field' % tuple(vmatch[0]))
+        vmatch = vmatch[0]
+
+    # compose list of files
+    datapath = datacat['path']
+    datatree = datacat['subtree']
+    filename = datacat['components'][vmatch[0]]['filename']
+        
+
+    
+
+    return files
+
+
+def get_dataset(dataset, level, period):
+    '''
+    Retrieve requested dataset informations from general catalogue (YAML file).
+
+    This perform consistency control also on requested levels and time period.
+
+    Parameters
+    ----------
+    dataset : string
+        Name of data set
+    level : float
+        level float value
+    period : list
+        Might be None or a two element list with initial and final year
+
+    Returns
+    -------
+    out : dict
+        requested dataset information
+
+    '''
+
+    # Load catalogue
+    catalogue = yaml.load(open('zapata/catalogue.yml'), Loader=yaml.FullLoader)
+
+    # check dataset
+    if dataset not in catalogue.keys():
+        print('Requested dataset ' + dataset + ' is not available in catalogue')
+        sys.exit(1)
+    else:
+        out = catalogue[dataset]
+
+    # check for levels
+    if level is not None:
+        if level not in out['levels']:
+            print('Requested level ' + str(level) + ' is not available for dataset ' + dataset)
+            sys.exit(1)
+
+    # check time bounds
+    ds_range = out['year_bounds'] 
+    if period is not None and len(ds_range) > 1:
+           if period[0] < ds_range[0] or period[1] > ds_range[1]:
+               print('Requested time period is beyond the dataset ' + dataset + ' time bounds ')
+               sys.exit(1)
+
+
+    return out
 
 
 def read_month(dataset, vardir,var1,level,yy,mm,type,option,verbose=False):
@@ -390,54 +549,6 @@ def readvar_grid(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',
 
     return xdat,nlon, nlat,lat,lon,sv
 
-def read_xarray(dataset='ERA5',region='globe',var='Z',level='500',season='DJF',verbose=False):
-    '''
-    Read npy files from data and generates xarray.
-
-    This a xarray implementation of read_var. It always grabs the global data.
-
-    Parameters
-    ----------
-    dataset :   
-        Name of data set   
-    region: 
-        Select region   
-        * *globe*, Entire globe
-        * [East, West, North, South], Specific Region
-    var :   
-         variable name
-    level : 
-        level, either a value or 'SURF' for surface fields
-
-    season :    
-        Month ('JAN') or season (,'DJF') or annual 'ANN'), or 'ALL' for every year
-    verbose:    
-        True/False -- Tons of Output
-
-    Returns
-    -------
-    out : xarray   
-        array data 
-    
-    '''
-    
-    if season != 'ALL':
-        xdat,nlon, nlat,lat,lon,sv=readvar_grid(region='globe',dataset=dataset, \
-                            var=var,level=level,season=season,Celsius=False,verbose=verbose)
-        times = pd.date_range('1979-01-01', periods=40,freq='YS')
-    elif season == 'ALL':
-        xdat,nlon, nlat,lat,lon,sv=readvar_year(region='globe',dataset=dataset, \
-                            var=var,level=level,period='all',Celsius=False,verbose=verbose)
-        times = pd.date_range('1979-01-01', periods=480,freq='MS')
-    
-    out = xr.DataArray(xdat, coords=[lat, lon, times], dims=['lat','lon','time'])
-    if sv:
-        out=xr.where(out == sv, np.nan, out)
-    if region != 'globe':
-        out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
-
-    
-    return out
 
 def read_dataset(dataset='ERA5',region='globe',var='Z',level='500',season='DJF',verbose=False):
     '''

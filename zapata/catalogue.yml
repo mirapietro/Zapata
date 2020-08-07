@@ -1,7 +1,7 @@
 C-GLORSv7:
   remote: True
   path: /data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY 
-  structure: <year>
+  subtree: <year>
   source_url: http://c-glors.cmcc.it/index/index.html
   description: Ocean Global Reanalyses at 1/4° resolution monthly means
   year_bounds: [1986, 2019]
@@ -31,13 +31,13 @@ C-GLORSv7:
     landsea: 'MESHMASK/mesh_mask.nc'
 
 #
-ERA5:
+ERA5_MM:
   remote: False
-  path: <HOME>/Dropbox (CMCC)/ERA5/CLIM
-  structure: 
+  path: /Users/lovato/ERA5_MM
+  subtree: None 
   source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
-  description: ERA5 Monthly Mean fields
-  year_bounds: ['clim',]
+  description: ERA5 Monthly Mean on Pressure Levels
+  year_bounds: [1979, 2018]
   frequencies: ['1m',]
   levels: [10, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,]
   # data
@@ -45,12 +45,13 @@ ERA5:
     atm:
       model: 'IFS'
       grid: {'x':1440, 'y':721, 'z':14}
-      filename: ERA5_clim_1979-2018.nc
+      filename: <var>_<lev>_<year>_<mon>_MM.npy
       data_stream:
          clim: 
            3D: [U, V, T, W]
            2D: [SLP]
 
   # assumed to be contained in <path> 
-  masks:
-    landsea: 'landsea_mask.nc'
+  metrics:
+    lon: ERA5_quarter_global_lon.npy
+    lat: ERA5_quarter_global_lat.npy
