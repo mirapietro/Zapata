@@ -22,7 +22,7 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     '''
     Read npy files from data and generates xarray.
 
-    This a xarray implementation of read_var. It always grabs the global data.
+    This ia an xarray implementation of read_var. It always grabs the global data.
 
     Parameters
     ----------
@@ -37,7 +37,7 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     level : float
         level, either a value or 'SURF' for surface fields
     period : list
-        Might be None or a two element list with initial and final yea
+        Might be None or a two element list with initial and final years
     season : string
         Month ('JAN') or season (,'DJF') or annual 'ANN'), or 'ALL' for every year
     verbose: Boolean
@@ -53,9 +53,7 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
 
     files = get_data_files(datacat, var, level, period)
     
-    # check region
-
-
+    # time sampling
     if season != 'ALL':
         xdat,nlon, nlat,lat,lon,sv=readvar_grid(region='globe',dataset=dataset, \
                             var=var,level=level,season=season,Celsius=False,verbose=verbose)
@@ -66,6 +64,8 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
         times = pd.date_range('1979-01-01', periods=480,freq='MS')
 
     out = xr.DataArray(xdat, coords=[lat, lon, times], dims=['lat','lon','time'])
+
+    # space sampling
     if sv:
         out=xr.where(out == sv, np.nan, out)
     if region != 'globe':
@@ -97,8 +97,6 @@ def get_data_files(datacat, var, level, period):
         dataset input files
 
     '''
-    file_wildcards=['year', 'data_stream', 'frequencies']
-
     # find matching variable
     vmatch=[]
     for cc in datacat['components'].keys():
@@ -130,6 +128,10 @@ def get_data_files(datacat, var, level, period):
     if datatree is not None:
         # check if year in subtree
         subyear = True if re.search('year',datatree) else False
+        #TODO do we need to handle months in subtree?
+        if re.search('mon',datatree):
+            print('Cannot handle dataset subtree with months')
+            sys.exit(1)
 
     nameyear = True if re.search('year',filename) else False
         
@@ -189,21 +191,22 @@ def get_dataset(dataset, level, period):
         print('Requested dataset ' + dataset + ' is not available in catalogue')
         sys.exit(1)
     else:
+        print('Access dataset ' + dataset + '\n')
         out = catalogue[dataset]
 
-    # check for levels
+    # check for level bounds
+    level_bnd = [min(out['levels']), max(out['levels'])]
     if level is not None:
-        if level not in out['levels']:
-            print('Requested level ' + str(level) + ' is not available for dataset ' + dataset)
+        if level < level_bnd[0] or level > level_bnd[1]:
+            print('Requested level ' + str(level) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
             sys.exit(1)
 
-    # check time bounds
-    ds_range = out['year_bounds'] 
-    if period is not None and len(ds_range) > 1:
-           if period[0] < ds_range[0] or period[1] > ds_range[1]:
-               print('Requested time period is beyond the dataset ' + dataset + ' time bounds ')
+    # check for time bounds
+    time_bnd = out['year_bounds'] 
+    if period is not None and len(time_bnd) > 1:
+           if period[0] < time_bnd[0] or period[1] > time_bnd[1]:
+               print('Requested time period is not within dataset bounds [%s, %s]' % tuple(time_bnd))
                sys.exit(1)
-
 
     return out
 

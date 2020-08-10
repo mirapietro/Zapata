@@ -39,7 +39,7 @@ from geocat.viz import util as gvutil
 import tqdm as tm
 import mpl_toolkits.axes_grid1 as tl
 
-def zonal_var(dataset,var,season,level=None, option='LonTime',verbose=False):
+def zonal_var(dataset, var, season=None, level=None, period=None, option='LonTime',verbose=False):
     """
     A routine to average xarray 
     
@@ -55,6 +55,8 @@ def zonal_var(dataset,var,season,level=None, option='LonTime',verbose=False):
         Month or Season. Resolved from `dat_param`
     level : float
         Vertical level to extract
+    period : list
+        Might be None or a two element list with initial and final years
     option :       
         Control Averaging   
             -  None        No Averaging   
@@ -77,7 +79,7 @@ def zonal_var(dataset,var,season,level=None, option='LonTime',verbose=False):
     >>> zonal_var('GPCP','TPREP','DJF',option='Time',verbose=True)   # Time average 
     """
 
-    xx=zdat.read_xarray(dataset=dataset,var=var,level=level,season=season,verbose=verbose)
+    xx=zdat.read_xarray(dataset=dataset,var=var,level=level,season=season,period=period, verbose=verbose)
     
     if option == 'LonTime':
         zon=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[0]])
