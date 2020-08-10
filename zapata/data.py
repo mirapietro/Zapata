@@ -28,16 +28,14 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     ----------
     dataset : string
         Name of data set
-    region:
-        Select region
-        * *globe*, Entire globe
-        * [East, West, North, South], Specific Region
+    region: list
+        Region corners [LonMax, LonMin, LatMax, LatMin]
     var : string
          variable name
     level : float
         level, either a value or 'SURF' for surface fields
     period : list
-        Might be None or a two element list with initial and final years
+        A two element list with initial and final years
     season : string
         Month ('JAN') or season (,'DJF') or annual 'ANN'), or 'ALL' for every year
     verbose: Boolean
@@ -49,41 +47,107 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
         array data
 
     '''
-    datacat = get_dataset(dataset, level, period)
+    datacat = inquire_catalogue(dataset)
 
     files = get_data_files(datacat, var, level, period)
     
-    # time sampling
-    if season != 'ALL':
+    da_all = load_dataarray(datacat, files)
+ 
+    # temporal sampling
+    if season is not None:
         xdat,nlon, nlat,lat,lon,sv=readvar_grid(region='globe',dataset=dataset, \
                             var=var,level=level,season=season,Celsius=False,verbose=verbose)
-        times = pd.date_range('1979-01-01', periods=40,freq='YS')
-    elif season == 'ALL':
-        xdat,nlon, nlat,lat,lon,sv=readvar_year(region='globe',dataset=dataset, \
-                            var=var,level=level,period='all',Celsius=False,verbose=verbose)
-        times = pd.date_range('1979-01-01', periods=480,freq='MS')
 
-    out = xr.DataArray(xdat, coords=[lat, lon, times], dims=['lat','lon','time'])
-
-    # space sampling
-    if sv:
-        out=xr.where(out == sv, np.nan, out)
-    if region != 'globe':
+    # horizontal sampling
+    if region is not None:
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
+
+    # vertical sampling
+    if not files['islevel'] and level is not None:
+        out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
+
+    return out
+
+
+def load_dataarray(dataset, files):
+    '''
+    Read requested data into a xarray dataArray according to input data format
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    files: dict
+        Dataset input files, variable name, requested period
+
+    Returns
+    -------
+    out : xarray
+        array data
+
+    '''
+
+    if dataset['data_format'] == 'netcdf':
+        # open files as a dataset
+        ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override')
+        out = ds[var]
+        print('netcdf')
+
+    elif dataset['data_format'] == 'numpy':
+        # get lon/lat coordinates
+        if dataset['metrics']['lon'][-3:] == 'npy': 
+            lon = np.load(dataset['path'] + '/' + dataset['metrics']['lon'])
+            lat = np.load(dataset['path'] + '/' + dataset['metrics']['lat'])
+        else:
+            lon = eval(dataset['metrics']['lon'])
+            lat = eval(dataset['metrics']['lat'])
+
+        # define time axis
+        time_bnd = files['period']
+        if dataset['data_freq'] == 'yearly':
+            prds = (time_bnd[1] - time_bnd[0] + 1) ; frq = 'YS'
+        elif dataset['data_freq'] == 'monthly':
+            prds = (time_bnd[1] - time_bnd[0] + 1) * 12 ; frq = 'M'
+        elif dataset['data_freq'] == 'daily':
+            prds = (time_bnd[1] - time_bnd[0] + 1) * 365 ; frq = 'D'
+        time = pd.date_range(str(time_bnd[0])+'-01-01', periods=prds,freq=frq)
+        del prds, frq
+
+        # get first file
+        ndat = np.load(files['files'][0])
+
+        # append other data
+        if len(files['files']) > 1:
+           ndat =  np.expand_dims(ndat, axis=0)
+           for ff in files['files'][1:]:
+              tmp = np.expand_dims(np.load(ff), axis=0)
+              ndat = np.append(ndat, tmp, axis=0)
+           del tmp, ff
+
+        # create xarray
+        if len(lat.shape) > 1:
+            out = xr.DataArray(ndat, name=files['var'], coords={'time': time, 'latitude': (['lat','lon'], lat),
+                          'longitude': (['lat','lon'],lon)}, dims=['time', 'lat', 'lon'])
+        else:
+            out = xr.DataArray(ndat, name=files['var'], coords=[time, lat, lon], dims=['time', 'lat','lon'])
+ 
+    else:
+        print('Cannot handle data format ' + dataset['data_format'])
+        sys.exit(1)
+        
 
 
     return out
 
 
-def get_data_files(datacat, var, level, period):
+def get_data_files(dataset, var, level, period):
     '''
-    Retrieve list of input files for the requested dataset and variable.
-
+    Retrieve list of input files from requested dataset and variable.
 
     Parameters
     ----------
-    datacat : dict
-        Dataset structure information
+    dataset : dict
+        Dataset informative structure
     var : string
          variable name
     level : float
@@ -93,36 +157,22 @@ def get_data_files(datacat, var, level, period):
 
     Returns
     -------
-    files: list
-        dataset input files
+    files: dict
+        Dataset input files, variable name, requested period
 
     '''
-    # find matching variable
-    vmatch=[]
-    for cc in datacat['components'].keys():
-        for dd in datacat['components'][cc]['data_stream'].keys():
-             for xy in datacat['components'][cc]['data_stream'][dd].keys():
-                 thevars = datacat['components'][cc]['data_stream'][dd][xy]
-                 if var in thevars:
-                     vmatch.append([cc, dd, xy])
-    del cc, dd, xy, thevars
-
-    if len(vmatch) > 1:
-        print('Requested variable ' + var + ' is available from multiple data stream. Something is wrong.')
-        sys.exit(1)
-    elif len(vmatch) == 0:
-        print('Requested variable ' + var + ' is not available in the dataset %s', dataset)
-        sys.exit(1)
-    else:
-        print('Retrieve variable ' + var + ' from component %s of data stream %s as %s field' % tuple(vmatch[0]))
-        vmatch = vmatch[0]
+    var_info = dataset_request_var(dataset, var, level, period)
 
     # compose list of files
-    datapath = datacat['path']
-    datatree = datacat['subtree']
-    filename = datacat['components'][vmatch[0]]['filename']
+    datapath = dataset['path']
+    datatree = dataset['subtree']
+    filename = dataset['components'][var_info[0]]['filename']
+
     if period is None:
-        period = datacat['year_bounds']
+        period = dataset['year_bounds']
+
+    # check if variable is arranged by levels
+    islevel = True if re.search('<lev>',datatree) else False
 
     # replace wildcards
     if datatree is not None:
@@ -136,13 +186,13 @@ def get_data_files(datacat, var, level, period):
     nameyear = True if re.search('year',filename) else False
         
     # standard set of wildcards
-    wildcards={'var':var, 'lev':str(level), 'mon':'*', 'comp':vmatch[0], 'stream':vmatch[1]}
+    wildcards={'var':var, 'lev':str(level), 'mon':'*', 'comp':var_info[0], 'stream':var_info[1]}
     for ii in wildcards.keys():
         datatree = datatree.replace('<' + ii +'>',wildcards[ii])
         filename = filename.replace('<' + ii +'>',wildcards[ii])
     
     # compose files list
-    files=[]
+    in_files=[]
     for yy in np.arange(period[0], period[1]+1):
         thispath = '/'.join([datapath, datatree])
         if subyear:
@@ -151,26 +201,32 @@ def get_data_files(datacat, var, level, period):
         if nameyear:
             thisname = thisname.replace('<year>',str(yy))
         tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
-        files.extend(tmpfile)
+        in_files.extend(tmpfile)
     
-    if not files:
-        print('Input files not found for ' + dataset + ' located in ' + datapath)
+    if not in_files:
+        print('Input files not found for ' + dataset['name'] + ' located in ' + datapath)
         sys.exit(1)
-      
+
+    # create output dictionary
+    files={}
+    files['files'] = in_files
+    files['var'] = var
+    files['period'] = period
+    files['islevel'] = islevel
 
     return files
 
 
-def get_dataset(dataset, level, period):
+def dataset_request_var(dataset, var, level, period):
     '''
-    Retrieve requested dataset informations from general catalogue (YAML file).
-
-    This perform consistency control also on requested levels and time period.
+    Perform consistency control on user dataset requests and find matching variable.
 
     Parameters
     ----------
-    dataset : string
-        Name of data set
+    dataset : dict
+        Dataset informative structure
+    var : string
+         variable name
     level : float
         vertical levels float value
     period : list
@@ -178,35 +234,85 @@ def get_dataset(dataset, level, period):
 
     Returns
     -------
-    out : dict
-        requested dataset information
+    var_info : list
+        requested variable information: [component, data stream, type]
 
     '''
-
-    # Load catalogue
-    catalogue = yaml.load(open('zapata/catalogue.yml'), Loader=yaml.FullLoader)
-
-    # check dataset
-    if dataset not in catalogue.keys():
-        print('Requested dataset ' + dataset + ' is not available in catalogue')
-        sys.exit(1)
-    else:
-        print('Access dataset ' + dataset + '\n')
-        out = catalogue[dataset]
-
     # check for level bounds
-    level_bnd = [min(out['levels']), max(out['levels'])]
+    level_bnd = [min(dataset['levels']), max(dataset['levels'])]
     if level is not None:
         if level < level_bnd[0] or level > level_bnd[1]:
             print('Requested level ' + str(level) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
             sys.exit(1)
 
     # check for time bounds
-    time_bnd = out['year_bounds'] 
+    time_bnd = dataset['year_bounds']
     if period is not None and len(time_bnd) > 1:
            if period[0] < time_bnd[0] or period[1] > time_bnd[1]:
                print('Requested time period is not within dataset bounds [%s, %s]' % tuple(time_bnd))
                sys.exit(1)
+
+    # find matching variable
+    var_match=[]
+    for cc in dataset['components'].keys():
+        for dd in dataset['components'][cc]['data_stream'].keys():
+             for xy in dataset['components'][cc]['data_stream'][dd].keys():
+                 thevars = dataset['components'][cc]['data_stream'][dd][xy]
+                 if var in thevars:
+                     var_match.append([cc, dd, xy])
+    del cc, dd, xy, thevars
+
+    if len(var_match) > 1:
+        print('Requested variable ' + var + ' is available from multiple data streams. Something is wrong.')
+        sys.exit(1)
+    elif len(var_match) == 0:
+        print('Requested variable ' + var + ' is not available in the dataset %s', dataset['name'])
+        sys.exit(1)
+    else:
+        print('Retrieve variable ' + var + ' from component %s of data stream %s as %s field' % tuple(var_match[0]))
+        var_info = var_match[0]
+
+
+    return var_info
+
+
+def inquire_catalogue(dataset=None):
+    '''
+    Retrieve requested dataset informative structure from general catalogue (YAML file).
+
+    If no dataset is requested, print a list of available datasets name and description.
+
+    Parameters
+    ----------
+    dataset : string
+        Name of data set
+
+    Returns
+    -------
+    out : dict
+        requested dataset informative structure
+
+    '''
+
+    # Load catalogue
+    catalogue = yaml.load(open('zapata/catalogue.yml'), Loader=yaml.FullLoader)
+
+    # Print list of available datasets    
+    if dataset is None:
+        print('List of datasets in catalogue:\n')
+        for cat in catalogue.keys():
+            print('%s : %s' % tuple([cat, catalogue[cat]['description']]))
+        print('\n')
+        return
+
+    # retrieve dataset information
+    if dataset not in catalogue.keys():
+        print('Requested dataset ' + dataset + ' is not available in catalogue.')
+        sys.exit(1)
+    else:
+        print('Access dataset ' + dataset + '\n')
+        out = catalogue[dataset]
+        out['name'] = dataset
 
     return out
 
