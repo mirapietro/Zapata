@@ -5,7 +5,8 @@ C-GLORSv7:
   source_url: http://c-glors.cmcc.it/index/index.html
   description: Ocean Global Reanalyses at 1/4° resolution monthly means
   year_bounds: [1986, 2019]
-  frequencies: ['1m',]
+  data_block: yearly
+  data_format: 'netcdf'
   levels: [ 0.505760014, 1.55585527, 2.66768169, 3.85627985, 5.14036131, 6.5430336, 8.09251881, 9.82275009, 11.7736797, 13.9910383, 16.525322, 19.4298019, 22.757616, 26.5583, 30.8745613, 35.7402039, 41.1800232, 47.211895, 53.8506355, 61.1128387, 69.0216827, 77.6111603, 86.9294281, 97.0413132, 108.030281, 120 133.075821, 147.40625, 163.164459, 180.549927, 199.789963, 221.141174, 244.890625, 271.356384, 300.887512, 333.862823, 370.688477, 411.793854, 457.62561, 508.639893, 565.292297, 628.026001, 697.258667, 773.368286, 856.678955, 947.447876, 1045.85425, 1151.99121, 1265.86145, 1387.37695, 1516.36365, 1652.56848, 1795.67078, 1945.29553, 2101.02661, 2262.42163, 2429.02515, 2600.38037, 2776.03931, 2955.57031, 3138.56494, 3324.64087, 3513.44556, 3704.65674, 3897.98193, 4093.15869, 4289.95264, 4488.15479, 4687.58105, 4888.06982, 5089.47852, 5291.68311, 5494.5752, 5698.06055, 5902.05762,]
   # data
   components:
@@ -38,7 +39,9 @@ ERA5_MM:
   source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
   description: ERA5 Monthly Mean on Pressure Levels
   year_bounds: [1979, 2018]
-  frequencies: ['1m',]
+  data_block: monthly
+  data_freq: monthly
+  data_format: 'numpy'
   levels: [10, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,]
   # data
   components:
@@ -53,6 +56,6 @@ ERA5_MM:
 
   # Places in <path> 
   metrics:
-    lon: ERA5_quarter_global_lon.npy
-    lat: ERA5_quarter_global_lat.npy
+    lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
+    lat: 'np.asarray([i for i in np.arange(-90,90.1,0.25)][::-1])'
     oro: ERA5_quarter_global_oro.npy
