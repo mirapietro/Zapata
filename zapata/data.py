@@ -55,7 +55,7 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
  
     # temporal sampling
     if season is not None:
-        out = sample_monsea(out, season)
+        out = da_time_mean(out, season)
 
     # horizontal sampling
     if region is not None:
@@ -68,7 +68,7 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     return out
 
 
-def sample_monsea(da, sample):
+def da_time_mean(da, sample):
     '''
     Sample datarray based on month/season and compute average over timewindows
 
@@ -99,10 +99,8 @@ def sample_monsea(da, sample):
 
     if sample in time_grp.keys():
         if len(time_grp[sample]) > 1:
-           #TODO need to weight seasonal/annual average by days in months
-           #eomdays = da.time.dt.days_in_month
-
-           da = da.resample(time=time_grp[sample][0]).mean(dim='time')
+           weights = subyear_weights(da.time, time_grp[sample][0])
+           da = (da * weights).resample(time=time_grp[sample][0]).sum(dim='time')
            idx = time_grp[sample][1]
            da = da.isel(time=slice(idx[0], None, idx[1]))
            da.attrs['time_resample'] = sample
@@ -116,6 +114,39 @@ def sample_monsea(da, sample):
         sys.exit(1)
 
     return da
+
+
+def subyear_weights(time, freq):
+    '''
+    Compute month weights according to frequency anchored offsets (season/year)
+
+    Parameters
+    ----------
+    time: DataArray
+        Time array of input data
+    freq: string
+        Identifier of pandas temporal anchored offsets (e.g., A, Q-DEC)
+
+    Returns
+    -------
+    weights : DataArray
+        weights to be applied at data before subyear time averaging
+
+    '''
+
+    weights = None 
+    months = time.dt.days_in_month
+    monbyfreq = pd.PeriodIndex(time.data,  freq=freq)
+
+    cummon = months * 0. 
+    for ii in monbyfreq.unique():
+        idx = (monbyfreq == ii)
+        asum = months.sel(time=dx).sum(dim='time').data
+        cummon.data[aaa] = asum
+    
+    weights = months / cummon
+
+    return weights
 
 
 def load_dataarray(dataset, files):
