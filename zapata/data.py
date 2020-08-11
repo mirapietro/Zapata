@@ -56,16 +56,14 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     # temporal sampling
     if season is not None:
         out = sample_monsea(out, season)
-        xdat,nlon, nlat,lat,lon,sv=readvar_grid(region='globe',dataset=dataset, \
-                            var=var,level=level,season=season,Celsius=False,verbose=verbose)
 
     # horizontal sampling
     if region is not None:
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
-    # vertical sampling
+    # vertical sampling (to be tested)
     if not files['islevel'] and level is not None:
-        out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
+        out = out.sel(lev = level)
 
     return out
 
@@ -84,45 +82,40 @@ def sample_monsea(da, sample):
     Returns
     -------
     out : DataArray
-        Time sapmled xarray DataArrray
+        Time sampled DataArrray
 
     '''
     indexes = None
 
     # admissible time groups
-    time_grp ={'DJF':[12,1,2], 'MAM':[3,4,5], 'JJA':[6,7,8], 'SON':[9,10,11],
-        'JFM':[1,2,3], 'AMJ':[4,5,6], 'JAS':[7,8,9], 'ANN':[i for i in range(1,13)], 
+    time_grp ={'DJF': ['Q-NOV', [0, 4]], 'MAM':['Q-NOV', [1, 4]], 'JJA':['Q-NOV', [2, 4]], 'SON':['Q-NOV', [3, 4]],
+        'JFM':['Q-DEC', [0, 4]], 'AMJ':['Q-DEC', [1, 4]], 'JAS':['Q-DEC', [2, 4]], 'OND':['Q-DEC', [3, 4]],
+        'ANN':['A', [0, 1]], 
         'JAN':[1,], 'FEB':[2,], 'MAR': [3,], 'APR':[4,], 'MAY':[5,], 'JUN':[6,],
         'JUL':[7,], 'AUG':[8,], 'SEP': [9,], 'OCT':[10,], 'NOV':[11,], 'DEC':[12,]}
 
     # reduce data to months
     da = da.resample(time='M').mean(dim='time')
 
-    # days in month
-    eomdays = da.time.dt.days_in_month
-    
     if sample in time_grp.keys():
         if len(time_grp[sample]) > 1:
-           # days in month
-           eomdays = da.time.dt.days_in_month
+           #TODO need to weight seasonal/annual average by days in months
+           #eomdays = da.time.dt.days_in_month
 
-           idx = []
-           for sm in time_grp[sample]:
-               tmp = np.where(time.dt.month == sm)
-               if idx:
-                   idx = tmp
-               else:
-                   idx.append(tmp)
-           idx = sort(idx)
+           da = da.resample(time=time_grp[sample][0]).mean(dim='time')
+           idx = time_grp[sample][1]
+           da = da.isel(time=slice(idx[0], None, idx[1]))
+           da.attrs['time_resample'] = sample
         else:
-            months = ( time.dt.month == time_grp[sample])
+            months = ( da.time.dt.month == time_grp[sample])
             da = da.sel(time=months)
+            da.attrs['time_resample'] = sample
 
     else:
         print('requested temporal sampling' + sample + ' is not in admissible time groups.')
         sys.exit(1)
 
-    return indexes
+    return da
 
 
 def load_dataarray(dataset, files):

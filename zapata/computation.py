@@ -53,7 +53,7 @@ def zonal_var(dataset, var, season=None, level=None, period=None, option='LonTim
         Variable
     season :     
         Month or Season. Resolved from `dat_param`
-    level : float
+    level : list
         Vertical level to extract
     period : list
         Might be None or a two element list with initial and final years
@@ -79,31 +79,23 @@ def zonal_var(dataset, var, season=None, level=None, period=None, option='LonTim
     >>> zonal_var('GPCP','TPREP','DJF',option='Time',verbose=True)   # Time average 
     """
 
-    xx=zdat.read_xarray(dataset=dataset,var=var,level=level,season=season,period=period, verbose=verbose)
-    
-    if option == 'LonTime':
-        zon=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[0]])
-        print(' Averaging on longitude and time ')
-    elif option == 'Time':
-        zon=xr.DataArray.expand_dims(xx.mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[0]])
-        print(' Averaging on  time ')
-    elif option == 'Lon':
-        zon=xr.DataArray.expand_dims(xx.mean(dim='lon'),dim='pressure').assign_coords(pressure=[lev[0]])
-        print(' Averaging on longitude ')
-    else:
-        zon=xr.DataArray.expand_dims(xx,dim='pressure').assign_coords(pressure=[lev[0]])
+    for lev in level:
 
-    for i in tm.tnrange(1,nlev):
-        xx=zdat.read_xarray(dataset=dataset,var=var,level=str(lev[i]),season=season)
+        xx=zdat.read_xarray(dataset=dataset, var=var, level=lev, season=season, period=period, verbose=verbose)
+
         if option == 'LonTime':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[i]])
+            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev])
         elif option == 'Time':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[i]])
+            xx1=xr.DataArray.expand_dims(xx.mean(dim='time'),dim='pressure').assign_coords(pressure=[lev])
         elif option == 'Lon':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon'),dim='pressure').assign_coords(pressure=[lev[i]])
+            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon'),dim='pressure').assign_coords(pressure=[lev])
         else:
-            xx1=xr.DataArray.expand_dims(xx,dim='pressure').assign_coords(pressure=[lev[i]])       
-        zon=xr.concat([zon,xx1],dim='pressure')
+            xx1=xr.DataArray.expand_dims(xx,dim='pressure').assign_coords(pressure=[lev])       
+
+        if lev == level[0]:
+            zon = xx1
+        else:
+            zon = xr.concat([zon, xx1],dim='pressure')
         
     return zon
 
