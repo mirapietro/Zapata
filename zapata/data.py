@@ -18,7 +18,7 @@ import yaml, glob
 #
 
 
-def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=None,verbose=False):
+def read_xarray(dataset=None, var=None, period=None, level=None, season=None, region=None, verbose=False):
     '''
     Load into a DataArray the requested variable from dataset source.
 
@@ -26,17 +26,17 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
     ----------
     dataset : string
         Name of dataset
-    region: list
-        Region corners [LonMax, LonMin, LatMax, LatMin]
     var : string
          variable name
-    level : float
-        level, either a value or 'SURF' for surface fields
     period : list
         A two element list with initial and final years
+    level : float
+        level, either a value or 'SURF' for surface fields
     season : string
         Month ('JAN') or season (,'DJF') or annual 'ANN'), or 'ALL' for every year
-    verbose: Boolean
+    region : list
+        Region corners [LonMax, LonMin, LatMax, LatMin]
+    verbose : Boolean
         True/False -- Tons of Output
 
     Returns
@@ -72,9 +72,9 @@ def da_time_mean(da, sample):
 
     Parameters
     ----------
-    da: DataArray
+    da : DataArray
         Input data
-    sample: string
+    sample : string
         Identifier of temporal sampling (e.g., JAN, FEB, ...,  ANN, DJF, MAM ...)
 
     Returns
@@ -97,15 +97,15 @@ def da_time_mean(da, sample):
 
     if sample in time_grp.keys():
         if len(time_grp[sample]) > 1:
-           weights = subyear_weights(da.time, time_grp[sample][0])
-           da = (da * weights).resample(time=time_grp[sample][0]).sum(dim='time')
-           idx = time_grp[sample][1]
-           da = da.isel(time=slice(idx[0], None, idx[1]))
-           da.attrs['time_resample'] = sample
+            weights = subyear_weights(da.time, time_grp[sample][0])
+            da = (da * weights).resample(time=time_grp[sample][0]).sum(dim='time')
+            idx = time_grp[sample][1]
+            da = da.isel(time=slice(idx[0], None, idx[1]))
+            da.attrs.update({'time_resample':sample})
         else:
             months = ( da.time.dt.month == time_grp[sample])
             da = da.sel(time=months)
-            da.attrs['time_resample'] = sample
+            da.attrs.update({'time_resample':sample})
 
     else:
         print('requested temporal sampling' + sample + ' is not in admissible time groups.')
@@ -120,9 +120,9 @@ def subyear_weights(time, freq):
 
     Parameters
     ----------
-    time: DataArray
+    time : DataArray
         Time array of input data
-    freq: string
+    freq : string
         Identifier of pandas temporal anchored offsets (e.g., A, Q-DEC)
 
     Returns
@@ -139,8 +139,8 @@ def subyear_weights(time, freq):
     cummon = months * 0. 
     for ii in monbyfreq.unique():
         idx = (monbyfreq == ii)
-        asum = months.sel(time=dx).sum(dim='time').data
-        cummon.data[aaa] = asum
+        asum = months.sel(time=idx).sum(dim='time').data
+        cummon.data[idx] = asum
     
     weights = months / cummon
 
@@ -155,7 +155,7 @@ def load_dataarray(dataset, files):
     ----------
     dataset : dict
         Dataset informative structure
-    files: dict
+    files : dict
         Dataset input files, variable name, requested period
 
     Returns
@@ -168,8 +168,7 @@ def load_dataarray(dataset, files):
     if dataset['data_format'] == 'netcdf':
         # open files as a dataset
         ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override')
-        out = ds[var]
-        print('netcdf')
+        out = ds[files['var']]
 
     elif dataset['data_format'] == 'numpy':
         # get lon/lat coordinates
@@ -213,6 +212,12 @@ def load_dataarray(dataset, files):
         print('Cannot handle data format ' + dataset['data_format'])
         sys.exit(1)
 
+    # rename coordinates if mapping provided
+    if 'coord_map' in files.keys():
+        for coord in files['coord_map'].keys():
+            if files['coord_map'][coord] in out.coords.keys():
+                out = out.rename({files['coord_map'][coord]:coord})
+
     return out
 
 
@@ -237,6 +242,10 @@ def get_data_files(dataset, var, level, period):
         Dataset input files, variable name, requested period
 
     '''
+    if dataset is None:
+        print('No dataset provided.')
+        sys.exit(1)
+
     var_info = dataset_request_var(dataset, var, level, period)
 
     # compose list of files
@@ -247,22 +256,24 @@ def get_data_files(dataset, var, level, period):
     if period is None:
         period = dataset['year_bounds']
 
-    # check if variable is arranged by levels
-    islevel = True if re.search('<lev>',datatree) else False
-
-    # replace wildcards
     if datatree is not None:
+        # check if variable is arranged by levels
+        islevel = True if re.search('<lev>',datatree) else False
         # check if year in subtree
         subyear = True if re.search('year',datatree) else False
         #TODO do we need to handle months in subtree?
         if re.search('mon',datatree):
             print('Cannot handle dataset subtree with months')
             sys.exit(1)
+    else:
+        islevel = False
+        subyear = False
+        datatree = ''
 
     nameyear = True if re.search('year',filename) else False
         
     # standard set of wildcards
-    wildcards={'var':var, 'lev':str(level), 'mon':'*', 'comp':var_info[0], 'stream':var_info[1]}
+    wildcards={'var':var, 'lev':str(level), 'mon':'*', 'comp':var_info[0], 'data_stream':var_info[1]}
     for ii in wildcards.keys():
         datatree = datatree.replace('<' + ii +'>',wildcards[ii])
         filename = filename.replace('<' + ii +'>',wildcards[ii])
@@ -278,6 +289,7 @@ def get_data_files(dataset, var, level, period):
             thisname = thisname.replace('<year>',str(yy))
         tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
         in_files.extend(tmpfile)
+        del thispath, thisname, tmpfile
     
     if not in_files:
         print('Input files not found for ' + dataset['name'] + ' located in ' + datapath)
@@ -289,6 +301,11 @@ def get_data_files(dataset, var, level, period):
     files['var'] = var
     files['period'] = period
     files['islevel'] = islevel
+
+    # coordinate mapping
+    data_stream = dataset['components'][var_info[0]]['data_stream'][var_info[1]]
+    if 'coord_map' in data_stream.keys():
+        files['coord_map'] = data_stream['coord_map']
 
     return files
 
