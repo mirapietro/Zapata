@@ -19,9 +19,12 @@ from geocat.viz import util as gvutil
 # check catalogue contents
 zdat.inquire_catalogue()
 
+# Read data and compose zonal means (local)
+xx=zdat.read_xarray(dataset='C-GLORSv7', var='votemper', period=[2000, 2001], season='JFM')
 
-# Read data and compose zonal means¶
-ud=zcom.zonal_var('ERA5_MM','T', period=[2000, 2001], season='DJF',level=[100,])
+
+# Read data and compose zonal means (local)
+#ud=zcom.zonal_var('ERA5_MM','T', period=[2000, 2001], season='DJF',level=[100,])
 
 
 print('Done')
