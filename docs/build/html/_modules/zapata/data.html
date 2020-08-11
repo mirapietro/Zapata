@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zapata.data &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -44,18 +44,436 @@
 <span class="sd">================================</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">zapata.lib</span> <span class="k">as</span> <span class="nn">lib</span>
 <span class="kn">import</span> <span class="nn">netCDF4</span> <span class="k">as</span> <span class="nn">net</span>
+<span class="kn">import</span> <span class="nn">yaml</span><span class="o">,</span> <span class="nn">glob</span>
+
 
 <span class="c1"># NCEP Reanalysis standard pressure levels</span>
 <span class="c1"># 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10</span>
 <span class="c1"># 1000  925  850  700  600, 500  400  300, 250, 200, 150, 100      50          10</span>
 <span class="c1">#</span>
 
+
+<div class="viewcode-block" id="read_xarray"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_xarray">[docs]</a><span class="k">def</span> <span class="nf">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">season</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Load into a DataArray the requested variable from dataset source.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : string</span>
+<span class="sd">        Name of dataset</span>
+<span class="sd">    var : string</span>
+<span class="sd">         variable name</span>
+<span class="sd">    period : list</span>
+<span class="sd">        A two element list with initial and final years</span>
+<span class="sd">    level : float</span>
+<span class="sd">        level value (if not in levels list the closest one will be used)</span>
+<span class="sd">    season : string</span>
+<span class="sd">        Month (&#39;JAN&#39;), season (&#39;DJF&#39;, &#39;AMJ&#39;) or annual (&#39;ANN&#39;)</span>
+<span class="sd">    region : list</span>
+<span class="sd">        Region corners [LonMax, LonMin, LatMax, LatMin]</span>
+<span class="sd">    verbose : Boolean</span>
+<span class="sd">        True/False -- Tons of Output</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : DataArray</span>
+<span class="sd">        extracted data</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; da = read_xarray(dataset=&#39;ERA5_MM&#39;,var=&#39;T&#39;,period=[2000 2010], level=&#39;500&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; da = read_xarray(dataset=&#39;C-GLORSv7&#39;, var=&#39;votemper&#39;, period=[2000 2010], season=&#39;DJF&#39;)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">datacat</span> <span class="o">=</span> <span class="n">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="n">get_data_files</span><span class="p">(</span><span class="n">datacat</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+    
+    <span class="n">out</span> <span class="o">=</span> <span class="n">load_dataarray</span><span class="p">(</span><span class="n">datacat</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+ 
+    <span class="c1"># temporal sampling</span>
+    <span class="k">if</span> <span class="n">season</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">da_time_mean</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">season</span><span class="p">)</span>
+
+    <span class="c1"># horizontal sampling (need test)</span>
+    <span class="k">if</span> <span class="n">region</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lon</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">region</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">lat</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">region</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+
+    <span class="c1"># vertical sampling</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;islevel&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="c1"># find closest level if not in levels list</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datacat</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">]:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">lev</span> <span class="o">-</span> <span class="n">level</span><span class="p">)</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">lev</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lev</span> <span class="o">=</span> <span class="n">level</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="da_time_mean"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.da_time_mean">[docs]</a><span class="k">def</span> <span class="nf">da_time_mean</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Sample datarray based on month/season and compute average over timewindows</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    da : DataArray</span>
+<span class="sd">        Input data</span>
+<span class="sd">    sample : string</span>
+<span class="sd">        Identifier of temporal sampling (e.g., JAN, FEB, ...,  ANN, DJF, MAM ...)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : DataArray</span>
+<span class="sd">        Time sampled DataArrray</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; da = da_time_mean(da, &#39;JJA&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; da = da_time_mean(da, &#39;ANN&#39;)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">indexes</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># admissible time groups</span>
+    <span class="n">time_grp</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;DJF&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Q-NOV&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span> <span class="s1">&#39;MAM&#39;</span><span class="p">:[</span><span class="s1">&#39;Q-NOV&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span> <span class="s1">&#39;JJA&#39;</span><span class="p">:[</span><span class="s1">&#39;Q-NOV&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span> <span class="s1">&#39;SON&#39;</span><span class="p">:[</span><span class="s1">&#39;Q-NOV&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span>
+        <span class="s1">&#39;JFM&#39;</span><span class="p">:[</span><span class="s1">&#39;Q-DEC&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span> <span class="s1">&#39;AMJ&#39;</span><span class="p">:[</span><span class="s1">&#39;Q-DEC&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span> <span class="s1">&#39;JAS&#39;</span><span class="p">:[</span><span class="s1">&#39;Q-DEC&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span> <span class="s1">&#39;OND&#39;</span><span class="p">:[</span><span class="s1">&#39;Q-DEC&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]],</span>
+        <span class="s1">&#39;ANN&#39;</span><span class="p">:[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> 
+        <span class="s1">&#39;JAN&#39;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,],</span> <span class="s1">&#39;FEB&#39;</span><span class="p">:[</span><span class="mi">2</span><span class="p">,],</span> <span class="s1">&#39;MAR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,],</span> <span class="s1">&#39;APR&#39;</span><span class="p">:[</span><span class="mi">4</span><span class="p">,],</span> <span class="s1">&#39;MAY&#39;</span><span class="p">:[</span><span class="mi">5</span><span class="p">,],</span> <span class="s1">&#39;JUN&#39;</span><span class="p">:[</span><span class="mi">6</span><span class="p">,],</span>
+        <span class="s1">&#39;JUL&#39;</span><span class="p">:[</span><span class="mi">7</span><span class="p">,],</span> <span class="s1">&#39;AUG&#39;</span><span class="p">:[</span><span class="mi">8</span><span class="p">,],</span> <span class="s1">&#39;SEP&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,],</span> <span class="s1">&#39;OCT&#39;</span><span class="p">:[</span><span class="mi">10</span><span class="p">,],</span> <span class="s1">&#39;NOV&#39;</span><span class="p">:[</span><span class="mi">11</span><span class="p">,],</span> <span class="s1">&#39;DEC&#39;</span><span class="p">:[</span><span class="mi">12</span><span class="p">,]}</span>
+
+    <span class="c1"># reduce data to months</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;M&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">time_grp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_grp</span><span class="p">[</span><span class="n">sample</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">subyear_weights</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">time_grp</span><span class="p">[</span><span class="n">sample</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="p">(</span><span class="n">da</span> <span class="o">*</span> <span class="n">weights</span><span class="p">)</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time_grp</span><span class="p">[</span><span class="n">sample</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">time_grp</span><span class="p">[</span><span class="n">sample</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;time_resample&#39;</span><span class="p">:</span><span class="n">sample</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">months</span> <span class="o">=</span> <span class="p">(</span> <span class="n">da</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">time_grp</span><span class="p">[</span><span class="n">sample</span><span class="p">])</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">months</span><span class="p">)</span>
+            <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;time_resample&#39;</span><span class="p">:</span><span class="n">sample</span><span class="p">})</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;requested temporal sampling&#39;</span> <span class="o">+</span> <span class="n">sample</span> <span class="o">+</span> <span class="s1">&#39; is not in admissible time groups.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">da</span></div>
+
+
+<div class="viewcode-block" id="subyear_weights"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.subyear_weights">[docs]</a><span class="k">def</span> <span class="nf">subyear_weights</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">freq</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compute month weights according to frequency anchored offsets (season/year)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : DataArray</span>
+<span class="sd">        Time array of input data</span>
+<span class="sd">    freq : string</span>
+<span class="sd">        Identifier of pandas temporal anchored offsets (e.g., A, Q-DEC)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    weights : DataArray</span>
+<span class="sd">        weights to be applied at data before subyear time averaging</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span> 
+    <span class="n">months</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">days_in_month</span>
+    <span class="n">monbyfreq</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">PeriodIndex</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>  <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+
+    <span class="n">cummon</span> <span class="o">=</span> <span class="n">months</span> <span class="o">*</span> <span class="mf">0.</span> 
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">monbyfreq</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">monbyfreq</span> <span class="o">==</span> <span class="n">ii</span><span class="p">)</span>
+        <span class="n">asum</span> <span class="o">=</span> <span class="n">months</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">cummon</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">asum</span>
+    
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">months</span> <span class="o">/</span> <span class="n">cummon</span>
+
+    <span class="k">return</span> <span class="n">weights</span></div>
+
+
+<div class="viewcode-block" id="load_dataarray"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.load_dataarray">[docs]</a><span class="k">def</span> <span class="nf">load_dataarray</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">files</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Read requested data into an xarray DataArray according to dataset data_format</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : dict</span>
+<span class="sd">        Dataset informative structure</span>
+<span class="sd">    files : dict</span>
+<span class="sd">        Dataset input files, variable name, requested period</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : xarray</span>
+<span class="sd">        array data</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;data_format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;netcdf&#39;</span><span class="p">:</span>
+        <span class="c1"># open files as a dataset</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">],</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;netcdf4&#39;</span><span class="p">,</span> <span class="n">combine</span> <span class="o">=</span> <span class="s1">&#39;by_coords&#39;</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="s1">&#39;minimal&#39;</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="s1">&#39;override&#39;</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">]]</span>
+
+    <span class="k">elif</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;data_format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;numpy&#39;</span><span class="p">:</span>
+        <span class="c1"># get lon/lat coordinates</span>
+        <span class="k">if</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;lon&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;npy&#39;</span><span class="p">:</span> 
+            <span class="n">lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;lon&#39;</span><span class="p">])</span>
+            <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;lat&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lon</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;lon&#39;</span><span class="p">])</span>
+            <span class="n">lat</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;metrics&#39;</span><span class="p">][</span><span class="s1">&#39;lat&#39;</span><span class="p">])</span>
+
+        <span class="c1"># define time axis</span>
+        <span class="n">time_bnd</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;data_freq&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;yearly&#39;</span><span class="p">:</span>
+            <span class="n">prds</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_bnd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">;</span> <span class="n">frq</span> <span class="o">=</span> <span class="s1">&#39;YS&#39;</span>
+        <span class="k">elif</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;data_freq&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;monthly&#39;</span><span class="p">:</span>
+            <span class="n">prds</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_bnd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">12</span> <span class="p">;</span> <span class="n">frq</span> <span class="o">=</span> <span class="s1">&#39;M&#39;</span>
+        <span class="k">elif</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;data_freq&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;daily&#39;</span><span class="p">:</span>
+            <span class="n">prds</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_bnd</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">365</span> <span class="p">;</span> <span class="n">frq</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;-01-01&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">prds</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="n">frq</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">prds</span><span class="p">,</span> <span class="n">frq</span>
+
+        <span class="c1"># get first file</span>
+        <span class="n">ndat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># append other data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+           <span class="n">ndat</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+           <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">:]:</span>
+              <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ff</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+              <span class="n">ndat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+           <span class="k">del</span> <span class="n">tmp</span><span class="p">,</span> <span class="n">ff</span>
+
+        <span class="c1"># create xarray</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">],</span> <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">:</span> <span class="p">([</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">],</span> <span class="n">lat</span><span class="p">),</span>
+                          <span class="s1">&#39;longitude&#39;</span><span class="p">:</span> <span class="p">([</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">],</span><span class="n">lon</span><span class="p">)},</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">ndat</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">],</span> <span class="n">coords</span><span class="o">=</span><span class="p">[</span><span class="n">time</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">],</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">])</span>
+ 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Cannot handle data format &#39;</span> <span class="o">+</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;data_format&#39;</span><span class="p">])</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># rename coordinates if mapping provided</span>
+    <span class="k">if</span> <span class="s1">&#39;coord_map&#39;</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;coord_map&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;coord_map&#39;</span><span class="p">][</span><span class="n">coord</span><span class="p">]</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">coords</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;coord_map&#39;</span><span class="p">][</span><span class="n">coord</span><span class="p">]:</span><span class="n">coord</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="get_data_files"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.get_data_files">[docs]</a><span class="k">def</span> <span class="nf">get_data_files</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Retrieve list of input files from requested dataset and variable.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : dict</span>
+<span class="sd">        Dataset informative structure</span>
+<span class="sd">    var : string</span>
+<span class="sd">         variable name</span>
+<span class="sd">    level : float</span>
+<span class="sd">        vertical levels float value</span>
+<span class="sd">    period : list</span>
+<span class="sd">        Might be None or a two element list with initial and final year</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    files: dict</span>
+<span class="sd">        Dataset input files, variable name, requested period</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No dataset provided.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">var_info</span> <span class="o">=</span> <span class="n">dataset_request_var</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+
+    <span class="c1"># compose list of files</span>
+    <span class="n">datapath</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span>
+    <span class="n">datatree</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;subtree&#39;</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">var_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">period</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;year_bounds&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">datatree</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># check if variable is arranged by levels</span>
+        <span class="n">islevel</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;&lt;lev&gt;&#39;</span><span class="p">,</span><span class="n">datatree</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="c1"># check if year in subtree</span>
+        <span class="n">subyear</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span><span class="n">datatree</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="c1">#TODO do we need to handle months in subtree?</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;mon&#39;</span><span class="p">,</span><span class="n">datatree</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Cannot handle dataset subtree with months&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">islevel</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">subyear</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">datatree</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">nameyear</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
+        
+    <span class="c1"># standard set of wildcards</span>
+    <span class="n">wildcards</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;var&#39;</span><span class="p">:</span><span class="n">var</span><span class="p">,</span> <span class="s1">&#39;lev&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">),</span> <span class="s1">&#39;mon&#39;</span><span class="p">:</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;comp&#39;</span><span class="p">:</span><span class="n">var_info</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;data_stream&#39;</span><span class="p">:</span><span class="n">var_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">wildcards</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">datatree</span> <span class="o">=</span> <span class="n">datatree</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="n">ii</span> <span class="o">+</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span><span class="n">wildcards</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="n">ii</span> <span class="o">+</span><span class="s1">&#39;&gt;&#39;</span><span class="p">,</span><span class="n">wildcards</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+    
+    <span class="c1"># compose files list</span>
+    <span class="n">in_files</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">yy</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">period</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">period</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">thispath</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">datapath</span><span class="p">,</span> <span class="n">datatree</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">subyear</span><span class="p">:</span>
+            <span class="n">thispath</span> <span class="o">=</span> <span class="n">thispath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;year&gt;&#39;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">yy</span><span class="p">))</span>
+        <span class="n">thisname</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="n">nameyear</span><span class="p">:</span>
+            <span class="n">thisname</span> <span class="o">=</span> <span class="n">thisname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;year&gt;&#39;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">yy</span><span class="p">))</span>
+        <span class="n">tmpfile</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">thispath</span><span class="p">,</span> <span class="n">thisname</span><span class="p">])))</span>
+        <span class="n">in_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tmpfile</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">thispath</span><span class="p">,</span> <span class="n">thisname</span><span class="p">,</span> <span class="n">tmpfile</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">in_files</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Input files not found for &#39;</span> <span class="o">+</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; located in &#39;</span> <span class="o">+</span> <span class="n">datapath</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># create output dictionary</span>
+    <span class="n">files</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">files</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">in_files</span>
+    <span class="n">files</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span>
+    <span class="n">files</span><span class="p">[</span><span class="s1">&#39;period&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">period</span>
+    <span class="n">files</span><span class="p">[</span><span class="s1">&#39;islevel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">islevel</span>
+
+    <span class="c1"># coordinate mapping</span>
+    <span class="n">data_stream</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">var_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">var_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="s1">&#39;coord_map&#39;</span> <span class="ow">in</span> <span class="n">data_stream</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">files</span><span class="p">[</span><span class="s1">&#39;coord_map&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_stream</span><span class="p">[</span><span class="s1">&#39;coord_map&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">files</span></div>
+
+
+<div class="viewcode-block" id="dataset_request_var"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.dataset_request_var">[docs]</a><span class="k">def</span> <span class="nf">dataset_request_var</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Perform consistency control on user dataset requests and find matching variable.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : dict</span>
+<span class="sd">        Dataset informative structure</span>
+<span class="sd">    var : string</span>
+<span class="sd">         variable name</span>
+<span class="sd">    level : float</span>
+<span class="sd">        vertical levels float value</span>
+<span class="sd">    period : list</span>
+<span class="sd">        Might be None or a two element list with initial and final year</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    var_info : list</span>
+<span class="sd">        requested variable information: [component, data stream, type]</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># check for level bounds</span>
+    <span class="n">level_bnd</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">])]</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="n">level_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">level</span> <span class="o">&gt;</span> <span class="n">level_bnd</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Requested level &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; is not within dataset bounds [</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">level_bnd</span><span class="p">))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># check for time bounds</span>
+    <span class="n">time_bnd</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;year_bounds&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_bnd</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+           <span class="k">if</span> <span class="n">period</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">time_bnd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">period</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">time_bnd</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+               <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Requested time period is not within dataset bounds [</span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">time_bnd</span><span class="p">))</span>
+               <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># find matching variable</span>
+    <span class="n">var_match</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">dd</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">cc</span><span class="p">][</span><span class="s1">&#39;data_stream&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+             <span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">cc</span><span class="p">][</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">dd</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                 <span class="n">thevars</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">cc</span><span class="p">][</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">dd</span><span class="p">][</span><span class="n">xy</span><span class="p">]</span>
+                 <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">thevars</span><span class="p">:</span>
+                     <span class="n">var_match</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">cc</span><span class="p">,</span> <span class="n">dd</span><span class="p">,</span> <span class="n">xy</span><span class="p">])</span>
+    <span class="k">del</span> <span class="n">cc</span><span class="p">,</span> <span class="n">dd</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">thevars</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_match</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Requested variable &#39;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s1">&#39; is available from multiple data streams. Something is wrong.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">var_match</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Requested variable &#39;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s1">&#39; is not available in the dataset </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Retrieve variable &#39;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s1">&#39; from component </span><span class="si">%s</span><span class="s1"> of data stream </span><span class="si">%s</span><span class="s1"> as </span><span class="si">%s</span><span class="s1"> field&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">var_match</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">var_info</span> <span class="o">=</span> <span class="n">var_match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+    <span class="k">return</span> <span class="n">var_info</span></div>
+
+
+<div class="viewcode-block" id="inquire_catalogue"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.inquire_catalogue">[docs]</a><span class="k">def</span> <span class="nf">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Retrieve requested dataset informative structure from general catalogue (YAML file).</span>
+
+<span class="sd">    If no dataset is requested, print a list of available datasets name and description.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : string</span>
+<span class="sd">        Name of data set</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dict</span>
+<span class="sd">        requested dataset informative structure</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; datacat = inquire_catalogue(dataset=&#39;C-GLORSv7&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; inquire_catalogue()</span>
+<span class="sd">        List of datasets in catalogue:</span>
+<span class="sd">        C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means</span>
+<span class="sd">        ERA5_MM : ERA5 Monthly Mean on Pressure Levels</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Load catalogue</span>
+    <span class="n">catalogue</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;zapata/catalogue.yml&#39;</span><span class="p">),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+
+    <span class="c1"># Print list of available datasets    </span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;List of datasets in catalogue:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">cat</span><span class="p">,</span> <span class="n">catalogue</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">]]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># retrieve dataset information</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Requested dataset &#39;</span> <span class="o">+</span> <span class="n">dataset</span> <span class="o">+</span> <span class="s1">&#39; is not available in catalogue.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Access dataset &#39;</span> <span class="o">+</span> <span class="n">dataset</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">catalogue</span><span class="p">[</span><span class="n">dataset</span><span class="p">]</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
 
 
 <div class="viewcode-block" id="read_month"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_month">[docs]</a><span class="k">def</span> <span class="nf">read_month</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">vardir</span><span class="p">,</span><span class="n">var1</span><span class="p">,</span><span class="n">level</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">mm</span><span class="p">,</span><span class="nb">type</span><span class="p">,</span><span class="n">option</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -431,54 +849,6 @@
 
     <span class="k">return</span> <span class="n">xdat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">sv</span></div>
 
-<div class="viewcode-block" id="read_xarray"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_xarray">[docs]</a><span class="k">def</span> <span class="nf">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Read npy files from data and generates xarray.</span>
-
-<span class="sd">    This a xarray implementation of read_var. It always grabs the global data.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    dataset :   </span>
-<span class="sd">        Name of data set   </span>
-<span class="sd">    region: </span>
-<span class="sd">        Select region   </span>
-<span class="sd">        * *globe*, Entire globe</span>
-<span class="sd">        * [East, West, North, South], Specific Region</span>
-<span class="sd">    var :   </span>
-<span class="sd">         variable name</span>
-<span class="sd">    level : </span>
-<span class="sd">        level, either a value or &#39;SURF&#39; for surface fields</span>
-
-<span class="sd">    season :    </span>
-<span class="sd">        Month (&#39;JAN&#39;) or season (,&#39;DJF&#39;) or annual &#39;ANN&#39;), or &#39;ALL&#39; for every year</span>
-<span class="sd">    verbose:    </span>
-<span class="sd">        True/False -- Tons of Output</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : xarray   </span>
-<span class="sd">        array data </span>
-<span class="sd">    </span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    
-    <span class="k">if</span> <span class="n">season</span> <span class="o">!=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">:</span>
-        <span class="n">xdat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">sv</span><span class="o">=</span><span class="n">readvar_grid</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> \
-                            <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="n">season</span><span class="p">,</span><span class="n">Celsius</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;1979-01-01&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;YS&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">season</span> <span class="o">==</span> <span class="s1">&#39;ALL&#39;</span><span class="p">:</span>
-        <span class="n">xdat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">sv</span><span class="o">=</span><span class="n">readvar_year</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> \
-                            <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span><span class="n">period</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span><span class="n">Celsius</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;1979-01-01&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">480</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">)</span>
-    
-    <span class="n">out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">xdat</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="p">[</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">times</span><span class="p">],</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">sv</span><span class="p">:</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">out</span> <span class="o">==</span> <span class="n">sv</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">region</span> <span class="o">!=</span> <span class="s1">&#39;globe&#39;</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lon</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">region</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">lat</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">region</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
-
-    
-    <span class="k">return</span> <span class="n">out</span></div>
 
 <div class="viewcode-block" id="read_dataset"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_dataset">[docs]</a><span class="k">def</span> <span class="nf">read_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -638,7 +1008,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>

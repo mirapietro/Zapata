@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>interp module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -67,20 +67,20 @@ can be used to perform the actual interpolation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>grid</strong> (<em>str</em>) – Choice of output grids</p>
+<li><p><strong>grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Choice of output grids</p>
 <ul>
 <li><p><cite>1x1</cite>  – Regular 1 degree</p></li>
 <li><p><cite>025x025</cite>  – Coupled model grid, nominally 0.25,</p></li>
 </ul>
 </li>
-<li><p><strong>option</strong> (<em>str</em>) – ‘linear’, interpolation method</p></li>
+<li><p><strong>option</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘linear’, interpolation method</p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="#interp.Atmosphere_Interpolator.name" title="interp.Atmosphere_Interpolator.name"><strong>name</strong></a> (<em>str</em>) – Name of the interpolator</p></li>
-<li><p><strong>grid</strong> (<em>str</em>) – Option for the grid</p></li>
-<li><p><strong>option</strong> (<em>str</em>) – Interpolation method</p></li>
+<li><p><a class="reference internal" href="#interp.Atmosphere_Interpolator.name" title="interp.Atmosphere_Interpolator.name"><strong>name</strong></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Name of the interpolator</p></li>
+<li><p><strong>grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Option for the grid</p></li>
+<li><p><strong>option</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Interpolation method</p></li>
 </ul>
 </dd>
 </dl>
@@ -135,13 +135,13 @@ can be used to perform the actual interpolation.</p>
 This methods can be used for scalar quantities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>xdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
+<dd class="field-odd"><p><strong>xdata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Interpolated xarray on the target grid</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -168,9 +168,9 @@ of the points, indicating which points correspond to the (i,j) index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>src_grid</strong> (<em>xarray</em>) – Source grid</p></li>
-<li><p><strong>tgt_grid</strong> (<em>xarray</em>) – Target grid</p></li>
-<li><p><strong>option</strong> (<em>str</em>) – ‘global’, for global grids (to be implemented regional )</p></li>
+<li><p><strong>src_grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – Source grid</p></li>
+<li><p><strong>tgt_grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – Target grid</p></li>
+<li><p><strong>option</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – ‘global’, for global grids (to be implemented regional )</p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
@@ -280,13 +280,13 @@ of the points, indicating which points correspond to the (i,j) index.</p>
 This methods can be used for scalar quantities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>xdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
+<dd class="field-odd"><p><strong>xdata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Interpolated xarray on the target grid</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -300,13 +300,13 @@ This methods can be used for vector quantities.</p>
 rotates them and then interpolates to the target grid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>udata,vdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
+<dd class="field-odd"><p><strong>udata,vdata</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Interpolated xarray on the target grid</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -386,7 +386,7 @@ rotates them and then interpolates to the target grid.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>

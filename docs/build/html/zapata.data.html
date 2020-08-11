@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zapata.data module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -51,6 +51,171 @@
 <span id="zapata-data-module"></span><h1>zapata.data module<a class="headerlink" href="#module-zapata.data" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="a-module-to-store-and-treat-data">
 <h2>A module to store and treat data<a class="headerlink" href="#a-module-to-store-and-treat-data" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="zapata.data.read_xarray">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_xarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load into a DataArray the requested variable from dataset source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – Name of dataset</p></li>
+<li><p><strong>var</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – variable name</p></li>
+<li><p><strong>period</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – A two element list with initial and final years</p></li>
+<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – level value (if not in levels list the closest one will be used)</p></li>
+<li><p><strong>season</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – Month (‘JAN’), season (‘DJF’, ‘AMJ’) or annual (‘ANN’)</p></li>
+<li><p><strong>region</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – Region corners [LonMax, LonMin, LatMax, LatMin]</p></li>
+<li><p><strong>verbose</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Boolean</span></code>) – True/False – Tons of Output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – extracted data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataArray</span></code></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">da</span> <span class="o">=</span> <span class="n">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5_MM&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;T&#39;</span><span class="p">,</span><span class="n">period</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span> <span class="mi">2010</span><span class="p">],</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">da</span> <span class="o">=</span> <span class="n">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;C-GLORSv7&#39;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;votemper&#39;</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span> <span class="mi">2010</span><span class="p">],</span> <span class="n">season</span><span class="o">=</span><span class="s1">&#39;DJF&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.da_time_mean">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">da_time_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">da</span></em>, <em class="sig-param"><span class="n">sample</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#da_time_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.da_time_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample datarray based on month/season and compute average over timewindows</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>da</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataArray</span></code>) – Input data</p></li>
+<li><p><strong>sample</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – Identifier of temporal sampling (e.g., JAN, FEB, …,  ANN, DJF, MAM …)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Time sampled DataArrray</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataArray</span></code></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">da</span> <span class="o">=</span> <span class="n">da_time_mean</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="s1">&#39;JJA&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">da</span> <span class="o">=</span> <span class="n">da_time_mean</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="s1">&#39;ANN&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.subyear_weights">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">subyear_weights</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">freq</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#subyear_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.subyear_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute month weights according to frequency anchored offsets (season/year)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataArray</span></code>) – Time array of input data</p></li>
+<li><p><strong>freq</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – Identifier of pandas temporal anchored offsets (e.g., A, Q-DEC)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>weights</strong> – weights to be applied at data before subyear time averaging</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DataArray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.load_dataarray">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">load_dataarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#load_dataarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.load_dataarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read requested data into an xarray DataArray according to dataset data_format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Dataset informative structure</p></li>
+<li><p><strong>files</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Dataset input files, variable name, requested period</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – array data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.get_data_files">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">get_data_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">period</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#get_data_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.get_data_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve list of input files from requested dataset and variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Dataset informative structure</p></li>
+<li><p><strong>var</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – variable name</p></li>
+<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – vertical levels float value</p></li>
+<li><p><strong>period</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – Might be None or a two element list with initial and final year</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>files</strong> – Dataset input files, variable name, requested period</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.dataset_request_var">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">dataset_request_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">period</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#dataset_request_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.dataset_request_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform consistency control on user dataset requests and find matching variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Dataset informative structure</p></li>
+<li><p><strong>var</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – variable name</p></li>
+<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – vertical levels float value</p></li>
+<li><p><strong>period</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – Might be None or a two element list with initial and final year</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>var_info</strong> – requested variable information: [component, data stream, type]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.inquire_catalogue">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">inquire_catalogue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#inquire_catalogue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.inquire_catalogue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve requested dataset informative structure from general catalogue (YAML file).</p>
+<p>If no dataset is requested, print a list of available datasets name and description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code>) – Name of data set</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – requested dataset informative structure</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">datacat</span> <span class="o">=</span> <span class="n">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;C-GLORSv7&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inquire_catalogue</span><span class="p">()</span>
+<span class="go">    List of datasets in catalogue:</span>
+<span class="go">    C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means</span>
+<span class="go">    ERA5_MM : ERA5 Monthly Mean on Pressure Levels</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py function">
 <dt id="zapata.data.read_month">
 <code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">vardir</span></em>, <em class="sig-param"><span class="n">var1</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_month" title="Permalink to this definition">¶</a></dt>
@@ -143,7 +308,7 @@ for limited region, longitude 0-360</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>xdat</strong> (<em>numpy</em>) – array data</p></li>
+<li><p><strong>xdat</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy</span></code>) – array data</p></li>
 <li><p><em>nlon</em> – Number of longitudes</p></li>
 <li><p><em>nlat</em> – Number of Latitudes</p></li>
 <li><p><em>lat</em> – Latitudes</p></li>
@@ -157,33 +322,6 @@ for limited region, longitude 0-360</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">readvar_grid</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;SST&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;SURF&#39;</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="n">Celsius</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="zapata.data.read_xarray">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">'ERA5'</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">'globe'</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">'Z'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'500'</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">'DJF'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_xarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read npy files from data and generates xarray.</p>
-<p>This a xarray implementation of read_var. It always grabs the global data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> – Name of data set</p></li>
-<li><p><strong>region</strong> – Select region
-* <em>globe</em>, Entire globe
-* [East, West, North, South], Specific Region</p></li>
-<li><p><strong>var</strong> – variable name</p></li>
-<li><p><strong>level</strong> – level, either a value or ‘SURF’ for surface fields</p></li>
-<li><p><strong>season</strong> – Month (‘JAN’) or season (,’DJF’) or annual ‘ANN’), or ‘ALL’ for every year</p></li>
-<li><p><strong>verbose</strong> – True/False – Tons of Output</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – array data</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>xarray</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -219,7 +357,7 @@ for limited region, longitude 0-360</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>xdat</strong> (<em>numpy</em>) – array data</p></li>
+<li><p><strong>xdat</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy</span></code>) – array data</p></li>
 <li><p><em>nlon</em> – Number of longitudes</p></li>
 <li><p><em>nlat</em> – Number of Latitudes</p></li>
 <li><p><em>lat</em> – Latitudes</p></li>
@@ -314,7 +452,7 @@ for limited region, longitude 0-360</p></li>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
     </div>
   </body>
 </html>
