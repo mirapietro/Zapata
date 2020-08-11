@@ -176,8 +176,8 @@ def load_dataarray(dataset, files):
 
     Returns
     -------
-    out : xarray
-        array data
+    out : DataArray
+        Output data from dataset
 
     '''
 
