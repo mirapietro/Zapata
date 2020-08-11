@@ -64,5 +64,8 @@ Routine for remote working on Zeus
 
 # Documentation
 
-Zapata documenatation is created using `sphinx`, based on the tool code. HTML source can be accessed at `docs/build/html/index.html`
+Zapata documentation is created using `sphinx` and it is sourced from the code itself. 
+
+HTML documentation can be accessed at `docs/build/html/index.html`
+
 To update the documetation of the tool go to `docs` folder and type `gmake html`.
