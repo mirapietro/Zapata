@@ -20,7 +20,7 @@ from geocat.viz import util as gvutil
 zdat.inquire_catalogue()
 
 # Read data and compose zonal means (local)
-xx=zdat.read_xarray(dataset='C-GLORSv7', var='votemper', period=[2000, 2001], season='JFM')
+xx=zdat.read_xarray(dataset='C-GLORSv7', var='votemper', period=[2000, 2001], season='JFM', level=500.)
 
 
 # Read data and compose zonal means (local)
