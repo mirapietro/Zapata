@@ -17,6 +17,10 @@ Python working environment can be setup using the provided conda environment.yml
 
 `conda activate zapata`
 
+To update your `zapata` environment with following updates use
+
+`conda env update -f environment.yml`
+
 # Packages
 
 ## zapata
