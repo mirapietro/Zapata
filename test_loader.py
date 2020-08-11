@@ -21,7 +21,7 @@ zdat.inquire_catalogue()
 
 
 # Read data and compose zonal means¶
-ud=zcom.zonal_var('ERA5_MM','T', period=[2000, 2001], season='ANN',level=[100,])
+ud=zcom.zonal_var('ERA5_MM','T', period=[2000, 2001], season='DJF',level=[100,])
 
 
 print('Done')
