@@ -59,8 +59,14 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
     if region is not None:
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
-    # vertical sampling (to be tested)
+    # vertical sampling
     if not files['islevel'] and level is not None:
+
+        # find closest level if not in levels list
+        if level not in datacat['levels']:
+            idx = np.abs(out.lev - level).argmin()
+            level = out.lev[idx]
+
         out = out.sel(lev = level)
 
     return out
