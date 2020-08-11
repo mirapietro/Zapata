@@ -20,14 +20,12 @@ import yaml, glob
 
 def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=None,verbose=False):
     '''
-    Read npy files from data and generates xarray.
-
-    This ia an xarray implementation of read_var. It always grabs the global data.
+    Load into a DataArray the requested variable from dataset source.
 
     Parameters
     ----------
     dataset : string
-        Name of data set
+        Name of dataset
     region: list
         Region corners [LonMax, LonMin, LatMax, LatMin]
     var : string
@@ -43,8 +41,8 @@ def read_xarray(dataset=None,region=None,var=None,level=None,period=None,season=
 
     Returns
     -------
-    out : xarray
-        array data
+    out : DataArray
+        extracted data
 
     '''
     datacat = inquire_catalogue(dataset)
@@ -371,6 +369,7 @@ def inquire_catalogue(dataset=None):
         requested dataset informative structure
 
     '''
+    out = None
 
     # Load catalogue
     catalogue = yaml.load(open('zapata/catalogue.yml'), Loader=yaml.FullLoader)
