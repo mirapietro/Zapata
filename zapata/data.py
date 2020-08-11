@@ -1,6 +1,6 @@
 '''
-A module to store and treat data
-================================
+Data retrieve and resampling module
+===================================
 '''
 
 import os, sys, re
