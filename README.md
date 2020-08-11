@@ -61,3 +61,8 @@ subroutine for interpolation
 
 ## zeus
 Routine for remote working on Zeus
+
+# Documentation
+
+Zapata documenatation is created using `sphinx`, based on the tool code. HTML source can be accessed at `docs/build/html/index.html`
+To update the documetation of the tool go to `docs` folder and type `gmake html`.
