@@ -31,9 +31,9 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
     period : list
         A two element list with initial and final years
     level : float
-        level, either a value or 'SURF' for surface fields
+        level value (if not in levels list the closest one will be used)
     season : string
-        Month ('JAN') or season (,'DJF') or annual 'ANN'), or 'ALL' for every year
+        Month ('JAN'), season ('DJF', 'AMJ') or annual ('ANN')
     region : list
         Region corners [LonMax, LonMin, LatMax, LatMin]
     verbose : Boolean
@@ -44,6 +44,11 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
     out : DataArray
         extracted data
 
+    Examples
+    --------
+
+    >>> da = read_xarray(dataset='ERA5_MM',var='T',period=[2000 2010], level='500')
+    >>> da = read_xarray(dataset='C-GLORSv7', var='votemper', period=[2000 2010], season='DJF')
     '''
     datacat = inquire_catalogue(dataset)
 
@@ -55,7 +60,7 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
     if season is not None:
         out = da_time_mean(out, season)
 
-    # horizontal sampling
+    # horizontal sampling (need test)
     if region is not None:
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
@@ -88,6 +93,11 @@ def da_time_mean(da, sample):
     out : DataArray
         Time sampled DataArrray
 
+    Examples
+    --------
+
+    >>> da = da_time_mean(da, 'JJA')
+    >>> da = da_time_mean(da, 'ANN')
     '''
     indexes = None
 
@@ -391,6 +401,14 @@ def inquire_catalogue(dataset=None):
     out : dict
         requested dataset informative structure
 
+    Examples
+    --------
+
+    >>> datacat = inquire_catalogue(dataset='C-GLORSv7')
+    >>> inquire_catalogue()
+        List of datasets in catalogue:
+        C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means
+        ERA5_MM : ERA5 Monthly Mean on Pressure Levels
     '''
     out = None
 
