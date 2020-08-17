@@ -79,24 +79,15 @@ def zonal_var(dataset, var, season=None, level=None, period=None, option='LonTim
     >>> zonal_var('GPCP','TPREP','DJF',option='Time',verbose=True)   # Time average 
     """
 
-    for lev in level:
+    xx=zdat.read_xarray(dataset=dataset, var=var, level=level, season=season, period=period, verbose=verbose)
 
-        xx=zdat.read_xarray(dataset=dataset, var=var, level=lev, season=season, period=period, verbose=verbose)
+    if option == 'LonTime':
+        zon = xx.mean(dim='lon').mean(dim='time')
+    elif option == 'Time':
+        zon = xx.mean(dim='time')
+    elif option == 'Lon':
+        zon = xx.mean(dim='lon')
 
-        if option == 'LonTime':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev])
-        elif option == 'Time':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='time'),dim='pressure').assign_coords(pressure=[lev])
-        elif option == 'Lon':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon'),dim='pressure').assign_coords(pressure=[lev])
-        else:
-            xx1=xr.DataArray.expand_dims(xx,dim='pressure').assign_coords(pressure=[lev])       
-
-        if lev == level[0]:
-            zon = xx1
-        else:
-            zon = xr.concat([zon, xx1],dim='pressure')
-        
     return zon
 
 def smooth_xarray(X,sigma=5,order=0,mode='wrap'):

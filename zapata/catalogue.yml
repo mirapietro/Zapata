@@ -55,11 +55,37 @@ ERA5_MM:
       filename: <var>_<lev>_<year>_<mon>_MM.npy
       data_stream:
          monthly: 
-           3D: [U, V, T, W]
+           3D: [U, V, W, T, Z]
            2D: [SLP]
-
   # Places in <path> 
   metrics:
     lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
     lat: 'np.asarray([i for i in np.arange(-90,90.1,0.25)][::-1])'
+    oro: ERA5_quarter_global_oro.npy
+
+#
+ERA5_nc:
+  remote: False
+  path: /Users/lovato/ClimData/ERA5_nc
+  subtree: <var>
+  source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
+  description: ERA5 Monthly Mean on Pressure Levels
+  year_bounds: [1979, 2018]
+  data_block: monthly
+  data_freq: monthly
+  data_format: 'netcdf'
+  levels: [10, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,]
+  # data
+  components:
+    atm:
+      model: 'IFS'
+      grid: {'x':1440, 'y':721, 'z':14}
+      filename: ERA5_1m_<var>_<year>.nc
+      data_stream:
+         monthly:
+           3D: [U, V, W, T, Z]
+           2D: [SLP]
+           coord_map: {'lon':['longitude'], 'lat':['latitude'], 'time':['time'], 'lev':['level'],}
+  # Places in <path>
+  metrics:
     oro: ERA5_quarter_global_oro.npy

@@ -228,11 +228,14 @@ def load_dataarray(dataset, files):
         print('Cannot handle data format ' + dataset['data_format'])
         sys.exit(1)
 
-    # rename coordinates if mapping provided
+    # rename dimensions and coordinates if mapping provided
     if 'coord_map' in files.keys():
         for coord in files['coord_map'].keys():
-            if files['coord_map'][coord] in out.coords.keys():
-                out = out.rename({files['coord_map'][coord]:coord})
+            if files['coord_map'][coord][0] in out.coords.keys():
+                out = out.rename({files['coord_map'][coord][0]:coord})
+                # if dim name is different from coord a second value is given
+                if len(files['coord_map'][coord])>1:
+                    out = out.rename({files['coord_map'][coord][1]:coord})
 
     return out
 
@@ -336,7 +339,7 @@ def dataset_request_var(dataset, var, level, period):
         Dataset informative structure
     var : string
          variable name
-    level : float
+    level : list
         vertical levels float value
     period : list
         Might be None or a two element list with initial and final year
@@ -350,9 +353,10 @@ def dataset_request_var(dataset, var, level, period):
     # check for level bounds
     level_bnd = [min(dataset['levels']), max(dataset['levels'])]
     if level is not None:
-        if level < level_bnd[0] or level > level_bnd[1]:
-            print('Requested level ' + str(level) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
-            sys.exit(1)
+        for lev in level:
+            if lev < level_bnd[0] or lev > level_bnd[1]:
+                print('Requested level ' + str(lev) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
+                sys.exit(1)
 
     # check for time bounds
     time_bnd = dataset['year_bounds']
@@ -411,9 +415,10 @@ def inquire_catalogue(dataset=None):
         ERA5_MM : ERA5 Monthly Mean on Pressure Levels
     '''
     out = None
+    pwd = os.path.dirname(os.path.abspath(__file__))
 
     # Load catalogue
-    catalogue = yaml.load(open('zapata/catalogue.yml'), Loader=yaml.FullLoader)
+    catalogue = yaml.load(open(pwd + '/catalogue.yml'), Loader=yaml.FullLoader)
 
     # Print list of available datasets    
     if dataset is None:
