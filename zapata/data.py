@@ -7,16 +7,13 @@ import os, sys, re
 import numpy as np
 import xarray as xr
 import pandas as pd
-import zapata.lib as lib
-import netCDF4 as net
+import netCDF4 as nc
 import yaml, glob
 
+import zapata.lib as lib
+import zapata.data_drivers as zdrv
 
-# NCEP Reanalysis standard pressure levels
-# 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10
-# 1000  925  850  700  600, 500  400  300, 250, 200, 150, 100      50          10
-#
-
+xr.set_options(keep_attrs=True)
 
 def read_xarray(dataset=None, var=None, period=None, level=None, season=None, region=None, verbose=False):
     '''
@@ -52,9 +49,7 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
     '''
     datacat = inquire_catalogue(dataset)
 
-    files = get_data_files(datacat, var, level, period)
-    
-    out = load_dataarray(datacat, files)
+    out = load_dataarray(datacat, var, level, period)
  
     # temporal sampling
     if season is not None:
@@ -65,14 +60,18 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
     # vertical sampling
-    if not files['islevel'] and level is not None:
+    if level is not None:
+        lev_sel = []
+        for lev in level:
+            if lev in datacat['levels']:
+                lev_sel.append(lev)
+            else:
+                # find closest level if not in levels list
+                idx = np.abs(out.lev - lev).argmin()
+                lev_sel.append(out.lev[idx[0]])
+                print ('Warning: approximate requeste level %s to the nearest one %s' % (str(level),str(lev_sel[-1])))
 
-        # find closest level if not in levels list
-        if level not in datacat['levels']:
-            idx = np.abs(out.lev - level).argmin()
-            level = out.lev[idx]
-
-        out = out.sel(lev = level)
+        out = out.sel(lev = lev_sel)
 
     return out
 
@@ -163,16 +162,20 @@ def subyear_weights(time, freq):
     return weights
 
 
-def load_dataarray(dataset, files):
+def load_dataarray(dataset, var, level, period):
     '''
-    Read requested data into an xarray DataArray according to dataset data_format
+    Read requested data into an xarray DataArray using driver defined in catalogue
 
     Parameters
     ----------
     dataset : dict
         Dataset informative structure
-    files : dict
-        Dataset input files, variable name, requested period
+    var : string
+         variable name
+    level : list
+        vertical levels float value
+    period : list
+        Might be None or a two element list with initial and final year
 
     Returns
     -------
@@ -180,65 +183,58 @@ def load_dataarray(dataset, files):
         Output data from dataset
 
     '''
+    data_driver = dataset['driver']
 
-    if dataset['data_format'] == 'netcdf':
+    if data_driver == 'default':
+
+        # get files list to read
+        files = get_data_files(dataset, var, level, period)
+
         # open files as a dataset
         ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override')
         out = ds[files['var']]
+        out.attrs['realm'] = files['component']
 
-    elif dataset['data_format'] == 'numpy':
-        # get lon/lat coordinates
-        if dataset['metrics']['lon'][-3:] == 'npy': 
-            lon = np.load(dataset['path'] + '/' + dataset['metrics']['lon'])
-            lat = np.load(dataset['path'] + '/' + dataset['metrics']['lat'])
-        else:
-            lon = eval(dataset['metrics']['lon'])
-            lat = eval(dataset['metrics']['lat'])
+        # rename dimensions and coordinates if mapping provided
+        if 'coord_map' in files.keys():
+            out = fix_coords(out, files['coord_map'])
 
-        # define time axis
-        time_bnd = files['period']
-        if dataset['data_freq'] == 'yearly':
-            prds = (time_bnd[1] - time_bnd[0] + 1) ; frq = 'YS'
-        elif dataset['data_freq'] == 'monthly':
-            prds = (time_bnd[1] - time_bnd[0] + 1) * 12 ; frq = 'M'
-        elif dataset['data_freq'] == 'daily':
-            prds = (time_bnd[1] - time_bnd[0] + 1) * 365 ; frq = 'D'
-        time = pd.date_range(str(time_bnd[0])+'-01-01', periods=prds,freq=frq)
-        del prds, frq
-
-        # get first file
-        ndat = np.load(files['files'][0])
-
-        # append other data
-        if len(files['files']) > 1:
-           ndat =  np.expand_dims(ndat, axis=0)
-           for ff in files['files'][1:]:
-              tmp = np.expand_dims(np.load(ff), axis=0)
-              ndat = np.append(ndat, tmp, axis=0)
-           del tmp, ff
-
-        # create xarray
-        if len(lat.shape) > 1:
-            out = xr.DataArray(ndat, name=files['var'], coords={'time': time, 'latitude': (['lat','lon'], lat),
-                          'longitude': (['lat','lon'],lon)}, dims=['time', 'lat', 'lon'])
-        else:
-            out = xr.DataArray(ndat, name=files['var'], coords=[time, lat, lon], dims=['time', 'lat','lon'])
- 
     else:
-        print('Cannot handle data format ' + dataset['data_format'])
-        sys.exit(1)
-
-    # rename dimensions and coordinates if mapping provided
-    if 'coord_map' in files.keys():
-        for coord in files['coord_map'].keys():
-            if files['coord_map'][coord][0] in out.coords.keys():
-                out = out.rename({files['coord_map'][coord][0]:coord})
-                # if dim name is different from coord a second value is given
-                if len(files['coord_map'][coord])>1:
-                    out = out.rename({files['coord_map'][coord][1]:coord})
-
+        # check if driver external driver exist 
+        if data_driver in dir(zdrv):
+            out = getattr(zdrv, data_driver)(dataset, var, level, period)
+        else:
+            print('Driver %s not defined in data_drivers.py.' % data_driver)
+            sys.exit(1)
+            
     return out
 
+
+def fix_coords(da, coord_map):
+    '''
+    Rename dimensions and coordinates to common names using mapping provided in dataset definition
+
+    Parameters
+    ----------
+    da : dataArray
+        Xarray data structure
+    coord_map : dict
+         Dictionary to rename coordinate and dimensions
+
+    Returns
+    -------
+    da: dataArray
+        Xarray data structure with rename features
+
+    '''
+    for coord in coord_map.keys():
+        if coord_map[coord][0] in out.coords.keys():
+            da = out.rename({coord_map[coord][0]:coord})
+            # if a second value is given, dims name are different from coords
+            if len(coord_map[coord])>1:
+                da = out.rename({coord_map[coord][1]:coord})
+
+    return da
 
 def get_data_files(dataset, var, level, period):
     '''
@@ -278,6 +274,11 @@ def get_data_files(dataset, var, level, period):
     if datatree is not None:
         # check if variable is arranged by levels
         islevel = True if re.search('<lev>',datatree) else False
+        if len(level) > 1:
+            print('File list over explicit multiple levels not allowed.')
+            print('Use a loop to call get_data_files for each level with a specific data driver.')
+            sys.exit(1)
+        level = level[0]
         # check if year in subtree
         subyear = True if re.search('year',datatree) else False
         #TODO do we need to handle months in subtree?
@@ -320,6 +321,7 @@ def get_data_files(dataset, var, level, period):
     files['var'] = var
     files['period'] = period
     files['islevel'] = islevel
+    files['component'] = var_info[0]
 
     # coordinate mapping
     data_stream = dataset['components'][var_info[0]]['data_stream'][var_info[1]]
@@ -389,16 +391,20 @@ def dataset_request_var(dataset, var, level, period):
     return var_info
 
 
-def inquire_catalogue(dataset=None):
+def inquire_catalogue(dataset=None, info=False):
     '''
     Retrieve requested dataset informative structure from general catalogue (YAML file).
 
     If no dataset is requested, print a list of available datasets name and description.
 
+    If info is True print additional details without loading dataset if provided
+
     Parameters
     ----------
     dataset : string
         Name of data set
+    info: boolean
+        Print additional details for all or selected dataset
 
     Returns
     -------
@@ -427,6 +433,9 @@ def inquire_catalogue(dataset=None):
             print('%s : %s' % tuple([cat, catalogue[cat]['description']]))
         print('\n')
         return
+
+    if info:
+       print('Dataset : ' + dataset)
 
     # retrieve dataset information
     if dataset not in catalogue.keys():
@@ -501,7 +510,7 @@ def read_month(dataset, vardir,var1,level,yy,mm,type,option,verbose=False):
             data1=np.load(fil1)
     elif dataset == 'GPCP':       
         file = info[dataset]['place'] + '/gpcp_cdr_v23rB1_y' + str(yy) + '_m' + '{:02d}'.format(mm) + '.nc'      
-        data1 = net.Dataset(file).variables["precip"][:,:]
+        data1 = nc.Dataset(file).variables["precip"][:,:]
     else:
         Print(' Error in read_month, datset set as {}'.format(dataset))
     return data1
