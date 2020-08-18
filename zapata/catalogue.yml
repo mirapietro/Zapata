@@ -21,19 +21,19 @@ C-GLORSv7:
            2D: {'sohefldo':'surface_downward_heat_flux_in_sea_water', 'somxl010':'ocean_mixed_layer_thickness_defined_by_sigma_theta', 'soshfldo':'net_downward_shortwave_flux_at_sea_water_surface',
                 'sossheig':'sea_surface_height_above_geoid', 'sosaline':'sea_surface_salinity', 'sosstsst':'sea_surface_temperature', 'sowaflup':'water_flux_out_of_sea_ice_and_sea_water',
                 'sowindsp':'wind_speed_module', 'solongwa':'surface_net_downward_longwave_flux', 'solatent':'surface_downward_latent_heat_flux'} 
-           coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'], 'lev':['deptht'],}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered', 'lev':'deptht',}
          grid_U:
            3D: {'vozocrtx':'sea_water_x_velocity',}
            2D: {'sozocrtx':'surface_sea_water_x_velocity', 'sozotaux':'surface_downward_x_stress'}
-           coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'], 'lev':['depthu'],}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered', 'lev':'depthu',}
          grid_V:
            3D: {'vomecrty':'sea_water_y_velocity'}
            2D: {'somecrty':'surface_sea_water_y_velocity', 'sometauy':'surface_downward_y_stress',}
-           coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'], 'lev':['depthv'],}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered', 'lev':'depthv',}
          icemod:
            3D: {}
            2D: {'icethic':'sea_ice_thickness', 'iicevelu':'sea_ice_x_velocity', 'iicevelv':'sea_ice_y_velocity', 'isnowthi':'surface_snow_thickness', 'soicecov':'sea_ice_area_fraction'}
-           coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'],}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered'}
   # contained in <path>
   metrics:
     landsea: 'MESHMASK/mesh_mask.nc'
