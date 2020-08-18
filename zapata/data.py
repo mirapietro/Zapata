@@ -67,9 +67,9 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
                 lev_sel.append(lev)
             else:
                 # find closest level if not in levels list
-                idx = np.abs(out.lev - lev).argmin()
-                lev_sel.append(out.lev[idx[0]])
-                print ('Warning: approximate requeste level %s to the nearest one %s' % (str(level),str(lev_sel[-1])))
+                idx = np.abs(out.lev.values - lev).argmin().min()
+                lev_sel.append(out.lev.values[idx])
+                print ('Warning: approximate requested level %s to nearest one %s' % (str(level),str(lev_sel[-1])))
 
         out = out.sel(lev = lev_sel)
 
@@ -164,7 +164,7 @@ def subyear_weights(time, freq):
 
 def load_dataarray(dataset, var, level, period):
     '''
-    Read requested data into an xarray DataArray using driver defined in catalogue
+    Read requested data into an xarray DataArray using dataset driver
 
     Parameters
     ----------
@@ -228,17 +228,14 @@ def fix_coords(da, coord_map):
 
     '''
     for coord in coord_map.keys():
-        if coord_map[coord][0] in out.coords.keys():
-            da = out.rename({coord_map[coord][0]:coord})
-            # if a second value is given, dims name are different from coords
-            if len(coord_map[coord])>1:
-                da = out.rename({coord_map[coord][1]:coord})
+        if coord_map[coord] in da.dims:
+            da = da.rename({coord_map[coord]:coord})
 
     return da
 
 def get_data_files(dataset, var, level, period):
     '''
-    Retrieve list of input files from requested dataset and variable.
+    Retrieve list of input files for requested dataset/variable pair.
 
     Parameters
     ----------
@@ -456,10 +453,12 @@ def inquire_catalogue(dataset=None, info=False):
            thecomp = out['components'][comp]
            print( comp + ' component [' +thecomp['model'] + ']')
            for ss in thecomp['data_stream'].keys():
+               print('\nData Stream : ' + ss)
                for grp in thecomp['data_stream'][ss].keys():
-                   print(' Data Stream ' + ss + ' '+ grp  +' variables:')
-                   for vv in thecomp['data_stream'][ss][grp].keys():
-                       print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
+                   if grp not in ['coord_map',]:
+                       print(' ' + grp  +' variables')
+                       for vv in thecomp['data_stream'][ss][grp].keys():
+                           print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
 
     print('\n')
 
