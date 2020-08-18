@@ -372,7 +372,7 @@ def dataset_request_var(dataset, var, level, period):
     for cc in dataset['components'].keys():
         for dd in dataset['components'][cc]['data_stream'].keys():
              for xy in dataset['components'][cc]['data_stream'][dd].keys():
-                 thevars = dataset['components'][cc]['data_stream'][dd][xy]
+                 thevars = dataset['components'][cc]['data_stream'][dd][xy].keys()
                  if var in thevars:
                      var_match.append([cc, dd, xy])
     del cc, dd, xy, thevars
@@ -419,6 +419,14 @@ def inquire_catalogue(dataset=None, info=False):
         List of datasets in catalogue:
         C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means
         ERA5_MM : ERA5 Monthly Mean on Pressure Levels
+    >>> inquire_catalogue(dataset='ERA5_MM', info=True)
+        Access dataset ERA5_MM
+        atm component [IFS]
+         Data Stream monthly 3D variables:
+         - U : Zonal Wind
+         - V : Meridional Wind
+         - W : Vertical Velocity
+         ...
     '''
     out = None
     pwd = os.path.dirname(os.path.abspath(__file__))
@@ -434,20 +442,26 @@ def inquire_catalogue(dataset=None, info=False):
         print('\n')
         return
 
-    if info:
-       print('Dataset : ' + dataset)
-       for comp in dataset['components']:
-           thecomp = dataset['components'][comp]
-           print( comp + ' component [' +thecomp['model'] + ']')
-
     # retrieve dataset information
     if dataset not in catalogue.keys():
         print('Requested dataset ' + dataset + ' is not available in catalogue.')
         sys.exit(1)
     else:
-        print('Access dataset ' + dataset + '\n')
+        print('Access dataset ' + dataset )
         out = catalogue[dataset]
         out['name'] = dataset
+
+    if info:
+       for comp in out['components']:
+           thecomp = out['components'][comp]
+           print( comp + ' component [' +thecomp['model'] + ']')
+           for ss in thecomp['data_stream'].keys():
+               for grp in thecomp['data_stream'][ss].keys():
+                   print(' Data Stream ' + ss + ' '+ grp  +' variables:')
+                   for vv in thecomp['data_stream'][ss][grp].keys():
+                       print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
+
+    print('\n')
 
     return out
 

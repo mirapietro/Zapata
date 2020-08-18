@@ -16,20 +16,22 @@ C-GLORSv7:
       grid: {'x':1442, 'y':1050, 'z':75}
       data_stream:
          grid_T:
-           3D: [vosaline, votemper]
-           2D: [botemper, sobotpre, sofmmflx, soheatc3, soheatct, sohefldo, sohfdamp, solatent, solongwa, somixhgt, somxl010, soqempoc, sosaline, sosaltco, sosensib, soshfldo, sossheig, sosstmax, sosstmin, sosstsst, sowaflup, sowfdamp, sowindsp,]
+           3D: {'vosaline':'sea_water_practical_salinity', 'votemper':'sea_water_potential_temperature'}
+           2D: {'sohefldo':'surface_downward_heat_flux_in_sea_water', 'somxl010':'ocean_mixed_layer_thickness_defined_by_sigma_theta', 'soshfldo':'net_downward_shortwave_flux_at_sea_water_surface',
+                'sossheig':'sea_surface_height_above_geoid', 'sosaline':'sea_surface_salinity', 'sosstsst':'sea_surface_temperature', 'sowaflup':'water_flux_out_of_sea_ice_and_sea_water',
+                'sowindsp':'wind_speed_module', 'solongwa':'surface_net_downward_longwave_flux', 'solatent':'surface_downward_latent_heat_flux'} 
            coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'], 'lev':['deptht'],}
          grid_U:
-           3D: [vozocrtx,]
-           2D: [sozocrtx, sozotaux]
+           3D: {'vozocrtx':'sea_water_x_velocity',}
+           2D: {'sozocrtx':'surface_sea_water_x_velocity', 'sozotaux':'surface_downward_x_stress'}
            coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'], 'lev':['depthu'],}
          grid_V:
-           3D: [vomecrty,]
-           2D: [somecrty, sometauy]
+           3D: {'vomecrty':'sea_water_y_velocity'}
+           2D: {'somecrty':'surface_sea_water_y_velocity', 'sometauy':'surface_downward_y_stress',}
            coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'], 'lev':['depthv'],}
          icemod:
-           3D: []
-           2D: [icethic, iicevelu, iicevelv, isnowthi, qla_ai_cea, qns_ai_cea, qns_io_cea, qsr_ai_cea, qsr_io_cea, soicecov]
+           3D: {}
+           2D: {'icethic':'sea_ice_thickness', 'iicevelu':'sea_ice_x_velocity', 'iicevelv':'sea_ice_y_velocity', 'isnowthi':'surface_snow_thickness', 'soicecov':'sea_ice_area_fraction'}
            coord_map: {'lon':['nav_lon','x'], 'lat':['nav_lat','y'], 'time':['time_centered'],}
   # contained in <path>
   metrics:
@@ -55,8 +57,8 @@ ERA5_MM:
       filename: <var>_<lev>_<year>_<mon>_MM.npy
       data_stream:
          monthly: 
-           3D: [U, V, W, T, Z]
-           2D: [SST,]
+           3D: {'U':'Zonal Wind', 'V':'Meridional Wind', 'W':'Vertical Velocity', 'T':'Temperature', 'Z':'Geopotential Height'}
+           2D: {'SST':'Sea Surface Tenperature', 'tp':'Precipitation', 'MSL':'Mean Sea Level Pressure'}
   # Places in <path> 
   metrics:
     lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
