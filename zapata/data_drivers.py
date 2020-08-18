@@ -9,6 +9,7 @@ import xarray as xr
 import pandas as pd
 import glob
 
+
 def era5_numpy(dataset, var, level, period):
     '''
     Driver for data retrieve of ERA5 in numpy format
@@ -31,6 +32,7 @@ def era5_numpy(dataset, var, level, period):
         Output data from dataset
 
     '''
+    from natsort import natsorted
     from zapata.data import get_data_files
   
     out = None
@@ -42,6 +44,9 @@ def era5_numpy(dataset, var, level, period):
     for lev in level:
 
         files = get_data_files(dataset, var, [lev], period)
+        
+        # use natural sorting of files
+        files['files'] = natsorted(files['files'])
 
         # get lon/lat coordinates
         if dataset['metrics']['lon'][-3:] == 'npy':
@@ -81,7 +86,8 @@ def era5_numpy(dataset, var, level, period):
             tmp = xr.DataArray(ndat, name=files['var'], coords=[time, lat, lon], dims=['time', 'lat','lon'])
 
         # add level coordinate
-        tmp = tmp.expand_dims(dim=['lev'], axis=1).assign_coords(lev=[lev]) 
+        if lev not in ['SURF',]:
+           tmp = tmp.expand_dims(dim=['lev'], axis=1).assign_coords(lev=[lev]) 
 
         if out is None:
             out = tmp

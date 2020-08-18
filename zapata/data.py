@@ -60,7 +60,7 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
     # vertical sampling
-    if level is not None:
+    if level is not None and 'lev' in out.coords.keys():
         lev_sel = []
         for lev in level:
             if lev in datacat['levels']:
@@ -354,7 +354,7 @@ def dataset_request_var(dataset, var, level, period):
     '''
     # check for level bounds
     level_bnd = [min(dataset['levels']), max(dataset['levels'])]
-    if level is not None:
+    if level is not None and not isinstance(level[0], str):
         for lev in level:
             if lev < level_bnd[0] or lev > level_bnd[1]:
                 print('Requested level ' + str(lev) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
@@ -436,6 +436,9 @@ def inquire_catalogue(dataset=None, info=False):
 
     if info:
        print('Dataset : ' + dataset)
+       for comp in dataset['components']:
+           thecomp = dataset['components'][comp]
+           print( comp + ' component [' +thecomp['model'] + ']')
 
     # retrieve dataset information
     if dataset not in catalogue.keys():

@@ -23,5 +23,6 @@ dependencies:
   - tqdm
   - sphinx
   - seaborn
+  - natsort
   - pudb
   - yapf
