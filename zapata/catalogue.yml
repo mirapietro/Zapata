@@ -4,6 +4,7 @@ C-GLORSv7:
   subtree:
   source_url: http://c-glors.cmcc.it/index/index.html
   description: Ocean Global Reanalyses at 1/4° resolution monthly means
+  contact: Andrea Cipollone
   year_bounds: [1986, 2019]
   data_block: yearly
   driver: 'default'
@@ -43,7 +44,8 @@ ERA5_MM:
   path: /Users/lovato/ClimData/ERA5_MM
   subtree: <var><lev>
   source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
-  description: ERA5 Monthly Mean on Pressure Levels
+  description: ERA5 Monthly Mean on Pressure Levels (compiled by A. Navarra 2019)
+  contact: Antonio Navarra
   year_bounds: [1979, 2018]
   data_block: monthly
   data_freq: monthly
