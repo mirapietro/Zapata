@@ -191,7 +191,7 @@ def load_dataarray(dataset, var, level, period):
         files = get_data_files(dataset, var, level, period)
 
         # open files as a dataset
-        ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override')
+        ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override', parallel=True)
         out = ds[files['var']]
         out.attrs['realm'] = files['component']
 
