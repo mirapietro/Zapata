@@ -60,8 +60,8 @@
 <li><p><strong>dataset</strong> – Name of the dataset, <code class="docutils literal notranslate"><span class="pre">ERA5</span></code>, <code class="docutils literal notranslate"><span class="pre">GPCP</span></code></p></li>
 <li><p><strong>var</strong> – Variable</p></li>
 <li><p><strong>season</strong> – Month or Season. Resolved from <cite>dat_param</cite></p></li>
-<li><p><strong>level</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – Vertical level to extract</p></li>
-<li><p><strong>period</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – Might be None or a two element list with initial and final years</p></li>
+<li><p><strong>level</strong> (<em>list</em>) – Vertical level to extract</p></li>
+<li><p><strong>period</strong> (<em>list</em>) – Might be None or a two element list with initial and final years</p></li>
 <li><p><strong>option</strong> –</p>
 <dl class="simple">
 <dt>Control Averaging</dt><dd><ul class="simple">
@@ -146,7 +146,7 @@ The input is extended by wrapping around to the opposite edge.</p></li>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul>
-<li><p><strong>var</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – array to compute anomalies</p></li>
+<li><p><strong>var</strong> (<em>xarray</em>) – array to compute anomalies</p></li>
 <li><p><strong>option</strong> –</p>
 <dl>
 <dt>Option controlling the type of anomaly calculation</dt><dd><table class="docutils align-default">
@@ -179,7 +179,7 @@ The input is extended by wrapping around to the opposite edge.</p></li>
 <dd class="field-even"><p><strong>anom</strong></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code></p>
+<dd class="field-odd"><p>xarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -195,13 +195,13 @@ number of columns</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – <cite>xarray</cite> of at leasts two dimensions</p></li>
+<li><p><strong>X</strong> (<em>xarray</em>) – <cite>xarray</cite> of at leasts two dimensions</p></li>
 <li><p><strong>dims</strong> – Dimensions to be stacked, <em>Default (‘lat’,’lon’)</em></p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="#zapata.computation.Xmat.A" title="zapata.computation.Xmat.A"><strong>A</strong></a> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – Stacked matrix of type <em>xarray</em></p></li>
+<li><p><a class="reference internal" href="#zapata.computation.Xmat.A" title="zapata.computation.Xmat.A"><strong>A</strong></a> (<em>xarray</em>) – Stacked matrix of type <em>xarray</em></p></li>
 <li><p><strong>_ntime</strong> – Length of time points</p></li>
 <li><p><strong>_npoints</strong> – Length of spatial points</p></li>
 </ul>
@@ -256,7 +256,7 @@ then it is set to the maximum</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></p>
+<dd class="field-odd"><p>dictionary</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -279,8 +279,8 @@ to the computed correlation. The algorithms is taken from scipy.stats.pearsonsr�
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">xarray</span></code>) – Index, should have the same dimension length <cite>time</cite></p></li>
-<li><p><strong>option</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) –</p>
+<li><p><strong>y</strong> (<em>xarray</em>) – Index, should have the same dimension length <cite>time</cite></p></li>
+<li><p><strong>option</strong> (<em>str</em>) –</p>
 <ul>
 <li><p>‘probability’ _Returns the probability (p-value) that the correlation is smaller than a random sample</p></li>
 <li><p>‘signicance’  _Returns the significance level ( 1 - p-value)</p></li>
@@ -342,9 +342,9 @@ map can be inverted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Kernel</span></code>) – Kernel to be used</p></li>
+<li><p><strong>k</strong> (<em>Kernel</em>) – Kernel to be used</p></li>
 <li><p><strong>num</strong> – Number of RKHS vectors to transform</p></li>
-<li><p><strong>PsiX</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array</span> <span class="pre">(npoints,ntime)</span></code>) – Original data defininf the kernel</p></li>
+<li><p><strong>PsiX</strong> (<em>array (npoints,ntime)</em>) – Original data defininf the kernel</p></li>
 <li><p><strong>Proj</strong> – Projction coefficients on Feature Space</p></li>
 <li><p><strong>icstart</strong> – Starting Value for iteration</p></li>
 </ul>
@@ -353,7 +353,7 @@ map can be inverted.</p>
 <dd class="field-even"><p><strong>back_image</strong></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array(npoints</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">num)</span></code></p>
+<dd class="field-odd"><p>array(npoints, num)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -436,7 +436,7 @@ map can be inverted.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

@@ -148,6 +148,8 @@
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Opening figure , </span><span class="si">%i</span><span class="s1"> rows and </span><span class="si">%i</span><span class="s1"> cols </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span><span class="n">cols</span><span class="p">))</span>
     
     <span class="k">return</span> <span class="n">fig</span><span class="p">,</span><span class="n">ax</span><span class="p">,</span><span class="n">projection</span></div>
+
+
 <div class="viewcode-block" id="xmap"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.xmap">[docs]</a><span class="k">def</span> <span class="nf">xmap</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">cont</span><span class="p">,</span> <span class="n">pro</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">contour</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clabel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">c_format</span> <span class="o">=</span> <span class="s1">&#39; </span><span class="si">{:6.0f}</span><span class="s1"> &#39;</span><span class="p">,</span> \
                       <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Special_Value</span> <span class="o">=</span> <span class="mf">9999.</span><span class="p">,</span>\
                       <span class="n">lefttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">righttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">maintitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>\
@@ -338,6 +340,8 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">handles</span><span class="p">[</span><span class="s1">&#39;filled&#39;</span><span class="p">],</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span><span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">handles</span>    </div>
+
+
 <div class="viewcode-block" id="xsmap"><a class="viewcode-back" href="../../zapata.mapping.html#zapata.mapping.xsmap">[docs]</a><span class="k">def</span> <span class="nf">xsmap</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">cont</span><span class="p">,</span> <span class="n">pro</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">contour</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clabel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>\
                       <span class="n">zeroline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">Special_Value</span> <span class="o">=</span> <span class="mf">9999.</span><span class="p">,</span>\
                       <span class="n">lefttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">righttitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">maintitle</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>\
@@ -938,7 +942,7 @@
         <span class="n">linewidths</span><span class="o">=</span><span class="mf">1.25</span><span class="p">,</span>
         <span class="n">add_labels</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># again turn off automatic labels</span>
         <span class="p">)</span>
-    <span class="n">lev</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">pressure</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">lev</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">lev</span><span class="o">.</span><span class="n">values</span>
     <span class="n">nlev</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">lev</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">lev</span><span class="p">[</span><span class="n">nlev</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lev</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Invert y axis</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span><span class="o">-</span><span class="mi">90</span><span class="p">)</span>  <span class="c1"># Invert x axis</span>
@@ -1411,7 +1415,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

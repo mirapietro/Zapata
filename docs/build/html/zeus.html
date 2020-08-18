@@ -68,7 +68,7 @@ modules; to install the dependencies run for example:</p>
 This function must be called before any other function from the module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>user</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Username on Zeus.</p>
+<dd class="field-odd"><p><strong>user</strong> (<em>str</em>) – Username on Zeus.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -89,7 +89,7 @@ This function must be called before any other function from the module.</p>
 <dd><p>Execute a command remotely on Zeus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cmd</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Command to be executed on Zeus.</p>
+<dd class="field-odd"><p><strong>cmd</strong> (<em>str</em>) – Command to be executed on Zeus.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -113,8 +113,8 @@ specified in <cite>dst</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>src</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path of the remote file to be downloaded from Zeus.</p></li>
-<li><p><strong>dst</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Local path/name where to copy the file from Zeus.</p></li>
+<li><p><strong>src</strong> (<em>str</em>) – Path of the remote file to be downloaded from Zeus.</p></li>
+<li><p><strong>dst</strong> (<em>str</em>) – Local path/name where to copy the file from Zeus.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -139,8 +139,8 @@ specified in <cite>dst</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>src</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path of the local file to be uploaded on Zeus.</p></li>
-<li><p><strong>dst</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path/name where to copy the file on Zeus.</p></li>
+<li><p><strong>src</strong> (<em>str</em>) – Path of the local file to be uploaded on Zeus.</p></li>
+<li><p><strong>dst</strong> (<em>str</em>) – Path/name where to copy the file on Zeus.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -172,10 +172,10 @@ wait for the job to end.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>script_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">src</span></code>) – Absolute (local) path of the script to be submitted on LSF.</p></li>
-<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">src</span></code>) – Absolute (remote) path of data to be downloaded.</p></li>
-<li><p><strong>compress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <em>optional</em>) – If data downloaded has to be compressed or not (default is False).</p></li>
-<li><p><strong>frequency</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – Interval for checking job status in seconds (default is 10s).</p></li>
+<li><p><strong>script_name</strong> (<em>src</em>) – Absolute (local) path of the script to be submitted on LSF.</p></li>
+<li><p><strong>data</strong> (<em>src</em>) – Absolute (remote) path of data to be downloaded.</p></li>
+<li><p><strong>compress</strong> (<em>bool, optional</em>) – If data downloaded has to be compressed or not (default is False).</p></li>
+<li><p><strong>frequency</strong> (<em>int, optional</em>) – Interval for checking job status in seconds (default is 10s).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -201,7 +201,7 @@ wait for the job to end.</p>
 is shown, otherwise all recent jobs will be listed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>jobid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – ID of LSF job.</p>
+<dd class="field-odd"><p><strong>jobid</strong> (<em>int, optional</em>) – ID of LSF job.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -230,30 +230,30 @@ interface are lent from the Dask Jobqueue interface.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>project</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Accounting string associated with each worker job. Passed to
+<li><p><strong>project</strong> (<em>str</em>) – Accounting string associated with each worker job. Passed to
 <cite>#BSUB -P</cite> option.</p></li>
-<li><p><strong>cores</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of cores for the worker nodes. Passed to <cite>#BSUB -n</cite> option.</p></li>
-<li><p><strong>memory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Total amount of memory per worker job. Passed to <cite>#BSUB -M</cite> option.</p></li>
-<li><p><strong>name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Name of Dask workers. By default set to Dask-test.</p></li>
-<li><p><strong>processes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – Cut the job up into this many processes. Good for GIL workloads or for
+<li><p><strong>cores</strong> (<em>int</em>) – Number of cores for the worker nodes. Passed to <cite>#BSUB -n</cite> option.</p></li>
+<li><p><strong>memory</strong> (<em>str</em>) – Total amount of memory per worker job. Passed to <cite>#BSUB -M</cite> option.</p></li>
+<li><p><strong>name</strong> (<em>str, optional</em>) – Name of Dask workers. By default set to Dask-test.</p></li>
+<li><p><strong>processes</strong> (<em>int, optional</em>) – Cut the job up into this many processes. Good for GIL workloads or for
 nodes with many cores. By default, process ~= sqrt(cores) so that the
 number of processes and the number of threads per process is roughly
 the same.</p></li>
-<li><p><strong>queue</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Destination queue for each worker job. Passed to #BSUB -q option. By
+<li><p><strong>queue</strong> (<em>str, optional</em>) – Destination queue for each worker job. Passed to #BSUB -q option. By
 default <cite>p_short</cite> queue is used.</p></li>
-<li><p><strong>local_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Dask worker local directory for file spilling. By default the folder
+<li><p><strong>local_directory</strong> (<em>str, optional</em>) – Dask worker local directory for file spilling. By default the folder
 <cite>dask-space</cite> in the home directory is used.</p></li>
-<li><p><strong>interface</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Network interface like <cite>eth0</cite> or <cite>ib0</cite>. This will be used for the Dask
+<li><p><strong>interface</strong> (<em>str, optional</em>) – Network interface like <cite>eth0</cite> or <cite>ib0</cite>. This will be used for the Dask
 workers interface. By default <cite>ib0</cite> is used.</p></li>
-<li><p><strong>walltime</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Walltime for each worker job in HH:MM. Passed to <cite>#BSUB -W</cite> option. If
+<li><p><strong>walltime</strong> (<em>str, optional</em>) – Walltime for each worker job in HH:MM. Passed to <cite>#BSUB -W</cite> option. If
 not specified the default queue walltime is used.</p></li>
-<li><p><strong>job_extra</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – List of optional LSF options, for example -x. Each option will be
+<li><p><strong>job_extra</strong> (<em>list, optional</em>) – List of optional LSF options, for example -x. Each option will be
 prepended with the #BSUB prefix.</p></li>
-<li><p><strong>env_extra</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <em>optional</em>) – Optional commands to add to script before launching worker.</p></li>
-<li><p><strong>log_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <em>optional</em>) – Directory to use for job scheduler logs. By default the folder
+<li><p><strong>env_extra</strong> (<em>list, optional</em>) – Optional commands to add to script before launching worker.</p></li>
+<li><p><strong>log_directory</strong> (<em>str, optional</em>) – Directory to use for job scheduler logs. By default the folder
 <cite>dask-space</cite> in the home directory is used.</p></li>
-<li><p><strong>death_timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>optional</em>) – Seconds to wait for a scheduler before closing workers (default is 60).</p></li>
-<li><p><strong>n_workers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <em>optional</em>) – Number of worker process to startup, i.e. jobs on LSF (default is 1).</p></li>
+<li><p><strong>death_timeout</strong> (<em>float, optional</em>) – Seconds to wait for a scheduler before closing workers (default is 60).</p></li>
+<li><p><strong>n_workers</strong> (<em>int, optional</em>) – Number of worker process to startup, i.e. jobs on LSF (default is 1).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -291,7 +291,7 @@ scheduler and worker processes. Note that this function will stop every
 Dask cluster running under the provided username on Zeus.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>client</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dask.distributed.Client</span></code>, <em>optional</em>) – Optional Dask Client refering to a running Dask cluster</p>
+<dd class="field-odd"><p><strong>client</strong> (<em>dask.distributed.Client, optional</em>) – Optional Dask Client refering to a running Dask cluster</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -373,7 +373,7 @@ Dask cluster running under the provided username on Zeus.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
