@@ -1,0 +1,4 @@
+[submodule "pq2"]
+	path = pq2
+	url = git@github.com:CMCC-Foundation/bs-mfc-pq.git
+	branch = pq_v2-ref
