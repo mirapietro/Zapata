@@ -200,7 +200,7 @@ def load_dataarray(dataset, var, level, period):
             out = fix_coords(out, files['coord_map'])
 
     else:
-        # check if driver external driver exist 
+        # check if external driver exist 
         if data_driver in dir(zdrv):
             out = getattr(zdrv, data_driver)(dataset, var, level, period)
         else:
