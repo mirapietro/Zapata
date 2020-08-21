@@ -33,15 +33,15 @@ from dask.distributed import Client
 
 # Global variable to store the login username
 username = ""
-# Global variable with the IP address of the Zeus login node
-hostname = "192.168.118.11"
+# Global variable with the hostname to login
+hostname = ""
 # Global variable to store the user home path
 home = ""
 # Global variable to store the user tmp folder
 tmp_path = ""
 
 
-def init(user):
+def init(user, host=None):
     """Initialize the module with the Zeus login username.
 
     It inizializes the module and checks if the ssh connection can be made.
@@ -62,9 +62,15 @@ def init(user):
 
     """
     global username
+    global hostname
     global home
     global tmp_path
     username = user
+    if host is None:
+        hostname = "192.168.118.11"
+    else:
+        hostname = host
+
     ret, res = _remote_cmd("echo $HOME", None, True)
     if ret == 0:
         home = res
