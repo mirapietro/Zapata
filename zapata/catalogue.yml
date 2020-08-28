@@ -65,3 +65,29 @@ ERA5_MM:
   metrics:
     lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
     lat: 'np.asarray([i for i in np.arange(-90,90.1,0.25)][::-1])'
+
+#
+ERAint:
+  remote: True
+  path: /work/paoloruggieri/ERA-INTERIM
+  subtree: <var><lev>
+  source_url: https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era-interim
+  description: ERA-Interim  Monthly Mean on Pressure Levels (compiled by P. Ruggeri)
+  contact: Paolo Ruggeri
+  year_bounds: [1980, 2017]
+  data_block: monthly
+  data_freq: monthly
+  driver: 'standard'
+  levels: [10, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,]
+  # data
+  components:
+    atm:
+      model: 'IFS'
+      grid: {'x':360, 'y':181, 'z':14}
+      filename: monthly_<var><lev>_<year>.nc
+      data_stream:
+         monthly:
+           3D: {'U':'Zonal Wind', 'V':'Meridional Wind', 'W':'Vertical Velocity', 'T':'Temperature', 'Z':'Geopotential Height'}
+           2D: {'SST':'Sea Surface Tenperature', 'tp':'Precipitation', 'MSL':'Mean Sea Level Pressure'}
+  # Places in <path>
+  metrics:
