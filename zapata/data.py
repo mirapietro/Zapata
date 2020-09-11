@@ -10,7 +10,6 @@ import pandas as pd
 import netCDF4 as nc
 import yaml, glob
 
-import zapata.lib as lib
 import zapata.data_drivers as zdrv
 
 xr.set_options(keep_attrs=True)
