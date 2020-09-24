@@ -19,16 +19,23 @@ from geocat.viz import util as gvutil
 # check catalogue contents
 zdat.inquire_catalogue()
 
-#zdat.inquire_catalogue(dataset='C-GLORSv7', info=True)
+mycat='BSFS-NRT_daily'
+#mycat='C-GLORSv7'
+#mycat='ERA5_MM'
+
+zdat.inquire_catalogue(dataset=mycat, info=True)
+
 ## Read data
-#xx=zdat.read_xarray(dataset='C-GLORSv7', var='votemper', period=[2000, 2001], season='JFM', level=[500.])
+if mycat == 'BSFS-NRT_daily':
+    xx=zdat.read_xarray(dataset=mycat, var='vomecrty', period=[2019, 2019], season='ANN', level=[3.])
 
+if mycat == 'C-GLORSv7':
+    xx=zdat.read_xarray(dataset=mycat, var='votemper', period=[2000, 2001], season='JFM', level=[500.])
 
-zdat.inquire_catalogue(dataset='ERA5_MM', info=True)
-yy = zdat.read_xarray(dataset='ERA5_MM', var='SST', period=[2000, 2001], season='JFM', level=['SURF',])
-# Read data and compose zonal means (local)
-ud=zcom.zonal_var('ERA5_MM','T', period=[2000, 2001], season='DJF',level=[100,], option='Time')
+if mycat == 'ERA5_MM':
+    xx=zcom.zonal_var(mycat, 'T', period=[2000, 2001], season='DJF',level=[100,], option='Time')
 
+print(xx)
 
 print('Done')
 
