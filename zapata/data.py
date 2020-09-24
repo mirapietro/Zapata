@@ -267,6 +267,7 @@ def get_data_files(dataset, var, level, period):
     if period is None:
         period = dataset['year_bounds']
 
+    months = ['01',]
     if datatree is not None:
         # check if variable is arranged by levels
         islevel = True if re.search('<lev>',datatree) else False
@@ -275,21 +276,21 @@ def get_data_files(dataset, var, level, period):
             print('Use a loop to call get_data_files for each level with a specific data driver.')
             sys.exit(1)
         level = level[0]
-        # check if year in subtree
-        subyear = True if re.search('year',datatree) else False
-        #TODO do we need to handle months in subtree?
-        if re.search('mon',datatree):
-            print('Cannot handle dataset subtree with months')
+        # check if month in subtree
+        if re.search('month',datatree) :
+            months = [str(item).zfill(2) for item in range(1,13)]
+        #TODO do we need to handle dayss in subtree?
+        if re.search('day',datatree):
+            print('Cannot handle dataset subtree with days')
             sys.exit(1)
     else:
         islevel = False
-        subyear = False
         datatree = ''
 
     nameyear = True if re.search('year',filename) else False
         
     # standard set of wildcards
-    wildcards={'var':var, 'lev':str(level), 'mon':'*', 'comp':var_info[0], 'data_stream':var_info[1]}
+    wildcards={'var':var, 'lev':str(level), 'comp':var_info[0], 'data_stream':var_info[1]}
     for ii in wildcards.keys():
         datatree = datatree.replace('<' + ii +'>',wildcards[ii])
         filename = filename.replace('<' + ii +'>',wildcards[ii])
@@ -297,15 +298,19 @@ def get_data_files(dataset, var, level, period):
     # compose files list
     in_files=[]
     for yy in np.arange(period[0], period[1]+1):
-        thispath = '/'.join([datapath, datatree])
-        if subyear:
+        for mm in months:
+            thispath = '/'.join([datapath, datatree])
+            #subtree replace
             thispath = thispath.replace('<year>',str(yy))
-        thisname = filename
-        if nameyear:
+            thispath = thispath.replace('<month>',str(mm))
+            #filename replace
+            thisname = filename
             thisname = thisname.replace('<year>',str(yy))
-        tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
-        in_files.extend(tmpfile)
-        del thispath, thisname, tmpfile
+            thisname = thisname.replace('<month>',str(mm))
+            #list files
+            tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
+            in_files.extend(tmpfile)
+            del thispath, thisname, tmpfile
     
     if not in_files:
         print('Input files not found for ' + dataset['name'] + ' located in ' + datapath)
