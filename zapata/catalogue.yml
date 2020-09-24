@@ -1,3 +1,42 @@
+BSFS-NRT_daily:
+  remote: True
+  path: /data/products/BSFS/bsfs_v3.2/analysis_daily_mean
+  subtree: <year>/<month>
+  source_url: http://bsfs.cmcc.it/
+  description: Black Sea Forecasting System (BSFS) NRT analisys daily means
+  contact: Stefania Ciliberti
+  year_bounds: [2014, 2019]
+  data_block: daily
+  driver: 'default'
+  levels: [2.50107861, 7.51119328, 12.5361958, 17.5834045, 22.6637363, 27.7934647, 32.9968567, 38.3100739, 43.7869759, 49.5077286, 55.591507, 62.2151947, 69.6406403, 78.2540207, 88.6216965, 101.567436, 118.274727, 140.413391, 170.277618, 210.89946, 266.066681, 340.139435, 437.56604, 562.099182, 715.915161, 899.013916, 1109.21924, 1342.77844, 1595.24304, 1862.25317, 2140.02075]
+  # data
+  components:
+    ocn:
+      model: 'NEMO 3.6'
+      filename: <data_stream>_<year><month>*_dm_CMCC_BSFS1b_BLKSEA_*_an12-v01.nc
+      grid: {'x':395, 'y':215, 'z':31}
+      data_stream:
+         t:
+           3D: {'vosaline':'sea_water_practical_salinity', 'votemper':'sea_water_potential_temperature'}
+           2D: {'sossheig':'sea_surface_height_above_geoid', 'sowaflup':'water_flux_out_of_sea_ice_and_sea_water',
+                'soshfldo':'net_downward_shortwave_flux_at_sea_water_surface', 'sohefldo':'surface_downward_heat_flux_in_sea_water',
+                'sorunoff':'River Runoffs', 'soevapor':'Local Evaporation', 'soflbackward':'Longwave Downward Heat Flux over open ocean',
+                'soflsensible':'Sensible Downward Heat Flux over open ocean', 'sofllatent':'Latent Downward Heat Flux over open ocean',
+                'somxl010':'ocean_mixed_layer_thickness_defined_by_sigma_theta',}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_counter', 'lev':'deptht',}
+         u:
+           3D: {'vozocrtx':'sea_water_x_velocity',}
+           2D: {'sozotaux':'surface_downward_x_stress'}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_counter', 'lev':'depthu',}
+         v:
+           3D: {'vomecrty':'sea_water_y_velocity'}
+           2D: {'sometauy':'surface_downward_y_stress',}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_counter', 'lev':'depthv',}
+  # contained in <path>
+  metrics:
+    landsea: 'MESHMASK/mesh_mask.nc'
+
+#
 C-GLORSv7:
   remote: True
   path: /data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY 
