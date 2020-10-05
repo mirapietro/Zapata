@@ -2,13 +2,17 @@
 ## Computational and Mapping Library   
 
 A revolutionary library for analysis and plotting of meteorological data. The mapping is based on cartopy and GEOCAT libraries from NCAR.
-It uses `xarray` as a basic data structure. 
+It uses `xarray` as a core data structure for all processing. 
 
-The folder `docs` contains documentation for the modules. The subdirectory `html` contains the html file for the documentation produced by Sphinx. 
+The directory `examples_notebook` contains working Jupyter Notebooks to illustarte different applications of Zapata.
 
-The directory 
+# Documentation
 
-The module `data` contains the information on the data banks. The routine `data_grid` in `data` must be modified to the location of the basic data for each installation.
+Zapata documentation is created using `sphinx` and it is sourced from the code itself.
+
+HTML documentation can be accessed at `docs/build/html/index.html`
+
+To update the documetation of the tool go to `docs` folder and type `gmake html`.
 
 ## Setup working environemt
 Python working environment can be setup using the provided conda environment.yml file:
@@ -21,10 +25,10 @@ To update your `zapata` environment with following updates use
 
 `conda env update -f environment.yml`
 
-# Packages
+# Available Packages
 
 ## zapata
-contains computation modules and plotting modules. Examples of working Jupyterlab Notebooks are in `examples_notebook`
+Contains computation modules and plotting modules along with dedicated functions to read input data form different datasets (local and remote).
 
 SubModules
 -------
@@ -61,15 +65,7 @@ Modules
 -------
 
 ## interp
-subroutine for interpolation
+subroutines for data interpolation
 
-## zeus
-Routine for remote working on Zeus
-
-# Documentation
-
-Zapata documentation is created using `sphinx` and it is sourced from the code itself. 
-
-HTML documentation can be accessed at `docs/build/html/index.html`
-
-To update the documetation of the tool go to `docs` folder and type `gmake html`.
+## Zeus
+Functions to access and remote working on Zeus cluster
