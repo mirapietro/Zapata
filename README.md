@@ -6,10 +6,9 @@ It uses `xarray` as a core data structure for all processing.
 
 The directory `examples_notebook` contains working Jupyter Notebooks to illustarte different applications of Zapata.
 
-# Documentation
+## Documentation
 
 Zapata documentation is created using `sphinx` and it is sourced from the code itself.
-
 HTML documentation can be accessed at `docs/build/html/index.html`
 
 To update the documetation of the tool go to `docs` folder and type `gmake html`.
@@ -25,47 +24,32 @@ To update your `zapata` environment with following updates use
 
 `conda env update -f environment.yml`
 
-# Available Packages
+# Library content
 
-## zapata
+## zapata package
 Contains computation modules and plotting modules along with dedicated functions to read input data form different datasets (local and remote).
-
-SubModules
--------
     
-**computation** :   
-    Routines for averaging and various computations
+- **computation** : Routines for averaging and various computations
     
-**data** :  
-    Information on data sets and routine to get data from the data sets
+- **data** : Information on data sets and routine to get data from the data sets
 
-**mapping** :   
-    Mapping routines based on *Cartopy*
+- **mapping** : Mapping routines based on *Cartopy*
     
-**lib** :   
-    Utilties for the rest of the modules.
+- **lib** : Utilties for the rest of the modules.
 
 
-##  klus
-contains algorithms for data analysis contributed by Stefan Klus
-
-SubModules
--------
+##  klus package
+Contains algorithms for data analysis contributed by Stefan Klus
     
-**algorithms** :   
-    Routines for averaging and various computations
+- **algorithms** : Routines for averaging and various computations
     
-**kernel** :  
-    Information on data sets and routine to get data from the data sets
+- **kernel** : Information on data sets and routine to get data from the data sets
 
-**osbervables** :   
-    Mapping routines based on *Cartopy*
-    
-Modules
--------
+- **osbervables** : Mapping routines based on *Cartopy*
 
-## interp
+
+## interp module
 subroutines for data interpolation
 
-## Zeus
+## Zeus module
 Functions to access and remote working on Zeus cluster
