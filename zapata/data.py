@@ -205,7 +205,7 @@ def load_dataarray(dataset, var, level, period):
         else:
             print('Driver %s not defined in data_drivers.py.' % data_driver)
             sys.exit(1)
-            
+
     return out
 
 
@@ -329,6 +329,23 @@ def get_data_files(dataset, var, level, period):
     if 'coord_map' in data_stream.keys():
         files['coord_map'] = data_stream['coord_map']
 
+    # coordinates from file
+    if 'coords' in data_stream.keys():
+        if 'coords' in dataset['metrics'].keys():
+            files['coords'] = data_stream['coords']
+            files['coords'].update({'file':dataset['metrics']['coords']})
+        else:
+            print('Coordinates file not available within metrics files')
+            sys.exit(1)
+
+    # mask to be applied at the input data fields
+    if 'mask' in data_stream.keys():
+        if 'mask' in dataset['metrics'].keys():
+            files['mask'] = {'file':dataset['metrics']['mask'], 'name':data_stream['mask']}
+        else:
+            print('Mask file not available within metrics files (maskname is ' + data_stream['mask'] + ')')
+            sys.exit(1)
+
     return files
 
 
@@ -373,9 +390,10 @@ def dataset_request_var(dataset, var, level, period):
     for cc in dataset['components'].keys():
         for dd in dataset['components'][cc]['data_stream'].keys():
              for xy in dataset['components'][cc]['data_stream'][dd].keys():
-                 thevars = dataset['components'][cc]['data_stream'][dd][xy].keys()
-                 if var in thevars:
-                     var_match.append([cc, dd, xy])
+                 if xy not in ['coords', 'coord_map', 'mask']:
+                     thevars = dataset['components'][cc]['data_stream'][dd][xy].keys()
+                     if var in thevars:
+                         var_match.append([cc, dd, xy])
     del cc, dd, xy, thevars
 
     if len(var_match) > 1:
@@ -459,7 +477,7 @@ def inquire_catalogue(dataset=None, info=False):
            for ss in thecomp['data_stream'].keys():
                print('\nData Stream : ' + ss)
                for grp in thecomp['data_stream'][ss].keys():
-                   if grp not in ['coord_map',]:
+                   if grp not in ['coords', 'coord_map', 'mask']:
                        print(' ' + grp  +' variables')
                        for vv in thecomp['data_stream'][ss][grp].keys():
                            print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])

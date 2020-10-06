@@ -9,6 +9,55 @@ import xarray as xr
 import pandas as pd
 import glob
 
+def cglorsv7(dataset, var, level, period):
+    '''
+    Driver for data retrieve of C-GLORS V7 global ocean reanalyses
+    Read requested data into an xarray DataArray
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    var : string
+         variable name
+    level : list
+        vertical levels float value
+    period : list
+        Might be None or a two element list with initial and final year
+
+    Returns
+    -------
+    out : DataArray
+        Output data from dataset
+
+    '''
+    from zapata.data import get_data_files, fix_coords
+
+    out = None
+
+    # get files list to read
+    files = get_data_files(dataset, var, level, period)
+
+    # open files as a dataset
+    ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override', parallel=True)
+    out = ds[files['var']]
+    out.attrs['realm'] = files['component']
+
+    # read and assign 2D coordinates
+    dc = xr.open_dataset(files['coords']['file'])
+    lon = dc[files['coords']['lon']]
+    lat = dc[files['coords']['lat']]
+
+    out = out.assign_coords({"nav_lon":(("y","x"), lon.data)})
+    out = out.assign_coords({"nav_lat":(("y","x"), lat.data)})
+
+    # rename dimensions and coordinates
+    out = fix_coords(out, files['coord_map'])
+
+    out.attrs['realm'] = files['component']
+
+    return out
+
 
 def era5_numpy(dataset, var, level, period):
     '''
