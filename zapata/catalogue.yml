@@ -83,7 +83,7 @@ C-GLORSv7:
            mask: tmask
   # ancillary files (full path)
   metrics:
-    mask: '/data/products/GLOBAL_REANALYSES/C-GLORSv7/MESHMASK/mesh_mask.nc'
+    mask: {'file':'/data/products/GLOBAL_REANALYSES/C-GLORSv7/MESHMASK/mesh_mask.nc', 'coord_map':{'lon':'x', 'lat':'y', 'time':'t', 'lev':'z'}}
     coords: '/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY/NEMO_coordinates.nc'
 
 #

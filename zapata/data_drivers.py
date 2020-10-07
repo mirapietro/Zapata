@@ -31,7 +31,7 @@ def cglorsv7(dataset, var, level, period):
         Output data from dataset
 
     '''
-    from zapata.data import get_data_files, fix_coords
+    from zapata.data import get_data_files, fix_coords, mask_data
 
     out = None
 
@@ -53,6 +53,10 @@ def cglorsv7(dataset, var, level, period):
 
     # rename dimensions and coordinates
     out = fix_coords(out, files['coord_map'])
+
+    # apply mask to data if available
+    if 'mask' in files.keys():
+        out = mask_data(out, files['mask']['name'], files['mask']['file'], files['mask']['coord_map'])
 
     out.attrs['realm'] = files['component']
 

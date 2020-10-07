@@ -198,6 +198,10 @@ def load_dataarray(dataset, var, level, period):
         if 'coord_map' in files.keys():
             out = fix_coords(out, files['coord_map'])
 
+        # apply mask to data if available
+        if 'mask' in files.keys():
+            out = mask_data(out, files['mask']['name'], files['mask']['file'],files['mask']['coord_map'])
+
     else:
         # check if external driver exist 
         if data_driver in dir(zdrv):
@@ -207,6 +211,40 @@ def load_dataarray(dataset, var, level, period):
             sys.exit(1)
 
     return out
+
+
+def mask_data(da, mask_name, mask_file, coord_map):
+    '''
+    Mask dataarray using a [0-1] mask file and the following convention, 0:remove, 1:retain
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    mask_name : string
+         mask variable name
+    mask_file : string
+         input file full path where mask variable is contained
+    coord_map : dict
+         Dictionary to rename dimensions
+
+    Returns
+    -------
+    da: dataArray
+        Xarray data structure with rename features
+    '''
+    dm = xr.open_dataset(mask_file)
+    dm = fix_coords(dm[mask_name], coord_map)
+    dm = dm.squeeze()
+
+    # drop lev dimension if data is 2D
+    if da.ndim < 4 and 'time' in da.dims:
+       if 'lev' in dm.dims:
+           dm = dm.sel(lev=1)
+
+    da = da.where(dm == 1)
+
+    return da
 
 
 def fix_coords(da, coord_map):
@@ -341,7 +379,8 @@ def get_data_files(dataset, var, level, period):
     # mask to be applied at the input data fields
     if 'mask' in data_stream.keys():
         if 'mask' in dataset['metrics'].keys():
-            files['mask'] = {'file':dataset['metrics']['mask'], 'name':data_stream['mask']}
+            files['mask'] = {'name':data_stream['mask']}
+            files['mask'].update(dataset['metrics']['mask'])
         else:
             print('Mask file not available within metrics files (maskname is ' + data_stream['mask'] + ')')
             sys.exit(1)
