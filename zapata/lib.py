@@ -5,7 +5,8 @@ import pygrib
 import numpy as np
 import scipy.linalg as sc
 import time
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+import xarray as xr
 
 def _showpic(picture_file):
     """ Show `picture_file` in a widget."""
@@ -120,3 +121,118 @@ def date2year(years,date):
     m=mon.index(str(date[0:3]))
     index = (y-1979)*12 + m
     return int(index)
+
+def putna(left,right, xar, scalar = None):
+    '''
+    Put NaN in xarray according if they are laying in the interval `left,right`
+
+    Parameters
+    ==========
+
+    left,right: 
+        Extremes of the interval where the values must be NaN
+    xar :   
+        Xarray
+    scalar :
+        If set all entries not satisfying the condition are put equal to `scalar`
+
+    Returns
+    =======
+
+    Modified array
+
+    '''
+
+    if scalar:
+        out=scalar
+    else:
+        out=xar
+
+    return xr.where((xar < right) & (xar > left), np.nan, out)
+
+def go_to(dir):
+    '''
+    Set Working directory
+
+    Parameters
+    ==========
+
+    dir:    
+        Target directory relative to users' root directory
+
+    YIELD
+    =====
+
+    Change working directory
+    '''
+
+    homedir = os.path.expanduser("~")
+
+    print('Root Directory for Data ',homedir)
+    #Working Directory
+    wkdir =   homedir + '/'+ dir
+    os.chdir(wkdir)
+    print(f'Changed working directory to {wkdir}')
+    return wkdir
+
+def long_string(lon,cent_lon=0):
+    '''
+    Get nice formatted longitude string
+
+    Parameters
+    ==========
+    lon:
+        Longitude
+    cent_lon:
+        Central longitude for projection used
+
+    Yield
+    =====
+
+    string in nice format
+    '''
+    E = 'E'
+    W = 'W'
+    if cent_lon == 0:
+        if lon < 0:
+            out = str(-lon) + W
+        elif lon > 0:
+            out = str(lon) + E
+        else:
+            out = str(lon)
+    elif cent_lon == 180:
+        if lon > 0:
+            out = str(lon) + W
+        elif lon < 0:
+            out = str(-lon) + E
+        else:
+            out = str(lon)
+    else:
+        SystemError(f'Error in longitude string cent_lon {cent_lon} ')
+    return out
+def lat_string(lat):
+    '''
+    Get nice formatted latitude string
+
+    Parameters
+    ==========
+    lat:
+        Latitude
+
+    Yield
+    =====
+
+    string in nice format
+    '''
+    
+    if lat < 0:
+        out = str(-lat) + 'S'
+    elif lat > 0:
+        out = str(lat) + 'N'
+    else:
+        out = 'Equator'
+    
+    return out
+
+
+
