@@ -1,6 +1,11 @@
 '''
 A module to store and treat data
 ================================
+in griglia nativa 1986-2020 giornaliera
+/data/products/GLOBAL_REANALYSES/C-GLORSv7/DAILY_MONTHLY
+
+in griglia nativa 1986-2020 mensile
+/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY
 '''
 
 import os
@@ -140,10 +145,12 @@ def DataGrid(option=None):
     """
     Routine that returns a Dictionary with information on the reuqested Data Set.
 
-    Currently two data sets are supported   
+    Currently these data sets are supported   
 
     * ERA5 -- Subset of monthly data of ERA5 (compiled by AN 2019)   
     * GPCP -- Monthly data of precipitation data set 
+    * OCRD'-- cGLORS renalaysis V7 daily 1986-2020
+    * OCRM'-- cGLORS renalaysis V7 monthly 1986-2020
 
     Info can be retrieved as ``grid[dataset][var]['start']`` for the starting years.
     See source for full explanation of the content.
@@ -162,7 +169,7 @@ def DataGrid(option=None):
     """
 
     homedir = os.path.expanduser("~")
-    if option == 'verbose': print('Root Directory for Data ',homedir)
+    if option == 'verbose': print('Root Directory for Local Data ',homedir)
     
     U ={      'level': [10, 50, 100,150, 200,250,300,400,500,600,700,850,925,1000],
               'start': 1979,
@@ -242,6 +249,7 @@ def DataGrid(option=None):
               'lonnp': np.asarray([i for i in np.arange(0,360.1,0.25)]),
               'clim': homedir + '/Dropbox (CMCC)/ERA5/CLIM',
               'place': homedir +'/Dropbox (CMCC)/ERA5/DATA/ERA5_MM',
+              'host': 'local',
               'source_url': 'http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings',
               'desc':'ERA5 Monthly Mean for U,V,T,W,SLP 1979-2018',
               'special_value': 9999.,
@@ -274,17 +282,38 @@ def DataGrid(option=None):
               'place': homedir +'/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP',
               'clim': homedir + '/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP',
               'desc': 'Precipitation from the GPCP Project',
-              'source_url': 'http://gpcp.umd.edu/'
+              'source_url': 'http://gpcp.umd.edu/',
+              'host': 'local'
               }
 
-
+    ocean_monthly={
+              'start':  1986,
+              'end':    2020,
+              'place': '/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY',
+              'names': 'CMCC-CM2-HR4-pi_1m_<year><month>01_<year><month>31_grid_T.nc',
+              'desc': 'Ocean Reanalysis V7 Monthly',
+              'source_url': '',
+              'host': 'DSS'
+              }
+    ocean_daily={
+              'start':  1986,
+              'end':    2020,
+              'place': '/data/products/GLOBAL_REANALYSES/C-GLORSv7/DAILY_MONTHLY',
+              'names': 'CMCC-CM2-HR4-pi_1m_<year><month>01_<year><month>31_grid_T.nc',
+              'desc': 'Ocean Reanalysis V7 Daily',
+              'source_url': '',
+              'host': 'DSS'
+              }
     grid={'ERA5': dataera5,
-          'GPCP': datagpcp
+          'GPCP': datagpcp,
+          'OCRD': ocean_daily,
+          'OCRM': ocean_monthly
          }
     if option == 'info':
         for i in list(grid.keys()):
             print(grid[i]['desc'])
             print(grid[i]['place'])
+            print(grid[i]['host'])
             print(grid[i]['source_url']+'\n')
         return
     

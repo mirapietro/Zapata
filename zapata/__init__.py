@@ -19,12 +19,15 @@ Modules
     Routines for averaging and various computations
     
 **data** :  
-    Information on data sets and routine to get data from the data sets
+    Information on data sets and routines to get data from the data sets
 
 **mapping** :   
     Mapping routines based on *Cartopy*
     
 **lib** :   
-    Utilties for the rest of the modules.
+    Utilities for the rest of the modules.
+
+**colormap** :
+    Routines to use colormap in xml format
 
 """

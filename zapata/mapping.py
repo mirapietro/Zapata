@@ -12,7 +12,7 @@ Zonal Plotting
 --------------
 These routine split zonal sections in pressures and latitude.
 
-**zonal_plot, zonal_stream_plot**
+**zonal_plot, zonal_stream_plot, ocean_zonal_plot**
 
 Utilities 
 ---------
@@ -33,17 +33,22 @@ import xarray as xr
 
 import cartopy.mpl.ticker as ctick
 import cartopy.feature as cfeature
-from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,
-                                LatitudeLocator)
+from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter)
 import zapata.data as era
 import zapata.computation as zcom
-
+import zapata.lib as zlib
 
 import mpl_toolkits.axes_grid1 as tl
 
 import geocat.datafiles as gdf
 from geocat.viz import cmaps as gvcmaps
 import geocat.viz.util as gvutil
+
+import docrep
+# Uses DOCREP for avoiding copying docstring, contrary to the docs delete works
+# only on one param at the time.
+
+d = docrep.DocstringProcessor()
 
 
 def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
@@ -107,85 +112,79 @@ def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
     print(' Opening figure , %i rows and %i cols \n' % (rows,cols))
     
     return fig,ax,projection
-def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_format = ' {:6.0f} ', \
-                      zeroline=False, Special_Value = 9999.,\
-                      lefttitle='',righttitle='',maintitle='',\
-                      d_xtick=30,d_ytick=30,\
-                      xlimit=None,ylimit=None,\
-                      colorbar=False,cmap='coolwarm',
-                      coasts=True,color_land='lightgray'):
+
+@d.get_sections(base='xmap')
+@d.dedent
+def xmap(field, cont, pro, ax=None, fill=True,contour=True, \
+                    data_cent_lon=180, \
+                    clabel=True, c_format = ' {:6.0f} ', \
+                    refline=False, Special_Value = 9999.,\
+                    lefttitle='',righttitle='',maintitle='',\
+                    dxtick=30,dytick=30,\
+                    xlimit=None,ylimit=None,\
+                    colorbar=False,cmap='coolwarm',\
+                    coasts=True,color_land='lightgray'):
     """
     Lat-Lon mapping function based on cartopy and NCAR GEOCAT.
 
-    Data must on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
-    referred to the projection chosen in `init`.
+    The data is supposed to be on a Plate (lat-lon) projection and the central longitude can be defined 
+    via the paramater `data_cent_lon`. The defualt is `data_cent_lon=180`, meaning that the central longitude is over the pacific. 
+    Coordinates that go from 0 to 360 implicitly assume such a Pacific central longitude.
 
     For the `Pacific` view it is assumed that the central longitude is at the daetline
     whereas for the `Atlantic` view the central longitude is at Greenwich.
 
-    
 
-    Parameters 
+    Parameters
     ----------
-    field :     
+    field :
         xarray  --  cyclic point added in the routine
-
-    cont :  
+    cont :
         * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc 
         * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn] 
         * n                      n contours 
         * []                     automatic choice  
-    pro :   
+    pro :
         Map Projection as initialized by init
-
-    ax :    
-        Plot axis to be used
-    
-    fill :  
-        True/False flag to have filled contours or not
-    
+    data_cent_lon :
+        Central longitude for the data projection
+    ax :
+        Plot axis to be used   
+    fill :
+        True/False flag to have filled contours or not 
     contour :  
         True/False flag to have  contours or not
-    
-    clabel :  
+    refline :
+        If a numeric value a single enhanced contour is pltted here
+    clabel :
         True/False flag to have labelled contours or not
-    
-    c_format :  
+    c_format :
         Format for the contour labels
-    
-    d_xtick : 
-        Tick interval for longitudes
-
-    d_ytick :
-        Tick interval for latitudes
-
-    Special_Value : 
-        Values to be ignored
-
-    lefttitle : 
-        Title string on the left
-
-    righttitle :    
+    dxtick : 
+        Tick interval for longitude
+    dytick :
+        Tick interval for latitude
+    Special_Value :
+        Values to be ignore
+    lefttitle :
+        Title string on the lef
+    righttitle :
         Title string on the right
-
-    maintitle : 
+    maintitle :
         Title string at the center
-
-    cmap :  
+    cmap :
         Colormap
-
-    coasts: 
+    coasts:
         False/True   Plotting or not empty coastlines 
-
-    color_land: 
+    color_land:
         if coasts=False, use color_land for land
-
-    xlimit:     
-        Longitude limits of the map, if not set they are derived from the data
-
-    ylimit:     
-        Latitude limits of the map, if not set they are derived from the data
-
+    xlimit:
+        Longitude limits of the map, if not set they are derived from the data.
+        The projection used is the geographical projection `pro`
+    ylimit:
+        Latitude limits of the map, if not set they are derived from the data.
+        The projection used is the geographical projection `pro`
+    
     
     Returns
     -------
@@ -201,6 +200,10 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
     if not this  in  ['PlateCarree']:
         print(' Wrong Projection in `xmap` {}'.format(this))
         raise SystemExit
+
+    # Set data projection
+    data_proj = car.PlateCarree(central_longitude=data_cent_lon)
+
     #Special Values
     data=field.where(field != 9999.)
     
@@ -216,72 +219,78 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         ax.coastlines(linewidth=0.5)
     else:
         ax.coastlines(linewidths=0.5)
-        ax.add_feature(cfeature.LAND, facecolor='lightgray')
+        ax.add_feature(cfeature.LAND, facecolor=color_land)
     
     if ylimit is  None:
-        ylim = (np.amin(data.lat.values),np.amax(data.lat.values))
+        ylim = ax.projection.y_limits
     else:
         ylim=ylimit
-    
-    #Bring coordinates within -180,180 that Cartopy likes.
-    if np.min(data.lon.values) > 0 and np.max(data.lon.values) > 180:
-        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
+    ax.set_ylim(ylim)
 
     if xlimit is  None:
-        xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180)
+        xlim = ax.projection.x_limits
     else:
         xlim=xlimit
-
+    ax.set_xlim(xlim)
 
     print(' Plotting with x limits {}  '.format(xlim)  ) 
     print(' Plotting with y limits {}  '.format(ylim) )
     
-    #Set axes limits
-    #set_extent is very buggy, for the moment it is not used.
-    if xlimit is not None and  ylimit is not None:
-       ax.set_extent(list(xlim+ylim),pro)
     
+
     add_ticks(ax)
     add_ticklabels(ax)
+
+    #Choose Contours
+    vmin = data.min()
+    vmax = data.max()
+    cc = choose_contour(vmin,vmax,cont)
+    print(f'Contouring from {vmin.data} to {vmax.data} with {cc} contours')
+    
+
 
     handles = dict()
     if fill:
         handles["filled"] = data.plot.contourf(
             ax=ax,                            # this is the axes we want to plot to
             cmap=cmap,                        # our special colormap
-            levels=choose_contour(cont),      # contour levels specified outside this function
-            xticks=make_ticks(xlim,dt=d_xtick),    # nice x ticks
-            yticks=make_ticks(ylim,dt=d_ytick),    # nice y ticks
-            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            levels=cc,                        # contour levels specified outside this function
+            vmax=vmax,                        # Maximum value for colormap  
+            vmin=vmin,                        # Minimum value for colormap 
+            xticks=make_ticks(xlim,dt=dxtick),    # nice x ticks
+            yticks=make_ticks(ylim,dt=dytick),    # nice y ticks
+            transform=data_proj,              # data projection,default is cent_lat=180
             add_colorbar=False,               # don't add individual colorbars for each plot call
             add_labels=False,                 # turn off xarray's automatic Lat, lon labels
         )
     if contour:
         handles['contours'] = data.plot.contour(
             ax=ax,                            # this is the axes we want to plot to
-            colors='black',                       # our special colormap
+            colors='black',                   # our special colormap
             linestyles="-",
             linewidths=0.8,
-            levels=choose_contour(cont),      # contour levels specified outside this function
-            transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+            levels=cc,                        # contour levels specified outside this function
+            vmax=vmax,                        # Maximum value for colormap  
+            vmin=vmin,                        # Minimum value for colormap 
+            transform=data_proj,              # data projection,default is cent_lat=180
             add_labels = False
         )
-    if zeroline:
-        handles["zeroline"] = data.plot.contour(
+    if refline:
+        handles["refline"] = data.plot.contour(
         ax=ax,
-        levels=[0],
+        levels=refline,
         colors="k",  # note plurals in this and following kwargs
         linestyles="-",
         linewidths=1.0,
-        transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
+        transform=data_proj,               # data projection,default is cent_lat=180
         add_labels=False  # again turn off automatic labels
         )
     # Label the contours
     if clabel and contour:
         ax.clabel(handles['contours'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
                 fontsize=8, fmt=c_format.format )
-        if zeroline:
-            ax.clabel(handles['zeroline'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
+        if refline:
+            ax.clabel(handles['refline'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
                 fontsize=8, fmt=c_format.format )
     
     # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
@@ -297,8 +306,12 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, clabel=True, c_forma
         ax.get_figure().colorbar(handles['filled'], cax=cax,orientation='vertical')
     
     return handles    
+
+d.delete_params('xmap.parameters','dxtick')
+d.delete_params('xmap.parameters.no_dxtick','dytick')
+@d.dedent
 def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
-                      zeroline=False, Special_Value = 9999.,\
+                      refline=False, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
                       xlimit=None,ylimit=None,\
                       colorbar=False,cmap='coolwarm',
@@ -317,56 +330,9 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
 
     Parameters 
     ----------
-    field :     
-        xarray  --  cyclic point added in the routine
-
-    cont :  
-        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc  
-        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  
-        * n                      n contours  
-        * []                     automatic choice   
-    pro :   
-        Map Projection as initialized by init
-
-    ax :    
-        Plot axis to be used    
-    
-    fill :  
-        True/False flag to have filled contours or not
-    
-    contour :  
-        True/False flag to have  contours or not
-    
-    clabel :  
-        True/False flag to have labelled contours or not
-    
-    c_format :  
-        Format for the contour labels
-
-    Special_Value : 
-        Values to be ignored
-
-    lefttitle : 
-        Title string on the left
-
-    righttitle :    
-        Title string on the right
-
-    maintitle : 
-        Title string at the center
-
-    cmap :  
-        Colormap
-
-    coasts: 
-        False/True   Plotting or not empty coastlines 
-
-    color_land: 
-         if coasts=False, use color_land for land
-    
+    %(xmap.parameters.no_dxtick.no_dytick)s    
     Top_label :    
         True/False  Turn off the top labels
-
     Lat_labels :    
         True/False  Turn off the latitude labels
     
@@ -400,7 +366,14 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
         ax.coastlines(linewidths=0.5)
         ax.add_feature(cfeature.LAND, facecolor='lightgray')
     
-    #Set axes limits
+    # Choose Contours
+    vmin = data.min()
+    vmax = data.max()
+    cc = choose_contour(vmin,vmax,cont)
+    print(f'Contouring from {vmin.data} to {vmax.data} with {cc} contours')
+   
+
+    # Set axes limits
     if xlimit is  None:
         xlim = (np.amin(data.lon.values)-180,np.amax(data.lon.values)-180+0.001)
     else:
@@ -426,7 +399,7 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
         handles["filled"] = data.plot.contourf(
             ax=ax,                            # this is the axes we want to plot to
             cmap=cmap,                        # our special colormap
-            levels=choose_contour(cont),      # contour levels specified outside this function
+            levels=cc,      # contour levels specified outside this function
             transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
             #xticks=np.arange(xlim[0],xlim[1], 30),  # nice x ticks
             #yticks=np.arange(ylim[0], ylim[1], 15),    # nice y ticks
@@ -439,14 +412,14 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
             colors='black',                       # our special colormap
             linestyles="-",
             linewidths=0.8,
-            levels=choose_contour(cont),      # contour levels specified outside this function
+            levels=cc,      # contour levels specified outside this function
             transform=car.PlateCarree(),      # data projection, for usual maps is assumed PlaceCarree
             add_labels = False
         )
-    if zeroline:
-        handles["zeroline"] = data.plot.contour(
+    if refline:
+        handles["refline"] = data.plot.contour(
         ax=ax,
-        levels=[0],
+        levels=refline,
         colors="k",  # note plurals in this and following kwargs
         linestyles="-",
         linewidths=1.0,
@@ -457,8 +430,8 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
     if clabel:
         ax.clabel(handles['contours'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
                 fontsize=8, fmt=c_format.format )
-        if zeroline:
-            ax.clabel(handles['zeroline'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
+        if refline:
+            ax.clabel(handles['refline'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
                 fontsize=8, fmt=c_format.format )
     
     xt = np.arange(-180,180,45)
@@ -486,18 +459,21 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
 
     return handles
 def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
+                      data_cent_lon=0, \
                       density=2, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
-                      d_xtick=30,d_ytick=30,\
+                      dxtick=30,dytick=30,\
                       xlimit=None,ylimit=None, \
-                      colorbar=False,cmap='coolwarm',cscale=None):
+                      colorbar=False,
+                      cscale=(0,1),cmap='coolwarm',norm=None):
     """
     Plot streamline for field U and V.
 
     This routine draws streamlines for the fields U,V, optionally colored with the field ``color``. Internally assume data is always on a latlon projection with central longitude at Greenwich.
 
-    Data must on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
-    referred to the projection chosen in `init`.
+    The data is supposed to be on a Plate (lat-lon) projection and the central longitude can be defined 
+    via the paramater `data_cent_lon`. The defualt is `data_cent_lon=180`, meaning that the central longitude is over the pacific. 
+    Coordinates that go from 0 to 360 implicitly assume such a Pacific central longitude.
 
     For the `Pacific` view it is assumed that the central longitude is at the dateline
     whereas for the `Atlantic` view the central longitude is at Greenwich.
@@ -516,6 +492,9 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
     
     cscale :
         If an array is used in `color`, it normalize to cscale = ( min, max)
+
+    data_cent_lon : 
+        Central longitude for the data projection
     
     density :    
         Density of the streamlines      
@@ -535,10 +514,10 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
     maintitle :      
         Title string at the center
 
-    d_xtick : 
+    dxtick : 
         Tick interval for longitudes
         
-    d_ytick :
+    dytick :
         Tick interval for latitudes   
     
     cmap :  
@@ -561,72 +540,64 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
     
     """
     #Special Values
-    U=U.where(U != 9999.)
+    #U=U.where(U != 9999.)
+
+    # Set data projection
+    data_proj = car.PlateCarree(central_longitude=data_cent_lon)
     
-    #select color scale, color are normalized accordin to `cscale`
+    #select color scale, if `color` is an array
+    # colors are normalized accordin to `cscale`
     this = type(color).__name__
     normuv = None
 
+    #create local copies
+    this_U = U
+    this_V = V
+    
+    
+    #check colorscale
     if this == 'str':
-        color_scale=color
+        color_scale = color
     elif this == 'DataArray':
-        print(f'Color set an xarray {color.name}')
         if not cscale:
             cscale= (color.min(), color.max() )
         normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
+        print(f'Color set an xarray -> cscale {cscale}')
         color_scale = color.data      
-    elif this == 'ndarray':
-        print(f'Color set an array {color.name}')
+    elif this == 'ndarray':  
         if not cscale:
             cscale= (color.max(), color.min() )
         normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
+        print(f'Color set an array -> cscale {cscale}')
         color_scale=color
     else:
         color_scale='black'
 
-    #Eliminate extra dimensions
-    if len(U.shape) > 2:
-        U = U.squeeze()
-        V = V.squeeze()
-    
-    # Check longitude coordinates
-    # Because we are not using the integrated matplotlib with xarray, the coordinate must be 
-    # transformed to (-180,180) if necessary
-    
-    this_U = U.copy()
-    this_V = V.copy()
-    lont = this_U.lon.data
-    lont[lont>180] = lont[lont>180] - 360.
-    
     # Add coastlines
     ax.coastlines(linewidth=0.5)
     # Draw filled polygons for land
     ax.add_feature(cfeature.LAND, zorder=0, edgecolor='black', color='lightgray')
 
     #Set axes limits
-    if xlimit is  None:
-        xlim = (np.amin(this_U.lon.data),np.amax(this_U.lon.data))
-    else:
-        xlim=xlimit
-        
     if ylimit is  None:
-        ylim = (np.amin(this_U.lat.values),np.amax(this_U.lat.values))
+        ylim = ax.projection.y_limits
     else:
         ylim=ylimit
-    print(' Plotting with x limits {}  '.format(xlim)  ) 
-    print(' Plotting with y limits {}  '.format(ylim) )
-    ax.set_xlim(xlim)
     ax.set_ylim(ylim)
+
+    if xlimit is  None:
+        xlim = ax.projection.x_limits
+    else:
+        xlim=xlimit
+    ax.set_xlim(xlim)
     
     # Stream-plot the data
     # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can't
     # pass xarray.DataArray objects directly: fetch NumPy arrays via 'data' attribute'
-    sp=ax.streamplot(lont, this_U.lat.data, this_U.data, this_V.data, linewidth=1, density=density, color=color_scale, \
-                      cmap=cmap,  zorder=1,norm = normuv)
+    sp=ax.streamplot(this_U.lon.data, this_U.lat.data, this_U.data, this_V.data, \
+        linewidth=1, density=density, color=color_scale, transform=proj,\
+                      cmap=cmap,  zorder=1, norm = normuv)
     
-    #ns=5
-    #ax.quiver(lont[::ns], this_U.lat.data[::ns], this_U.data[::ns,::ns], this_V.data[::ns,::ns])
-    #ax.quiverkey(self, Q, X, Y, U, label, **kw)[source]
 
     # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
     set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
@@ -640,8 +611,8 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
         cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
         ax.get_figure().colorbar(sp.lines, cax=cax,orientation='vertical')
     # Use geocat.viz.util convenience function to set axes tick values
-    tx=make_ticks(xlim,dt=d_xtick)
-    ty=make_ticks(ylim,dt=d_ytick)
+    tx=make_ticks(xlim,dt=dxtick)
+    ty=make_ticks(ylim,dt=dytick)
     gvutil.set_axes_limits_and_ticks(ax, xlim=xlim, ylim=ylim, xticks=tx, yticks=ty)
 
     #  add minor and major tick lines
@@ -651,18 +622,18 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
 
     return sp
 def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
-                      stride=10, Special_Value = 9999.,\
-                      veckey=None,\
-                      d_xtick=30,d_ytick=30,\
+                      data_cent_lon=0,stride=10, Special_Value = 9999.,\
+                      veckey=None,vec_min = 0.0, \
+                      dxtick=30,dytick=30,\
                       lefttitle='',righttitle='',maintitle='',\
                       xlimit=None,ylimit=None, \
                       colorbar=False,cmap='coolwarm',cscale=None,**kw):
     """
     Vector plot for field U and V.
 
-    This routine draws streamlines for the fields U,V, optionally colored with the field ``color``. Internally assume data is always on a latlon projection with central longitude at Greenwich.
+    This routine draws vectors for the fields U,V, optionally colored with the field ``color``. Internally assume data is always on a latlon projection with central longitude at Greenwich.
 
-    Data must on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
+    Data must be on a (0,360) longitude coordinate referred to Greenwich, but the `xlimit` are
     referred to the projection chosen in `init`.
 
     For the `Pacific` view it is assumed that the central longitude is at the dateline
@@ -697,6 +668,9 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
             * U -- Reference Unit
             * label -- Reference string, it can a latex string, i.e  r'$1 \\frac{m}{s}$'   
 
+    vec_min :   
+        Minimum value to represent with the vectors
+
     ax :          
         Plot axis to be used        
     
@@ -712,10 +686,10 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
     maintitle :      
         Title string at the center   
     
-    d_xtick : 
+    dxtick : 
         Tick interval for longitudes
         
-    d_ytick :
+    dytick :
         Tick interval for latitudes 
     
     cmap :  
@@ -737,6 +711,7 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
         Dictionary with matplotlib-like info on the plot
       
     """
+    
     #Special Values
     U=U.where(U != 9999.)
     
@@ -744,65 +719,66 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
     this = type(C).__name__
     normuv = None
 
-    if this == 'DataArray':
-        print(f'Color set an xarray {C.name}')
-        if not cscale:
-            cscale= (C.min(), C.max() )
-        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
-        col_vec = C.data[::stride,::stride]      
-    elif this == 'ndarray':
-        print(f'Color set an array {C.name}')
-        if not cscale:
-            cscale= (C.max(), C.min() )
-        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
-        col_vec=C[::stride,::stride]
-    else:
-        col_vec = None
-
-    #Eliminate extra dimensions
-    if len(U.shape) > 2:
-        U = U.squeeze()
-        V = V.squeeze()
+    #Eliminate small values
+    mag = np.sqrt(U*U + V*V)
+    this_U = U.where(mag > vec_min)
+    this_V = V.where(mag > vec_min)
+    this_C = C.where(mag > vec_min)
     
     # Check longitude coordinates
     # Because we are not using the integrated matplotlib with xarray, the coordinate must be 
     # transformed to (-180,180) if necessary
-    
-    this_U = U.copy()
-    this_V = V.copy()
-    lont = this_U.lon.data
-    lont[lont>180] = lont[lont>180] - 360.
+    if proj.view == 'Pacific':
+        this_U = adjust_data_centlon(this_U)
+        this_V = adjust_data_centlon(this_V)
+        this_C = adjust_data_centlon(this_C)
+
+    # Color array
+    if this == 'DataArray':
+        print(f'Color set an xarray {C.name}')
+        if not cscale:
+            cscale= (this_C.min(), this_C.max() )
+        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
+        col_vec = this_C.data[::stride,::stride]      
+    elif this == 'ndarray':
+        print(f'Color set an array {this_C.name}')
+        if not cscale:
+            cscale= (this_C.max(), this_C.min() )
+        normuv = plt.cm.colors.Normalize(cscale[0],cscale[1])
+        col_vec=this_C[::stride,::stride]
+    else:
+        col_vec = None
+
     
     # Add coastlines
     ax.coastlines(linewidth=0.5)
     # Draw filled polygons for land
     ax.add_feature(cfeature.LAND, zorder=0, edgecolor='black', color='lightgray')
 
-    #Set axes limits
-    if xlimit is  None:
-        xlim = (np.amin(this_U.lon.data),np.amax(this_U.lon.data))
-    else:
-        xlim=xlimit
-        
     if ylimit is  None:
-        ylim = (np.amin(this_U.lat.values),np.amax(this_U.lat.values))
+        ylim = ax.projection.y_limits
     else:
         ylim=ylimit
+    
+    if xlimit is  None:
+        xlim = ax.projection.x_limits
+    else:
+        xlim=xlimit
+
     print(' Plotting with x limits {}  '.format(xlim)  ) 
     print(' Plotting with y limits {}  '.format(ylim) )
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
+    
 
 
-    # Stream-plot the data
-    # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can't
+    # Vector the data
+    # There is no Xarray quiver function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can't
     # pass xarray.DataArray objects directly: fetch NumPy arrays via 'data' attribute'
-    sp=ax.quiver(lont[::stride], this_U.lat.data[::stride], this_U.data[::stride,::stride], this_V.data[::stride,::stride],col_vec, \
+    sp=ax.quiver(this_U.lon.data[::stride], this_U.lat.data[::stride], this_U.data[::stride,::stride], this_V.data[::stride,::stride],col_vec, \
                         linewidth=1, color=color,\
                         cmap=cmap,  zorder=1,norm = normuv,**kw)
 
     if veckey:
-        ax.quiverkey( sp, veckey['X'], veckey['Y'], veckey['Unit'], veckey['label'], **kw)
+        ax.quiverkey( sp, veckey['X'], veckey['Y'], veckey['Unit'], veckey['label'],coordinates='figure')
 
     # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
     set_titles_and_labels(ax, lefttitle=lefttitle, lefttitlefontsize=14,
@@ -816,8 +792,8 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
         cax = divider.append_axes('right',size="2.5%", pad=0.2, axes_class=plt.Axes)
         ax.get_figure().colorbar(sp, cax=cax,orientation='vertical')
     # Use geocat.viz.util convenience function to set axes tick values
-    tx=make_ticks(xlim,dt=d_xtick)
-    ty=make_ticks(ylim,dt=d_ytick)
+    tx=make_ticks(xlim,dt=dxtick)
+    ty=make_ticks(ylim,dt=dytick)
     gvutil.set_axes_limits_and_ticks(ax, xlim=xlim, ylim=ylim, xticks=tx, yticks=ty)
 
     #  add minor and major tick lines
@@ -827,7 +803,9 @@ def vecmap(U, V,  C, proj=car.PlateCarree(),ax=None, color='black',\
 
     return sp
 
-def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True):
+@d.get_sections(base='zonal_plot')
+@d.dedent
+def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, righttitle=None,refline=None):
     """
     Zonal mapping function for xarray (lat,pressure). 
     
@@ -835,35 +813,25 @@ def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, 
     ----------
     data :    
             xarray  --  cyclic point added in the routine (latitude, pressure)      
-    
-    cont :   
-            Choose contours according to length of _cont_
-    * [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_
-    * [ c1,c2, ..., cn]      _fixed contours at [ c1,c2, ..., cn]_
-    * n                      _n contours_
-    * []                     _automatic choice_
-    
+    cont :
+        * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc 
+        * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn] 
+        * n                      n contours 
+        * []                     automatic choice  
     ax :            
-            Plot axis to be used
-            
+            Plot axis to be used      
     Special_Value:     
-            Values to be ignored
-            
+            Values to be ignored      
     lefttitle:     
-            Title string on the left
-            
+            Title string on the left     
     righttitle:   
-            Title string on the right
-            
+            Title string on the right     
     maintitle:  
-            Title string at the center
-            
+            Title string at the center     
     cmap:  
-            Colormap
-            
-    zeroline:   
-            False/True if a zero line is desired
-            
+            Colormap     
+    refline:   
+            False/True if a zero line is desired     
     colorbar:   
             False/True if a colorbar is desired
     
@@ -876,22 +844,28 @@ def zonal_plot(data,ax,cont,cmap,colorbar=True, maintitle=None, lefttitle=None, 
     Examples
     --------
     
-    >>> zonal_plot(data,ax,[],'BYR',colorbar=True, maintitle=None, lefttitle=None, righttitle=None,zeroline=True)
+    >>> zonal_plot(data,ax,[],'BYR',colorbar=True, maintitle=None, lefttitle=None, righttitle=None,refline=None)
     """
+    #Choose Contours
+    vmin = data.min()
+    vmax = data.max()
+    cc = choose_contour(vmin,vmax,cont)
+    print(f'Contouring from {vmin.data} to {vmax.data} with {cc} contours')
+   
 
     handle = data.plot.contourf(
         ax=ax,                            # this is the axes we want to plot to
         cmap=cmap,                        # our special colormap
-        levels=choose_contour(cont),      # contour levels specified outside this function
+        levels=cc(cont),      # contour levels specified outside this function
         xticks=np.arange(-90, 90, 15),  # nice x ticks
         yticks=[1000,850,700,500,300,200,100],    # nice y ticks
         add_colorbar=colorbar,               # don't add individual colorbars for each plot call
         add_labels=False                 # turn off xarray's automatic Lat, lon labels
     )
-    if zeroline:
+    if refline:
         hc = data.plot.contour(
         ax=ax,
-        levels=[0],
+        levels=refline,
         colors="k",  # note plurals in this and following kwargs
         linestyles="-",
         linewidths=1.25,
@@ -1010,12 +984,16 @@ def zonal_stream_plot(datau,datav,ax,color='black',\
 
     return hc
 
-def choose_contour(cont):
+def choose_contour(vmin,vmax,cont):
     """
-    Choose contours according to length of cont.
+    Choose contours according to length of `cont`.
 
     Parameters
     -----------
+    vmin :
+        Max Value of the field
+    vmax :
+        Min Value of the field
     cont :  
         * [cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc 
         * [ c1,c2, ..., cn]      fixed contours at [ c1,c2, ..., cn]  
@@ -1045,7 +1023,12 @@ def choose_contour(cont):
         print('Number of Contours ',cc)
     else:
         cc=10
-        print('Ten Contours automatic')
+        delta = abs(vmax.data-vmin.data)
+        if delta < 0.0001:
+            cc = [vmax]
+            print(f'Almost constant field {vmax.data}, {vmin.data}, only one contour')
+        else:
+            print(f'Ten Contours automatic')
     return cc
 def add_ticks(ax, x_minor_per_major=3, y_minor_per_major=3, labelsize="large",length=6,width=0.9):
     """
@@ -1105,8 +1088,7 @@ def add_ticklabels(ax, zero_direction_label=False, dateline_direction_label=Fals
     dateline_direction_label :      
         Set True to get 180 E / 180 W or False to get 180 only.
     """
-    from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter,
-                                LatitudeLocator)
+    from cartopy.mpl.ticker import (LongitudeFormatter, LatitudeFormatter)
     
     lon_formatter = LongitudeFormatter(zero_direction_label=zero_direction_label,
                         dateline_direction_label=dateline_direction_label,degree_symbol='')
@@ -1127,18 +1109,21 @@ def add_colorbar(fig, handle, ax, colorbar_size=0.05,label_size=10,edges=True):
     ax :   
         Axis to which to add the colorbar
     colorbar_size:    
-        Size of colorbar as a fraxtion of the axis
+        Size of colorbar as a fraction of the axis
     label_size:   
         Size of labels
     edges:   
         Draw edges of the color bar
     """    
+    #Eliminate overlapping labels
+    stride = 1
+    if len(handle.levels) > 10:
+        stride = int(len(handle.levels)/10)
     divider = tl.make_axes_locatable(ax)
     cax = divider.append_axes('bottom',size="2.5%", pad=0.4, axes_class=plt.Axes)
     ax.get_figure().colorbar(handle, cax=cax, orientation='horizontal',\
-                        ticks=handle.levels,fraction=colorbar_size,drawedges=edges)
+                        ticks=handle.levels[::stride],fraction=colorbar_size,drawedges=edges)
     return
-
 def make_ticks(xt,dt=20):
     '''
     Calculates nice tickes for the axes.
@@ -1162,7 +1147,6 @@ def make_ticks(xt,dt=20):
     n = (xt[1]-xt[0])/dt
     print(f' {n} Ticks set at {dt}   intervals') 
     return np.linspace(xt[0], xt[1], int(n+1))
-
 def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose=False):
     """
     Utility function add ticks and labels to stereo plots
@@ -1236,7 +1220,6 @@ def add_sttick(ax,xt,yt,xlim,ylim, promap,Top_label=True,Lat_labels=True,verbose
         
 
     return
-
 def _set_label_location(tx,x, y, pro,ylim):
     """ utility to find the location of labels on stereo projection """
 
@@ -1258,7 +1241,6 @@ def _set_label_location(tx,x, y, pro,ylim):
     if tx.__getattribute__('Location') == 'Left':
         tx.set_horizontalalignment('right')
     return tx
-
 def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
                           lefttitle=None, lefttitlefontsize=18, \
                           righttitle=None, righttitlefontsize=18,
@@ -1311,10 +1293,10 @@ def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
         ax.set_title(maintitle, fontsize=maintitlefontsize, loc='center',pad=20)
 
     if lefttitle is not None:
-        ax.set_title(lefttitle, fontsize=lefttitlefontsize, y=ytitle+0.01, loc='left')
+        ax.set_title(lefttitle, fontsize=lefttitlefontsize,  loc='left')
 
     if righttitle is not None:
-        ax.set_title(righttitle, fontsize=righttitlefontsize, y=ytitle+0.01, loc='right')
+        ax.set_title(righttitle, fontsize=righttitlefontsize,  loc='right')
 
     if xlabel is not None:
         ax.set_xlabel(xlabel, fontsize=labelfontsize)
@@ -1323,3 +1305,229 @@ def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
         ax.set_ylabel(ylabel, fontsize=labelfontsize)
 
     return
+
+d.delete_params('zonal_plot.parameters','data')
+@d.dedent
+def ocean_zonal_plot(data,ax,cont,cmap,colorbar=True, \
+    fill=True,contour=True, \
+    clabel=True, c_format = ' {:4.0f} ', \
+    maintitle=None, lefttitle=None, righttitle=None,\
+          xlimit=None,ylimit=None,refline=None,view='Atlantic'):
+    """
+    Ocean Zonal mapping function for xarray (lat,depth). 
+    
+    Parameters
+    ----------
+    data :    
+            xarray  --  cyclic point added in the routine (latitude, depth)   
+    %(zonal_plot.parameters.no_data)s
+    fill :
+        True/False flag to have filled contours or not 
+    contour :  
+        True/False flag to have  contours or not
+    refline :
+        If a numeric value a single enhanced contour is pltted here
+    clabel :
+        True/False flag to have labelled contours or not
+    c_format :
+        Format for the contour labels
+    xlimit:
+        x axis limits
+        A Pacific view is obtained by giving limits in coordinae with
+        the central longitude at Greenwich, e.g.  (120,-120) will produce a
+        shifted Pacific section 
+    ylimit:
+        y axis limits
+    view:
+        Shift between `Atlantic` and `Pacific` views
+
+    Returns
+    -------
+    
+    handle: 
+        Dict with plot parameters
+    
+    Examples
+    --------
+    
+    >>> ocean_zonal_plot(data,ax,[],'BYR',colorbar=True, maintitle=None, lefttitle=None, righttitle=None,refline=None)
+    """
+    #Set a working view
+    work = data
+    
+    #Choose Contours
+    vmin = data.min()
+    vmax = data.max()
+    cc = choose_contour(vmin,vmax,cont)
+    print(f'Contouring from {vmin.data} to {vmax.data} with {cc} contours')
+        
+    #Vertical levels
+    lev=data.deptht.data
+    nlev=len(lev)
+
+    # Vertical ticks
+    if lev.max() > 1500:
+        levtick =[i for i in range(0,1000,200)] + [i for i in range(1000,5500,500)]
+    elif lev.max() > 100:
+        levtick =[i for i in range(0,1000,100)] 
+    else:
+        levtick = [i for i in range(0,1000,100)] 
+    
+    # Choose labels
+    if 'lat' in data.dims:
+        xlab = 'Latitude'
+        xtick_loc = np.arange(-90,90,10)
+        xtick_lab = [zlib.lat_string(i) for i in xtick_loc]
+    elif 'lon' in data.dims:
+        #Check longitude zero line
+        if view == 'Pacific':
+            #Pacific View
+            print(f'Shifting Coordinates fro Pacific View')
+            work=work.roll(lon=-720,roll_coords=False)
+            xlab = 'Longitude'
+            xtick_loc = np.arange(-180,181,20)
+            dateline = int(len(xtick_loc)/2)
+            xtick_lab = [zlib.long_string((i+180)%360) for i in xtick_loc]
+            xtick_lab[dateline:] = [zlib.long_string(i -180) for i in xtick_loc[dateline:]]
+        else:
+            xlab = 'Longitude'
+            xtick_loc = np.arange(-180,181,20)
+            xtick_lab = [zlib.long_string(i) for i in xtick_loc]
+    else:
+        xlab = 'Missing'
+    
+    
+    handles = dict()
+    if fill:
+        handles['filled'] = work.plot.contourf(
+            ax=ax,                            # this is the axes we want to plot to
+            cmap=cmap,                        # our special colormap
+            levels=cc,      # contour levels specified outside this function
+            xticks=xtick_loc,  # nice x ticks
+            yticks = levtick,    # nice y ticks
+            add_colorbar=colorbar,               # don't add individual colorbars for each plot call
+            add_labels=False                 # turn off xarray's automatic Lat, lon labels
+        )
+    if contour:
+        handles['contours'] = work.plot.contour(
+            ax=ax,                            # this is the axes we want to plot to
+            colors='black',                       # our special colormap
+            linestyles="-",
+            linewidths=0.8,
+            levels=cc,      # contour levels specified outside this function
+            add_labels = False
+        )
+    if refline:
+        handles["refline"] = work.plot.contour(
+        ax=ax,
+        levels=refline,
+        colors="k",  # note plurals in this and following kwargs
+        linestyles="-",
+        linewidths=1.0,
+        add_labels=False  # again turn off autransform=car.Geodetic()tomatic labels
+        )
+    
+    ax.set_xticks(xtick_loc)
+    ax.set_xticklabels(xtick_lab)
+
+    # Y limits
+    if ylimit == None :
+        ax.set_ylim(lev[nlev-1], lev[0])  # Invert y axis
+    else:
+        ax.set_ylim(ylimit)
+    #X limits
+    if (xlimit == None) and (xlab == 'Latitude'):
+        ax.set_xlim(90,-90)  # Invert x axis
+    elif (xlimit == None) and (xlab == 'Longitude'):
+        ax.set_xlim(-180,180)  
+    else:
+        ax.set_xlim(xlimit)
+
+    # Label the contours
+    if clabel and contour:
+        ax.clabel(handles['contours'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8,rightside_up=True,fmt=c_format.format )
+        if refline:
+            ax.clabel(handles['refline'], colors='black', inline= True, use_clabeltext=True, inline_spacing=5,
+                fontsize=8, rightside_up=True, fmt=c_format.format )
+    
+    # set bathymetry to black
+    ax.set_facecolor('k')
+
+    set_titles_and_labels(ax, maintitle=maintitle, maintitlefontsize=18, \
+                          lefttitle=lefttitle, lefttitlefontsize=18, \
+                          righttitle=righttitle, righttitlefontsize=18,
+                          xlabel=xlab, ylabel='Depth', labelfontsize=18)
+    return handles
+def small_map(fig,ax,cent_lon=0,lat=None, lon=None):
+    '''
+    Add small map for sections. The line is drawn at one
+    `lat` or `lon`.
+
+    Parameters
+    ==========
+
+    fig:
+        `fig` to add the small map
+    ax:
+        `ax` to used
+    cent_lon:
+        central longitude for longitude sections
+    lat: (None)
+        Latitude of the longitude section
+    lon: (None)
+        Longitude of the latitude section
+    '''
+    pro = car.PlateCarree(central_longitude=cent_lon)
+    X,Y = ax.get_position().get_points()
+    r_ax = fig.add_axes([0.125,0.125,Y[0]/8,Y[1]/8], anchor='SW', facecolor='w',projection=pro)
+   
+    r_ax.set_global()
+    if lat is not None:
+        r_ax.plot([-180,180],[lat,lat],transform=pro,ls='-',color='r')
+    if lon is not None:
+        r_ax.plot([lon,lon],[-90,90],transform=pro,ls='-',color='r')
+    r_ax.coastlines(resolution='110m')
+    r_ax.gridlines()
+    return
+
+def adjust_data_centlon(data,centlon_old=0, centlon_new=180.):
+    '''
+    Adjust xarray to a different central longitude.
+    The data are rolled without rolling the coordinates.
+
+    Parameters
+    ==========
+    data: xarray
+        xarray data to be shifed. it is assumed to have dimension `lat` and `lon`
+    centlon_old:
+        Original Central longitude of the data
+    centlon_new:
+        New central longitude of the data
+    
+    Returns
+    =======
+        Rolled xarray
+    '''
+
+    # Check longitude dimension
+
+    if 'lon' not in data.dims:
+        SystemError(f'Wrong dimension in `adjust_data_centlon` --> {data.dims}')
+    #Check shift
+    if abs(centlon_new-centlon_old) < 180:
+        SystemError(f'Wrong dimension in `adjust_data_centlon` /n  \
+        Actual implementation only for 180 shifts  --> {centlon_new} -- {centlon_old}')
+    
+    print(f'Shifting from {centlon_old} to {centlon_new}')
+
+    #Get shift value
+    shift = int(data.sizes['lon']/2+1)
+    
+    #Roll data to new cent_lon
+    new = data.roll(lon=720,roll_coords=False)
+
+    return new
+        
+
+    
