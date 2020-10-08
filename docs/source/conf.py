@@ -14,8 +14,8 @@
 #
 import os
 import sys
-homedir = os.path.expanduser("~")
-root_path = homedir +'/Dropbox (CMCC)/GitHub/Zapata/docs'
+here = os.getcwd()
+root_path = os.path.abspath('../')
 os.chdir(root_path)
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))

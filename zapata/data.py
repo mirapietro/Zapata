@@ -1,581 +1,557 @@
 '''
-A module to store and treat data
-================================
-in griglia nativa 1986-2020 giornaliera
-/data/products/GLOBAL_REANALYSES/C-GLORSv7/DAILY_MONTHLY
-
-in griglia nativa 1986-2020 mensile
-/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY
+Data retrieve and resampling module
+===================================
 '''
 
-import os
+import os, sys, re
 import numpy as np
 import xarray as xr
 import pandas as pd
-import zapata.lib as lib
-import netCDF4 as net
+import netCDF4 as nc
+import yaml, glob
 
-# NCEP Reanalysis standard pressure levels
-# 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10
-# 1000  925  850  700  600, 500  400  300, 250, 200, 150, 100      50          10
-#
+import zapata.data_drivers as zdrv
 
+xr.set_options(keep_attrs=True)
 
-
-def read_month(dataset, vardir,var1,level,yy,mm,type,option,verbose=False):
-    """
-    A routine to read one month of data from various datasets.
-    
-    This routine will read data one month at a time from various data sets
-    described in *DataGrid()*
-    
-    Parameters
-    ----------
-    dataset :   
-        Name of the dataset, ``ERA5``, ``GPCP``  
-
-    vardir :   
-        Path to the dataset 
-
-    var1 :   
-        Variable to extract 
-
-    level :   
-        Level of the Variable   
-
-    yy :    
-        Year
-    
-    mm :    
-        Month
-
-    type :   
-        Type of data to reay. Currently hardwired to ``npy``
-
-    option :    
-        'Celsius'     For temperature Transform to Celsius
-    
-    verbose: 
-        Tons of Output
-    
-    Returns
-    --------
-    
-    average :
-        Monthly data. 
-    
-    Examples
-    --------
-    
-    >>> read_month('ERA5','.','Z','500',1979,12,'npy',[],verbose=verbose)
-    >>> read_month('GPCP','.','TPREP','SURF',1979,12,'nc',[],verbose=verbose) 
-    >>> read_month('ERA5','.','T','850',1979,12,'npy',option=Celsius,verbose=verbose)
-    """
-    info=DataGrid()
-    if dataset == 'ERA5':
- #       def adddir(name,dir):
- #   return dir +'/' + name.split('.')[0]+'.npy'
-        fil1=lib.adddir(lib.makemm(var1,str(level),yy,mm),info[dataset]['place'])
-        if verbose: print(fil1)
-        if var1 == 'T' and option == 'Celsius':
-            data1=np.load(fil1) - 273.16
-        else:
-            data1=np.load(fil1)
-    elif dataset == 'GPCP':       
-        file = info[dataset]['place'] + '/gpcp_cdr_v23rB1_y' + str(yy) + '_m' + '{:02d}'.format(mm) + '.nc'      
-        data1 = net.Dataset(file).variables["precip"][:,:]
-    else:
-        Print(' Error in read_month, datset set as {}'.format(dataset))
-    return data1
-
-def date_param():
-    """ 
-    Data Bank to resolve Month and Season averaging information
-
-    Examples
-    --------
-    >>> index = data_param()
-    >>> mon=index['DJF']['month_index']
-
-    """
-    months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
-    DJF ={'label':'DJF','month_index':[12,1,2]}
-    JFM ={'label':'JFM','month_index':[1,2,3]}
-    AMJ ={'label':'AMJ','month_index':[4,5,6]}
-    JJA ={'label':'JAS','month_index':[6,7,8]}
-    JAS ={'label':'JAS','month_index':[7,8,9]}
-    SON ={'label':'SON','month_index':[10,11,12]}
-    ANN ={'label':'ANN','month_index':[i for i in range(1,13)]}
-    JAN ={'label':'JAN','month_index':[1]}
-    FEB ={'label':'FEB','month_index':[2]}
-    MAR ={'label':'JAN','month_index':[3]}
-    APR ={'label':'APR','month_index':[4]}
-    MAY ={'label':'MAY','month_index':[5]}
-    JUN ={'label':'JUN','month_index':[6]}
-    JUL ={'label':'JUL','month_index':[7]}
-    AUG ={'label':'AUG','month_index':[8]}
-    SEP ={'label':'SEP','month_index':[9]}
-    OCT ={'label':'OCT','month_index':[10]}
-    NOV ={'label':'NOV','month_index':[11]}
-    DEC ={'label':'DEC','month_index':[12]}
-    out={'DJF':DJF,
-        'JFM': JFM,
-        'AMJ': AMJ,
-        'JAS': JAS,
-        'JJA': JJA,
-        'SON': SON,
-        'ANN': ANN,
-        'JAN': JAN,
-        'FEB': FEB,
-        'MAR': MAR,
-        'APR': APR,
-        'MAY': MAY,
-        'JUN': JUN,
-        'JUL': JUL,
-        'AUG': AUG,
-        'SEP': SEP,
-        'OCT': OCT,
-        'NOV': NOV,
-        'DEC': DEC,
-        'MONTHS': months
-        }
-    return out
-
-def DataGrid(option=None):
-    """
-    Routine that returns a Dictionary with information on the reuqested Data Set.
-
-    Currently these data sets are supported   
-
-    * ERA5 -- Subset of monthly data of ERA5 (compiled by AN 2019)   
-    * GPCP -- Monthly data of precipitation data set 
-    * OCRD'-- cGLORS renalaysis V7 daily 1986-2020
-    * OCRM'-- cGLORS renalaysis V7 monthly 1986-2020
-
-    Info can be retrieved as ``grid[dataset][var]['start']`` for the starting years.
-    See source for full explanation of the content.
-
-    Parameters
-    ----------
-    Option :       
-        * 'Verbose'      Tons of Output   
-        * 'Info'         Info on data sets  
-
-    Examples
-    --------
-
-    >>> DataGrid('info')
-    >>> dat = DataGrid('verbose')
-    """
-
-    homedir = os.path.expanduser("~")
-    if option == 'verbose': print('Root Directory for Local Data ',homedir)
-    
-    U ={      'level': [10, 50, 100,150, 200,250,300,400,500,600,700,850,925,1000],
-              'start': 1979,
-              'end': 2018,
-              'label': 'U',
-              'longname': 'Zonal Wind',
-              'factor':1
-               }
-    V ={      'level': [10,50,100,150,200,250,300,400,500,600, 700,850,925,1000],
-              'start': 1979,
-              'end': 2018,
-              'label': 'V',
-              'longname': 'Meridional Wind',
-              'factor':1
-               }
-    T ={      'level': [10,50,100,150, 200,250,300,400, 500,600, 700,850,925, 1000],
-              'start': 1979,
-              'end': 2018,
-              'cv': 4,
-              'label': 'T',
-              'longname': 'Temperature',
-              'factor':1
-               }
-    W ={      'level': [10,50,100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000],
-              'start': 1979,
-              'end': 2018,
-              'cv': 0.01,
-              'label': 'W',
-              'longname': 'Vertical Velocity',
-              'factor':1
-               }
-    Z ={      'level': [ 200, 500],
-              'start': 1979,
-              'end': 2018,
-              'cv': 0.01,
-              'label': 'Z',
-              'longname': 'Geopotential Height',
-              'factor':1
-               }
-    tp ={     'level': ['SURF'],
-              'start': 1979,
-              'end': 2018,
-              'cv': 0.01,
-              'label': 'TP',
-              'longname': 'Precipitation',
-              'factor':60
-               }
-    MSL ={     'level': ['SURF'],
-              'start': 1979,
-              'end': 2018,
-              'cv': 10,
-              'label': 'MSL',
-              'longname': 'Mean Sea Level Pressure',
-              'factor':1/100.
-               }
-    SST ={    'level': ['SURF'],
-              'start': 1979,
-              'end': 2018,
-              'cv': 10,
-              'label': 'SST',
-              'longname': 'Sea Surface Tenperature',
-              'factor':1
-               }
-    THETA ={      'level': [10,50,100,150, 200,250,300,400, 500,600, 700,850,925, 1000],
-              'start': 1979,
-              'end': 2018,
-              'cv': 4,
-              'label': 'T',
-              'longname': 'Potential Temperature',
-              'factor':1
-               }
-    dataera5={'nlat': 721,
-              'nlon': 1440,
-              'latvec':[i for i in np.arange(-90,90.1,0.25)],
-              'lonvec': [i for i in np.arange(0,360.1,0.25)],
-              'latnp': np.asarray([i for i in np.arange(-90,90.1,0.25)][::-1]),  # For plotting
-              'lonnp': np.asarray([i for i in np.arange(0,360.1,0.25)]),
-              'clim': homedir + '/Dropbox (CMCC)/ERA5/CLIM',
-              'place': homedir +'/Dropbox (CMCC)/ERA5/DATA/ERA5_MM',
-              'host': 'local',
-              'source_url': 'http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings',
-              'desc':'ERA5 Monthly Mean for U,V,T,W,SLP 1979-2018',
-              'special_value': 9999.,
-              'U': U,
-              'T': T,
-              'V': V,
-              'W': W,
-              'Z': Z,
-              'tp': tp,
-              'MSL': MSL,
-              'SST': SST,
-              'THETA': THETA
-              }
-    
-    precip_gpcp ={  'level': 'SURF',
-              'start': 1979,
-              'end': 2018,
-              'label': 'precip',
-              'factor':1,
-              'longname': 'Precipitation GPCP',
-               }
-    
-    datagpcp={'nlat': 72,
-              'nlon': 144,
-              'latvec':[i for i in np.arange(-88.75,90.1,2.5)],
-              'lonvec': [i for i in np.arange(1.25,360.1,2.5)],
-              'latnp': np.asarray([i for i in np.arange(-88.75,90.1,2.5)][::-1]),  # For plotting
-              'lonnp': np.asarray([i for i in np.arange(1.25,360.,2.5)]),
-              'precip': precip_gpcp,
-              'place': homedir +'/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP',
-              'clim': homedir + '/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP',
-              'desc': 'Precipitation from the GPCP Project',
-              'source_url': 'http://gpcp.umd.edu/',
-              'host': 'local'
-              }
-
-    ocean_monthly={
-              'start':  1986,
-              'end':    2020,
-              'place': '/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY',
-              'names': 'CMCC-CM2-HR4-pi_1m_<year><month>01_<year><month>31_grid_T.nc',
-              'desc': 'Ocean Reanalysis V7 Monthly',
-              'source_url': '',
-              'host': 'DSS'
-              }
-    ocean_daily={
-              'start':  1986,
-              'end':    2020,
-              'place': '/data/products/GLOBAL_REANALYSES/C-GLORSv7/DAILY_MONTHLY',
-              'names': 'CMCC-CM2-HR4-pi_1m_<year><month>01_<year><month>31_grid_T.nc',
-              'desc': 'Ocean Reanalysis V7 Daily',
-              'source_url': '',
-              'host': 'DSS'
-              }
-    grid={'ERA5': dataera5,
-          'GPCP': datagpcp,
-          'OCRD': ocean_daily,
-          'OCRM': ocean_monthly
-         }
-    if option == 'info':
-        for i in list(grid.keys()):
-            print(grid[i]['desc'])
-            print(grid[i]['place'])
-            print(grid[i]['host'])
-            print(grid[i]['source_url']+'\n')
-        return
-    
-    return grid
-
-
-def readvar_grid(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',Celsius=False,verbose=False):
-    """
-    Read Variable from data sets
-    
-    Parameters
-    ----------
-
-    region :    
-        *globe* for global maps, or [east, west, north, south]
-        for limited region, longitude 0-360
-    dataset :   
-         name of data set
-    var :   
-         variable name
-    level : 
-        level, either a value or 'SURF' for surface fields
-
-    season :    
-        Month ('JAN') or season (,'DJF') or annual 'ANN')
-     
-    Celsius :   
-        True/False for temperature transform to Celsius
-    
-    verbose :   
-        True/False -- tons of output
-
-    Returns
-    -------
-
-    xdat : numpy    
-        array data 
-    nlon :  
-        Number of longitudes
-    nlat :  
-        Number of Latitudes
-    lat :   
-        Latitudes
-    lon :   
-        Longitudes
-
-    Examples
-    --------
-
-    >>> readvar_grid(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',Celsius=False,verbose=False)
-    >>> readvar_grid(region='globe',dataset='ERA5',var='SST',level='SURF',season='JAN',Celsius=True,verbose=False)
-    """
-    
-    vardir = '.'
-
-    dat=date_param()
-
-    grid = DataGrid()
-    nlat = grid[dataset]['nlat']
-    nlon = grid[dataset]['nlon']
-
-    lat = grid[dataset]['latnp']
-    lon = grid[dataset]['lonnp']
-    #Correct for longitude in ERA5
-    if dataset =='ERA5':
-        lon=lon[:-1]
-    sv=None
-    try:
-        sv=grid[dataset]['special_value']
-        if verbose: print('  Using Special Value ---->', sv)
-    except:
-        print('  Special Value not defined for dataset {}'.format(dataset))
-        
-    ys=grid[dataset][var]['start']
-    ye=grid[dataset][var]['end']
-    ys=1979
-    ye=2018
-    lname=grid[dataset][var]['longname']
-
-    nyears= ye-ys
-    years =[i for i in range(ys,ye+1)]
-
-    factor=grid[dataset][var]['factor']
-
-    xdat= np.zeros([nlat,nlon,nyears+1])
-
-    for tim in years:
-        itim =years.index(tim)
-        dat=date_param()
-        mon=dat[season]['month_index']
-        if verbose:
-            print(' Plotting ' + var + ' from dataset ' + dataset)
-            print('Printing year  ', tim)
-        #
-        if len(mon) > 1:
-            if verbose: print('Mean on these months: {}'.format(mon))
-            temp= np.zeros([nlat,nlon,len(mon)])
-            for k in range(len(mon)):
-                temp[:,:,k]=read_month(dataset,vardir,var,level,tim,mon[k],'npy',[],verbose=verbose) 
-            xdat[:,:,itim]=np.mean(temp,axis=2)
-        else:
-            xdat[:,:,itim]=read_month(dataset, vardir,var,level,tim,mon[0],'npy',[],verbose=verbose) 
-
-    return xdat,nlon, nlat,lat,lon,sv
-
-def read_xarray(dataset='ERA5',region='globe',var='Z',level='500',season='DJF',verbose=False):
+def read_xarray(dataset=None, var=None, period=None, level=None, season=None, region=None, verbose=False):
     '''
-    Read npy files from data and generates xarray.
-
-    This a xarray implementation of read_var. It always grabs the global data.
+    Load into a DataArray the requested variable from dataset source.
 
     Parameters
     ----------
-    dataset :   
-        Name of data set   
-    region: 
-        Select region   
-        * *globe*, Entire globe
-        * [East, West, North, South], Specific Region
-    var :   
+    dataset : string
+        Name of dataset
+    var : string
          variable name
-    level : 
-        level, either a value or 'SURF' for surface fields
-
-    season :    
-        Month ('JAN') or season (,'DJF') or annual 'ANN'), or 'ALL' for every year
-    verbose:    
+    period : list
+        A two element list with initial and final years
+    level : float
+        level value (if not in levels list the closest one will be used)
+    season : string
+        Month ('JAN'), season ('DJF', 'AMJ') or annual ('ANN')
+    region : list
+        Region corners [LonMax, LonMin, LatMax, LatMin]
+    verbose : Boolean
         True/False -- Tons of Output
 
     Returns
     -------
-    out : xarray   
-        array data 
-    
-    '''
-    
-    if season != 'ALL':
-        xdat,nlon, nlat,lat,lon,sv=readvar_grid(region='globe',dataset=dataset, \
-                            var=var,level=level,season=season,Celsius=False,verbose=verbose)
-        times = pd.date_range('1979-01-01', periods=40,freq='YS')
-    elif season == 'ALL':
-        xdat,nlon, nlat,lat,lon,sv=readvar_year(region='globe',dataset=dataset, \
-                            var=var,level=level,period='all',Celsius=False,verbose=verbose)
-        times = pd.date_range('1979-01-01', periods=480,freq='MS')
-    
-    out = xr.DataArray(xdat, coords=[lat, lon, times], dims=['lat','lon','time'])
-    if sv:
-        out=xr.where(out == sv, np.nan, out)
-    if region != 'globe':
-        out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
-
-    
-    return out
-
-def read_dataset(dataset='ERA5',region='globe',var='Z',level='500',season='DJF',verbose=False):
-    '''
-    Similar to `read_xarray` but returns a ``xarray DataSet``
-    
-    '''
-    
-    out = read_xarray(dataset=dataset, region=region, \
-                            var=var,level=level,season=season,verbose=verbose)
-    ds = xr.Dataset({var: out})
-    return ds
-
-def readvar_year(region='globe',period='all',dataset='ERA5',var='Z',level='500',
-                 Celsius=False,verbose=False):
-    """
-    Read Variable from data banks, all month, no averaging
-    
-    Parameters
-    ----------
-
-    region :    
-        'globe' for global maps, or [east, west, north, south]
-        for limited region, longitude 0-360
-    dataset :   
-         name of data set
-    var :   
-         variable name
-    level : 
-        level, either a value or 'SURF' for surface fields
-
-    period :    
-        Time period to be read  
-            * 'all' Every time level in databank  
-            * [start_year,end_year] period in those years
-     
-    Celsius :   
-        True/False for temperature transform to Celsius
-    
-    verbose :   
-        True/False -- tons of output
-
-    Returns
-    -------
-
-    xdat : numpy    
-        array data 
-    nlon :  
-        Number of longitudes
-    nlat :  
-        Number of Latitudes
-    lat :   
-        Latitudes
-    lon :   
-        Longitudes
+    out : DataArray
+        extracted data
 
     Examples
     --------
 
-    >>> readvar_year(region='globe',dataset='ERA5',var='Z',level='500',season='JAN',Celsius=False,verbose=False)
-    >>> readvar_year(region='globe',dataset='ERA5',var='SST',level='SURF',season='JAN',Celsius=True,verbose=False)
-    """
-    
-    vardir = '.'
+    >>> da = read_xarray(dataset='ERA5_MM',var='T',period=[2000 2010], level='500')
+    >>> da = read_xarray(dataset='C-GLORSv7', var='votemper', period=[2000 2010], season='DJF')
+    '''
+    datacat = inquire_catalogue(dataset)
 
-    dat=date_param()
+    out = load_dataarray(datacat, var, level, period)
+ 
+    # temporal sampling
+    if season is not None:
+        out = da_time_mean(out, season)
 
-    grid = DataGrid()
-    nlat = grid[dataset]['nlat']
-    nlon = grid[dataset]['nlon']
+    # horizontal sampling
+    #TODO  need test with NEMO grid as coordinate are not associated to dimensions (maybe a dedicated function)
+    if region is not None:
+        out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
-    lat = grid[dataset]['latnp']
-    lon = grid[dataset]['lonnp']
-    #Correct for longitude in ERA5
-    if dataset =='ERA5':
-        lon=lon[:-1]
-    sv=None
-    try:
-        sv=grid[dataset]['special_value']
-        if verbose: print('  Using Special Value ---->', sv)
-    except:
-        print('  Special Value not defined for dataset {}'.format(dataset))
+    # vertical sampling
+    if level is not None and 'lev' in out.coords.keys():
+        lev_sel = []
+        for lev in level:
+            if lev in datacat['levels']:
+                lev_sel.append(lev)
+            else:
+                # find closest level if not in levels list
+                idx = np.abs(out.lev.values - lev).argmin().min()
+                lev_sel.append(out.lev.values[idx])
+                print ('Warning: approximate requested level %s to nearest one %s' % (str(level),str(lev_sel[-1])))
 
-    ys=grid[dataset][var]['start']
-    ye=grid[dataset][var]['end']
-    ys=1979
-    ye=2018
-    lname=grid[dataset][var]['longname']
-    #Choose period
-    if period =='all':
-        nyears= ye-ys
-        years =[i for i in range(ys,ye+1)]
+        out = out.sel(lev = lev_sel)
+
+    return out
+
+
+def da_time_mean(da, sample):
+    '''
+    Sample datarray based on month/season and compute average over timewindows
+
+    Parameters
+    ----------
+    da : DataArray
+        Input data
+    sample : string
+        Identifier of temporal sampling (e.g., JAN, FEB, ...,  ANN, DJF, MAM ...)
+
+    Returns
+    -------
+    out : DataArray
+        Time sampled DataArrray
+
+    Examples
+    --------
+
+    >>> da = da_time_mean(da, 'JJA')
+    >>> da = da_time_mean(da, 'ANN')
+    '''
+    indexes = None
+
+    # admissible time groups
+    time_grp ={'DJF': ['Q-NOV', [0, 4]], 'MAM':['Q-NOV', [1, 4]], 'JJA':['Q-NOV', [2, 4]], 'SON':['Q-NOV', [3, 4]],
+        'JFM':['Q-DEC', [0, 4]], 'AMJ':['Q-DEC', [1, 4]], 'JAS':['Q-DEC', [2, 4]], 'OND':['Q-DEC', [3, 4]],
+        'ANN':['A', [0, 1]], 
+        'JAN':[1,], 'FEB':[2,], 'MAR': [3,], 'APR':[4,], 'MAY':[5,], 'JUN':[6,],
+        'JUL':[7,], 'AUG':[8,], 'SEP': [9,], 'OCT':[10,], 'NOV':[11,], 'DEC':[12,]}
+
+    # reduce data to months
+    da = da.resample(time='M').mean(dim='time')
+
+    if sample in time_grp.keys():
+        if len(time_grp[sample]) > 1:
+            weights = subyear_weights(da.time, time_grp[sample][0])
+            da = (da * weights).resample(time=time_grp[sample][0]).sum(dim='time')
+            idx = time_grp[sample][1]
+            da = da.isel(time=slice(idx[0], None, idx[1]))
+            da.attrs.update({'time_resample':sample})
+        else:
+            months = ( da.time.dt.month == time_grp[sample])
+            da = da.sel(time=months)
+            da.attrs.update({'time_resample':sample})
+
     else:
-        nyears= period[1]-period[0]
-        years =[i for i in range(period[0],period[1]+1)]
+        print('requested temporal sampling' + sample + ' is not in admissible time groups.')
+        sys.exit(1)
 
-    factor=grid[dataset][var]['factor']
+    return da
 
-    xdat= np.zeros([nlat,nlon,12*(nyears+1)])
-   
-    itim=0
-    dat=date_param()
-    mon=dat['ANN']['month_index']
-    if verbose : print(' Reading ' + var + ' from databank ' + dataset)
-    for tim in years:
-        print('Reading year  ', tim)
-        for imon in mon:       
-            if verbose : print('Reading mon  ', imon)
-            xdat[:,:,itim]=read_month(dataset,vardir,var,level,tim,mon[imon-1],'npy',[],verbose=verbose)            
-            if verbose : print('Reading time  ', itim)
-            itim = itim + 1
 
-    return xdat,nlon, nlat,lat,lon,sv
+def subyear_weights(time, freq):
+    '''
+    Compute month weights according to frequency anchored offsets (season/year)
+
+    Parameters
+    ----------
+    time : DataArray
+        Time array of input data
+    freq : string
+        Identifier of pandas temporal anchored offsets (e.g., A, Q-DEC)
+
+    Returns
+    -------
+    weights : DataArray
+        weights to be applied at data before subyear time averaging
+
+    '''
+
+    weights = None 
+    months = time.dt.days_in_month
+    monbyfreq = pd.PeriodIndex(time.data,  freq=freq)
+
+    cummon = months * 0. 
+    for ii in monbyfreq.unique():
+        idx = (monbyfreq == ii)
+        asum = months.sel(time=idx).sum(dim='time').data
+        cummon.data[idx] = asum
+    
+    weights = months / cummon
+
+    return weights
+
+
+def load_dataarray(dataset, var, level, period):
+    '''
+    Read requested data into an xarray DataArray using dataset driver
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    var : string
+         variable name
+    level : list
+        vertical levels float value
+    period : list
+        Might be None or a two element list with initial and final year
+
+    Returns
+    -------
+    out : DataArray
+        Output data from dataset
+
+    '''
+    data_driver = dataset['driver']
+
+    if data_driver == 'default':
+
+        # get files list to read
+        files = get_data_files(dataset, var, level, period)
+
+        # open files as a dataset
+        ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override', parallel=True)
+        out = ds[files['var']]
+        out.attrs['realm'] = files['component']
+
+        # rename dimensions and coordinates if mapping provided
+        if 'coord_map' in files.keys():
+            out = fix_coords(out, files['coord_map'])
+
+        # apply mask to data if provided
+        if 'mask' in files.keys():
+            out = mask_data(out, files['mask']['name'], files['mask']['file'],files['mask']['coord_map'])
+
+    else:
+        # check if external driver exist 
+        if data_driver in dir(zdrv):
+            out = getattr(zdrv, data_driver)(dataset, var, level, period)
+        else:
+            print('Driver %s not defined in data_drivers.py.' % data_driver)
+            sys.exit(1)
+
+    out = roll_long(out)
+
+    return out
+
+
+def roll_long(da):
+    '''
+    Roll longitude coordinate between 0..360. Note that longitude dimension name must be 'lon'.
+
+    Parameters
+    ----------
+    da : dataArray
+        Xarray data structure
+
+    Returns
+    -------
+    da: dataArray
+        Xarray data structure
+
+    '''
+    coord = da.coords
+    # 1D coordinate
+    if 'lon' in coord:
+        if np.min(da.lon) < 0.:
+            da = da.assign_coords(lon=(((da.lon + 180) % 360) - 180))
+    # 2D coordinate for NEMO default name
+    elif 'nav_lon' in coord:
+        if np.min(da.nav_lon) < 0.:
+            da = da.assign_coords(nav_lon=(da.nav_lon % 360))
+
+    return da
+
+
+def mask_data(da, mask_name, mask_file, coord_map):
+    '''
+    Mask dataarray using a [0-1] mask file and the following convention, 0:remove, 1:retain
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    mask_name : string
+         mask variable name
+    mask_file : string
+         input file full path where mask variable is contained
+    coord_map : dict
+         Dictionary to rename dimensions
+
+    Returns
+    -------
+    da: dataArray
+        Xarray data structure with rename features
+    '''
+    dm = xr.open_dataset(mask_file)
+    dm = fix_coords(dm[mask_name], coord_map)
+    dm = dm.squeeze()
+
+    # drop lev dimension if data is 2D
+    if da.ndim < 4 and 'time' in da.dims:
+       if 'lev' in dm.dims:
+           dm = dm.sel(lev=1)
+
+    da = da.where(dm == 1)
+
+    return da
+
+
+def fix_coords(da, coord_map):
+    '''
+    Rename dimensions and coordinates to common names using mapping provided in dataset definition
+
+    Parameters
+    ----------
+    da : dataArray
+        Xarray data structure
+    coord_map : dict
+         Dictionary to rename coordinate and dimensions
+
+    Returns
+    -------
+    da: dataArray
+        Xarray data structure with rename features
+
+    '''
+    for coord in coord_map.keys():
+        if coord_map[coord] in da.dims:
+            da = da.rename({coord_map[coord]:coord})
+
+    return da
+
+def get_data_files(dataset, var, level, period):
+    '''
+    Retrieve list of input files for requested dataset/variable pair.
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    var : string
+         variable name
+    level : float
+        vertical levels float value
+    period : list
+        Might be None or a two element list with initial and final year
+
+    Returns
+    -------
+    files: dict
+        Dataset input files, variable name, requested period
+
+    '''
+    if dataset is None:
+        print('No dataset provided.')
+        sys.exit(1)
+
+    var_info = dataset_request_var(dataset, var, level, period)
+
+    # compose list of files
+    datapath = dataset['path']
+    datatree = dataset['subtree']
+    filename = dataset['components'][var_info[0]]['filename']
+
+    if period is None:
+        period = dataset['year_bounds']
+
+    months = ['01',]
+    if datatree is not None:
+        # check if variable is arranged by levels
+        islevel = True if re.search('<lev>',datatree) else False
+        if len(level) > 1:
+            print('File list over explicit multiple levels not allowed.')
+            print('Use a loop to call get_data_files for each level with a specific data driver.')
+            sys.exit(1)
+        level = level[0]
+        # check if month in subtree
+        if re.search('month',datatree) :
+            months = [str(item).zfill(2) for item in range(1,13)]
+        #TODO do we need to handle dayss in subtree?
+        if re.search('day',datatree):
+            print('Cannot handle dataset subtree with days')
+            sys.exit(1)
+    else:
+        islevel = False
+        datatree = ''
+
+    nameyear = True if re.search('year',filename) else False
+        
+    # standard set of wildcards
+    wildcards={'var':var, 'lev':str(level), 'comp':var_info[0], 'data_stream':var_info[1]}
+    for ii in wildcards.keys():
+        datatree = datatree.replace('<' + ii +'>',wildcards[ii])
+        filename = filename.replace('<' + ii +'>',wildcards[ii])
+    
+    # compose files list
+    in_files=[]
+    for yy in np.arange(period[0], period[1]+1):
+        for mm in months:
+            thispath = '/'.join([datapath, datatree])
+            #subtree replace
+            thispath = thispath.replace('<year>',str(yy))
+            thispath = thispath.replace('<month>',str(mm))
+            #filename replace
+            thisname = filename
+            thisname = thisname.replace('<year>',str(yy))
+            thisname = thisname.replace('<month>',str(mm))
+            #list files
+            tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
+            in_files.extend(tmpfile)
+            del thispath, thisname, tmpfile
+    
+    if not in_files:
+        print('Input files not found for ' + dataset['name'] + ' located in ' + datapath)
+        sys.exit(1)
+
+    # create output dictionary
+    files={}
+    files['files'] = in_files
+    files['var'] = var
+    files['period'] = period
+    files['islevel'] = islevel
+    files['component'] = var_info[0]
+
+    # coordinate mapping
+    data_stream = dataset['components'][var_info[0]]['data_stream'][var_info[1]]
+    if 'coord_map' in data_stream.keys():
+        files['coord_map'] = data_stream['coord_map']
+
+    # coordinates from file
+    if 'coords' in data_stream.keys():
+        if 'coords' in dataset['metrics'].keys():
+            files['coords'] = data_stream['coords']
+            files['coords'].update({'file':dataset['metrics']['coords']})
+        else:
+            print('Coordinates file not available within metrics files')
+            sys.exit(1)
+
+    # mask to be applied at the input data fields
+    if 'mask' in data_stream.keys():
+        if 'mask' in dataset['metrics'].keys():
+            files['mask'] = {'name':data_stream['mask']}
+            files['mask'].update(dataset['metrics']['mask'])
+        else:
+            print('Mask file not available within metrics files (maskname is ' + data_stream['mask'] + ')')
+            sys.exit(1)
+
+    return files
+
+
+def dataset_request_var(dataset, var, level, period):
+    '''
+    Perform consistency control on user dataset requests and find matching variable.
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    var : string
+         variable name
+    level : list
+        vertical levels float value
+    period : list
+        Might be None or a two element list with initial and final year
+
+    Returns
+    -------
+    var_info : list
+        requested variable information: [component, data stream, type]
+
+    '''
+    # check for level bounds
+    level_bnd = [min(dataset['levels']), max(dataset['levels'])]
+    if level is not None and not isinstance(level[0], str):
+        for lev in level:
+            if lev < level_bnd[0] or lev > level_bnd[1]:
+                print('Requested level ' + str(lev) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
+                sys.exit(1)
+
+    # check for time bounds
+    time_bnd = dataset['year_bounds']
+    if period is not None and len(time_bnd) > 1:
+           if period[0] < time_bnd[0] or period[1] > time_bnd[1]:
+               print('Requested time period is not within dataset bounds [%s, %s]' % tuple(time_bnd))
+               sys.exit(1)
+
+    # find matching variable
+    var_match=[]
+    for cc in dataset['components'].keys():
+        for dd in dataset['components'][cc]['data_stream'].keys():
+             for xy in dataset['components'][cc]['data_stream'][dd].keys():
+                 if xy not in ['coords', 'coord_map', 'mask']:
+                     thevars = dataset['components'][cc]['data_stream'][dd][xy].keys()
+                     if var in thevars:
+                         var_match.append([cc, dd, xy])
+    del cc, dd, xy, thevars
+
+    if len(var_match) > 1:
+        print('Requested variable ' + var + ' is available from multiple data streams. Something is wrong.')
+        sys.exit(1)
+    elif len(var_match) == 0:
+        print('Requested variable ' + var + ' is not available in the dataset %s', dataset['name'])
+        sys.exit(1)
+    else:
+        print('Retrieve variable ' + var + ' from component %s of data stream %s as %s field' % tuple(var_match[0]))
+        var_info = var_match[0]
+
+
+    return var_info
+
+
+def inquire_catalogue(dataset=None, info=False):
+    '''
+    Retrieve requested dataset informative structure from general catalogue (YAML file).
+
+    If no dataset is requested, print a list of available datasets name and description.
+
+    If info is True print additional details without loading dataset if provided
+
+    Parameters
+    ----------
+    dataset : string
+        Name of data set
+    info: boolean
+        Print additional details for all or selected dataset
+
+    Returns
+    -------
+    out : dict
+        requested dataset informative structure
+
+    Examples
+    --------
+
+    >>> datacat = inquire_catalogue(dataset='C-GLORSv7')
+    >>> inquire_catalogue()
+        List of datasets in catalogue:
+        C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means
+        ERA5_MM : ERA5 Monthly Mean on Pressure Levels
+    >>> inquire_catalogue(dataset='ERA5_MM', info=True)
+        Access dataset ERA5_MM
+        atm component [IFS]
+         Data Stream monthly 3D variables:
+         - U : Zonal Wind
+         - V : Meridional Wind
+         - W : Vertical Velocity
+         ...
+    '''
+    out = None
+    pwd = os.path.dirname(os.path.abspath(__file__))
+
+    # Load catalogue
+    catalogue = yaml.load(open(pwd + '/catalogue.yml'), Loader=yaml.FullLoader)
+
+    # Print list of available datasets    
+    if dataset is None:
+        print('List of datasets in catalogue:\n')
+        for cat in catalogue.keys():
+            print('%s : %s' % tuple([cat, catalogue[cat]['description']]))
+        print('\n')
+        return
+
+    # retrieve dataset information
+    if dataset not in catalogue.keys():
+        print('Requested dataset ' + dataset + ' is not available in catalogue.')
+        sys.exit(1)
+    else:
+        print('Access dataset ' + dataset )
+        out = catalogue[dataset]
+        out['name'] = dataset
+
+    if info:
+       for comp in out['components']:
+           thecomp = out['components'][comp]
+           print( comp + ' component [' +thecomp['model'] + ']')
+           for ss in thecomp['data_stream'].keys():
+               print('\nData Stream : ' + ss)
+               for grp in thecomp['data_stream'][ss].keys():
+                   if grp not in ['coords', 'coord_map', 'mask']:
+                       print(' ' + grp  +' variables')
+                       for vv in thecomp['data_stream'][ss][grp].keys():
+                           print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
+
+    print('\n')
+
+    return out

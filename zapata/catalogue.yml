@@ -1,0 +1,115 @@
+BSFS-NRT_daily:
+  remote: True
+  path: /data/products/BSFS/bsfs_v3.2/analysis_daily_mean
+  subtree: <year>/<month>
+  source_url: http://bsfs.cmcc.it/
+  description: Black Sea Forecasting System (BSFS) NRT analisys daily means
+  contact: Stefania Ciliberti
+  year_bounds: [2014, 2019]
+  data_block: daily
+  driver: 'default'
+  levels: [2.50107861, 7.51119328, 12.5361958, 17.5834045, 22.6637363, 27.7934647, 32.9968567, 38.3100739, 43.7869759, 49.5077286, 55.591507, 62.2151947, 69.6406403, 78.2540207, 88.6216965, 101.567436, 118.274727, 140.413391, 170.277618, 210.89946, 266.066681, 340.139435, 437.56604, 562.099182, 715.915161, 899.013916, 1109.21924, 1342.77844, 1595.24304, 1862.25317, 2140.02075]
+  # data
+  components:
+    ocn:
+      model: 'NEMO 3.6'
+      filename: <data_stream>_<year><month>*_dm_CMCC_BSFS1b_BLKSEA_*_an12-v01.nc
+      grid: {'x':395, 'y':215, 'z':31}
+      data_stream:
+         t:
+           3D: {'vosaline':'sea_water_practical_salinity', 'votemper':'sea_water_potential_temperature'}
+           2D: {'sossheig':'sea_surface_height_above_geoid', 'sowaflup':'water_flux_out_of_sea_ice_and_sea_water',
+                'soshfldo':'net_downward_shortwave_flux_at_sea_water_surface', 'sohefldo':'surface_downward_heat_flux_in_sea_water',
+                'sorunoff':'River Runoffs', 'soevapor':'Local Evaporation', 'soflbackward':'Longwave Downward Heat Flux over open ocean',
+                'soflsensible':'Sensible Downward Heat Flux over open ocean', 'sofllatent':'Latent Downward Heat Flux over open ocean',
+                'somxl010':'ocean_mixed_layer_thickness_defined_by_sigma_theta',}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_counter', 'lev':'deptht',}
+         u:
+           3D: {'vozocrtx':'sea_water_x_velocity',}
+           2D: {'sozotaux':'surface_downward_x_stress'}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_counter', 'lev':'depthu',}
+         v:
+           3D: {'vomecrty':'sea_water_y_velocity'}
+           2D: {'sometauy':'surface_downward_y_stress',}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_counter', 'lev':'depthv',}
+  # contained in <path>
+  metrics:
+    landsea: 'MESHMASK/mesh_mask.nc'
+
+#
+C-GLORSv7:
+  remote: True
+  path: /data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY 
+  subtree:
+  source_url: http://c-glors.cmcc.it/index/index.html
+  description: Ocean Global Reanalyses at 1/4° resolution monthly means
+  contact: Andrea Cipollone
+  year_bounds: [1986, 2019]
+  data_block: yearly
+  driver: 'cglorsv7'
+  levels: [0.505760014, 1.55585527, 2.66768169, 3.85627985, 5.14036131, 6.5430336, 8.09251881, 9.82275009, 11.7736797, 13.9910383, 16.525322, 19.4298019, 22.757616, 26.5583, 30.8745613, 35.7402039, 41.1800232, 47.211895, 53.8506355, 61.1128387, 69.0216827, 77.6111603, 86.9294281, 97.0413132, 108.030281, 120.0, 133.075821, 147.40625, 163.164459, 180.549927, 199.789963, 221.141174, 244.890625, 271.356384, 300.887512, 333.862823, 370.688477, 411.793854, 457.62561, 508.639893, 565.292297, 628.026001, 697.258667, 773.368286, 856.678955, 947.447876, 1045.85425, 1151.99121, 1265.86145, 1387.37695, 1516.36365, 1652.56848, 1795.67078, 1945.29553, 2101.02661, 2262.42163, 2429.02515, 2600.38037, 2776.03931, 2955.57031, 3138.56494, 3324.64087, 3513.44556, 3704.65674, 3897.98193, 4093.15869, 4289.95264, 4488.15479, 4687.58105, 4888.06982, 5089.47852, 5291.68311, 5494.5752, 5698.06055, 5902.05762,]
+  # data
+  components:
+    ocn:
+      model: 'NEMO 3.6'
+      filename: NEMO_1m_<year>_<data_stream>.nc
+      grid: {'x':1442, 'y':1050, 'z':75}
+      data_stream:
+         grid_T:
+           3D: {'vosaline':'sea_water_practical_salinity', 'votemper':'sea_water_potential_temperature'}
+           2D: {'sohefldo':'surface_downward_heat_flux_in_sea_water', 'somxl010':'ocean_mixed_layer_thickness_defined_by_sigma_theta', 'soshfldo':'net_downward_shortwave_flux_at_sea_water_surface',
+                'sossheig':'sea_surface_height_above_geoid', 'sosaline':'sea_surface_salinity', 'sosstsst':'sea_surface_temperature', 'sowaflup':'water_flux_out_of_sea_ice_and_sea_water',
+                'sowindsp':'wind_speed_module', 'solongwa':'surface_net_downward_longwave_flux', 'solatent':'surface_downward_latent_heat_flux'} 
+           coords: {'lon':'glamt', 'lat':'gphit'}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered', 'lev':'deptht'}
+           mask: tmask
+         grid_U:
+           3D: {'vozocrtx':'sea_water_x_velocity',}
+           2D: {'sozocrtx':'surface_sea_water_x_velocity', 'sozotaux':'surface_downward_x_stress'}
+           coords: {'lon':'glamu', 'lat':'gphiu'}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered', 'lev':'depthu'}
+           mask: umask
+         grid_V:
+           3D: {'vomecrty':'sea_water_y_velocity'}
+           2D: {'somecrty':'surface_sea_water_y_velocity', 'sometauy':'surface_downward_y_stress',}
+           coords: {'lon':'glamv', 'lat':'gphiv'}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered', 'lev':'depthv'}
+           mask: vmask
+         icemod:
+           3D: {}
+           2D: {'icethic':'sea_ice_thickness', 'iicevelu':'sea_ice_x_velocity', 'iicevelv':'sea_ice_y_velocity', 'isnowthi':'surface_snow_thickness', 'soicecov':'sea_ice_area_fraction'}
+           coords: {'lon':'glamt', 'lat':'gphit'}
+           coord_map: {'lon':'x', 'lat':'y', 'time':'time_centered'}
+           mask: tmask
+  # ancillary files (full path)
+  metrics:
+    mask: {'file':'/data/products/GLOBAL_REANALYSES/C-GLORSv7/MESHMASK/mesh_mask.nc', 'coord_map':{'lon':'x', 'lat':'y', 'time':'t', 'lev':'z'}}
+    coords: '/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY/NEMO_coordinates.nc'
+
+#
+ERA5_MM:
+  remote: False
+  path: /Users/lovato/ClimData/ERA5_MM
+  subtree: <var><lev>
+  source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
+  description: ERA5 Monthly Mean on Pressure Levels (compiled by A. Navarra 2019)
+  contact: Antonio Navarra
+  year_bounds: [1979, 2018]
+  data_block: monthly
+  data_freq: monthly
+  driver: 'era5_numpy'
+  levels: [10, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,]
+  # data
+  components:
+    atm:
+      model: 'IFS'
+      grid: {'x':1440, 'y':721, 'z':14}
+      filename: <var>_<lev>_<year>_<mon>_MM.npy
+      data_stream:
+         monthly: 
+           3D: {'U':'Zonal Wind', 'V':'Meridional Wind', 'W':'Vertical Velocity', 'T':'Temperature', 'Z':'Geopotential Height'}
+           2D: {'SST':'Sea Surface Tenperature', 'tp':'Precipitation', 'MSL':'Mean Sea Level Pressure'}
+  # Places in <path> 
+  metrics:
+    lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
+    lat: 'np.asarray([i for i in np.arange(-90,90.1,0.25)][::-1])'

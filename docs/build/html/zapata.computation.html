@@ -51,7 +51,7 @@
 <span id="zapata-computation-module"></span><h1>zapata.computation module<a class="headerlink" href="#module-zapata.computation" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="zapata.computation.zonal_var">
-<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">zonal_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">season</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'LonTime'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#zonal_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.zonal_var" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.computation.</code><code class="sig-name descname">zonal_var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'LonTime'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/computation.html#zonal_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.computation.zonal_var" title="Permalink to this definition">¶</a></dt>
 <dd><p>A routine to average xarray</p>
 <p>This routine will accept xarray up to four dimensions (lat,lon,pressure, time) and return the averaged arrays with compatible dimensions.</p>
 <dl class="field-list">
@@ -60,6 +60,8 @@
 <li><p><strong>dataset</strong> – Name of the dataset, <code class="docutils literal notranslate"><span class="pre">ERA5</span></code>, <code class="docutils literal notranslate"><span class="pre">GPCP</span></code></p></li>
 <li><p><strong>var</strong> – Variable</p></li>
 <li><p><strong>season</strong> – Month or Season. Resolved from <cite>dat_param</cite></p></li>
+<li><p><strong>level</strong> (<em>list</em>) – Vertical level to extract</p></li>
+<li><p><strong>period</strong> (<em>list</em>) – Might be None or a two element list with initial and final years</p></li>
 <li><p><strong>option</strong> –</p>
 <dl class="simple">
 <dt>Control Averaging</dt><dd><ul class="simple">
