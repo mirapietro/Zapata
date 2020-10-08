@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zapata.colormap &#8212; CMCC-Applications 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.colormap</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for zapata.colormap</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Color control and choice </span>
+<span class="sd">========================</span>
+
+<span class="sd">Colormap Selection </span>
+<span class="sd">------------------</span>
+<span class="sd">A number of colormap obtained from SciVis (`https://sciviscolor.org/`). </span>
+
+
+<span class="sd">Utilities </span>
+<span class="sd">---------</span>
+<span class="sd">**convert_colormap**</span>
+
+<span class="sd">Detailed Description:</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">Convert colormap in `xml` format into `matplotlib` format</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">col</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+
+<div class="viewcode-block" id="make_cmap"><a class="viewcode-back" href="../../zapata.colormap.html#zapata.colormap.make_cmap">[docs]</a><span class="k">def</span> <span class="nf">make_cmap</span><span class="p">(</span><span class="n">xml</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Convert colormap from `PARAVISION` and `SCIVISION` </span>
+<span class="sd">    https://sciviscolor.org/outlier-focused-colormaps/</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ==========</span>
+<span class="sd">    file: str</span>
+<span class="sd">        Input file colormap in xml format </span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    =======</span>
+<span class="sd">    colormap:    </span>
+<span class="sd">        Colormap object</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">load_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="s1">&#39;color_vals&#39;</span><span class="p">]</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="s1">&#39;data_vals&#39;</span><span class="p">]</span>
+
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;position length must be the same as colors&#39;</span><span class="p">)</span>
+
+    <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;red&#39;</span><span class="p">:[],</span> <span class="s1">&#39;green&#39;</span><span class="p">:[],</span> <span class="s1">&#39;blue&#39;</span><span class="p">:[]}</span>
+
+    <span class="k">if</span> <span class="n">position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;green&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;green&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">color</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">position</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;green&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">cdict</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">colors</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s1">&#39;my_colormap&#39;</span><span class="p">,</span><span class="n">cdict</span><span class="p">,</span><span class="mi">256</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmap</span></div>
+
+
+<div class="viewcode-block" id="load_xml"><a class="viewcode-back" href="../../zapata.colormap.html#zapata.colormap.load_xml">[docs]</a><span class="k">def</span> <span class="nf">load_xml</span><span class="p">(</span><span class="n">xml</span><span class="p">):</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;The input file is invalid. It must be a colormap xml file. Go to https://sciviscolor.org/home/colormaps/ for some good options&#39;</span><span class="p">)</span>
+        <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Go to https://sciviscolor.org/matlab-matplotlib-pv44/ for an example use of this script.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    
+    <span class="n">data_vals</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">color_vals</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;.//Point&#39;</span><span class="p">):</span>
+        <span class="n">data_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]))</span>
+        <span class="n">color_vals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">])))</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;color_vals&#39;</span><span class="p">:</span><span class="n">color_vals</span><span class="p">,</span> <span class="s1">&#39;data_vals&#39;</span><span class="p">:</span><span class="n">data_vals</span><span class="p">}</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/zap.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Zapata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conda_doc_SO.html">CONDA Useful commands</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.colormap</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, AN.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

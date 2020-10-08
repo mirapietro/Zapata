@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>zapata.work_in_progress module &#8212; CMCC-Applications 0.1 documentation</title>
+    <title>zapata.colormap module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -17,8 +17,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="zeus module" href="zeus.html" />
-    <link rel="prev" title="zapata.things_to_do module" href="zapata.things_to_do.html" /> 
+    <link rel="next" title="zapata.computation module" href="zapata.computation.html" />
+    <link rel="prev" title="zapata package" href="zapata.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,15 +30,15 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="zeus.html" title="zeus module"
+          <a href="zapata.computation.html" title="zapata.computation module"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="zapata.things_to_do.html" title="zapata.things_to_do module"
+          <a href="zapata.html" title="zapata package"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="zapata.html" accesskey="U">zapata package</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">zapata.work_in_progress module</a></li> 
+        <li class="nav-item nav-item-this"><a href="">zapata.colormap module</a></li> 
       </ul>
     </div>  
 
@@ -47,34 +47,46 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-zapata.work_in_progress">
-<span id="zapata-work-in-progress-module"></span><h1>zapata.work_in_progress module<a class="headerlink" href="#module-zapata.work_in_progress" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-zapata.colormap">
+<span id="zapata-colormap-module"></span><h1>zapata.colormap module<a class="headerlink" href="#module-zapata.colormap" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="color-control-and-choice">
+<h2>Color control and choice<a class="headerlink" href="#color-control-and-choice" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="colormap-selection">
+<h3>Colormap Selection<a class="headerlink" href="#colormap-selection" title="Permalink to this headline">¶</a></h3>
+<p>A number of colormap obtained from SciVis (<cite>https://sciviscolor.org/</cite>).</p>
+</div>
+<div class="section" id="utilities">
+<h3>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h3>
+<p><strong>convert_colormap</strong></p>
+</div>
+<div class="section" id="detailed-description">
+<h3>Detailed Description:<a class="headerlink" href="#detailed-description" title="Permalink to this headline">¶</a></h3>
+<p>Convert colormap in <cite>xml</cite> format into <cite>matplotlib</cite> format</p>
 <dl class="py function">
-<dt id="zapata.work_in_progress.ttest_1samp">
-<code class="sig-prename descclassname">zapata.work_in_progress.</code><code class="sig-name descname">ttest_1samp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">popmean</span></em>, <em class="sig-param"><span class="n">dim</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/work_in_progress.html#ttest_1samp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.work_in_progress.ttest_1samp" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a two-sided test for the null hypothesis that the expected value
-(mean) of a sample of independent observations <cite>a</cite> is equal to the given
-population mean, <cite>popmean</cite></p>
-<p>Inspired here: <a class="reference external" href="https://github.com/scipy/scipy/blob/v0.19.0/scipy/stats/stats.py#L3769-L3846">https://github.com/scipy/scipy/blob/v0.19.0/scipy/stats/stats.py#L3769-L3846</a></p>
+<dt id="zapata.colormap.make_cmap">
+<code class="sig-prename descclassname">zapata.colormap.</code><code class="sig-name descname">make_cmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xml</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/colormap.html#make_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.colormap.make_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert colormap from <cite>PARAVISION</cite> and <cite>SCIVISION</cite>
+<a class="reference external" href="https://sciviscolor.org/outlier-focused-colormaps/">https://sciviscolor.org/outlier-focused-colormaps/</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>xarray</em>) – sample observation</p></li>
-<li><p><strong>popmean</strong> (<em>float or array_like</em>) – expected value in null hypothesis, if array_like than it must have the
-same shape as <cite>a</cite> excluding the axis dimension</p></li>
-<li><p><strong>dim</strong> (<em>string</em>) – dimension along which to compute test</p></li>
-</ul>
+<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) – Input file colormap in xml format</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>mean</strong> (<em>xarray</em>) – averaged sample along which dimension t-test was computed</p></li>
-<li><p><strong>pvalue</strong> (<em>xarray</em>) – two-tailed p-value</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Colormap object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>colormap</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="zapata.colormap.load_xml">
+<code class="sig-prename descclassname">zapata.colormap.</code><code class="sig-name descname">load_xml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xml</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/colormap.html#load_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.colormap.load_xml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
 </div>
 
 
@@ -105,15 +117,15 @@ same shape as <cite>a</cite> excluding the axis dimension</p></li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="zapata.things_to_do.html"
-                        title="previous chapter">zapata.things_to_do module</a></p>
+  <p class="topless"><a href="zapata.html"
+                        title="previous chapter">zapata package</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="zeus.html"
-                        title="next chapter">zeus module</a></p>
+  <p class="topless"><a href="zapata.computation.html"
+                        title="next chapter">zapata.computation module</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/zapata.work_in_progress.rst.txt"
+      <li><a href="_sources/zapata.colormap.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -141,15 +153,15 @@ same shape as <cite>a</cite> excluding the axis dimension</p></li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="zeus.html" title="zeus module"
+          <a href="zapata.computation.html" title="zapata.computation module"
              >next</a> |</li>
         <li class="right" >
-          <a href="zapata.things_to_do.html" title="zapata.things_to_do module"
+          <a href="zapata.html" title="zapata package"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="modules.html" >Zapata</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="zapata.html" >zapata package</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">zapata.work_in_progress module</a></li> 
+        <li class="nav-item nav-item-this"><a href="">zapata.colormap module</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zapata.lib module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -124,6 +124,72 @@ Years are obtained from np.arange(1979,2018, 1/12)</p>
 <p>Years are from np.arange(1979,2018, 1/12)</p>
 </dd></dl>
 
+<dl class="py function">
+<dt id="zapata.lib.putna">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">putna</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">left</span></em>, <em class="sig-param"><span class="n">right</span></em>, <em class="sig-param"><span class="n">xar</span></em>, <em class="sig-param"><span class="n">scalar</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/lib.html#putna"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.lib.putna" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put NaN in xarray according if they are laying in the interval <cite>left,right</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left,right</strong> – Extremes of the interval where the values must be NaN</p></li>
+<li><p><strong>xar</strong> – Xarray</p></li>
+<li><p><strong>scalar</strong> – If set all entries not satisfying the condition are put equal to <cite>scalar</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Modified array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.go_to">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">go_to</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/lib.html#go_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.lib.go_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Working directory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dir</strong> – Target directory relative to users’ root directory</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>Change working directory</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.long_string">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">long_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lon</span></em>, <em class="sig-param"><span class="n">cent_lon</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/lib.html#long_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.lib.long_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get nice formatted longitude string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lon</strong> – Longitude</p></li>
+<li><p><strong>cent_lon</strong> – Central longitude for projection used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>string in nice format</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.lib.lat_string">
+<code class="sig-prename descclassname">zapata.lib.</code><code class="sig-name descname">lat_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lat</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/lib.html#lat_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.lib.lat_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get nice formatted latitude string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lat</strong> – Latitude</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>string in nice format</em></p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -150,6 +216,7 @@ Years are obtained from np.arange(1979,2018, 1/12)</p>
 <li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="conda_doc_SO.html">CONDA Useful commands</a></li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -202,7 +269,7 @@ Years are obtained from np.arange(1979,2018, 1/12)</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

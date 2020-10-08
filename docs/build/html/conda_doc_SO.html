@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CONDA Useful commands &#8212; CMCC-Applications 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="zeus module" href="zeus.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="zeus.html" title="zeus module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CONDA Useful commands</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="conda-useful-commands">
+<h1>CONDA Useful commands<a class="headerlink" href="#conda-useful-commands" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Conda Command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Verify Conda is installed, check version number</p></td>
+<td><p>conda info</p></td>
+</tr>
+<tr class="row-odd"><td><p>Update Conda to the current version</p></td>
+<td><p>conda update -n base conda</p></td>
+</tr>
+<tr class="row-even"><td><p>Update all packages to the latest version of Anaconda. Will install stable and compatible versions,
+not necessarily the very latest.</p></td>
+<td><p>conda update anaconda</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="working-with-environments">
+<h2>Working with Environments<a class="headerlink" href="#working-with-environments" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Conda Command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Create a new environment named ENVNAME with specific version of Python and packages installed.</p></td>
+<td><p>conda create –name ENVNAME python=3.6 “PKG1&gt;7.6” PKG2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Activate a named Conda environment</p></td>
+<td><p>conda activate ENVNAME</p></td>
+</tr>
+<tr class="row-even"><td><p>Deactivate current environment</p></td>
+<td><p>conda deactivate</p></td>
+</tr>
+<tr class="row-odd"><td><p>List all packages and versions in the active environment</p></td>
+<td><p>conda list</p></td>
+</tr>
+<tr class="row-even"><td><p>List all revisions made within the active environment</p></td>
+<td><p>conda list –revisions</p></td>
+</tr>
+<tr class="row-odd"><td><p>List all packages and versions in a named environment</p></td>
+<td><p>conda list –name ENVNAME</p></td>
+</tr>
+<tr class="row-even"><td><p>List all revisions made in a specified environment</p></td>
+<td><p>conda list –name ENVNAME –revisions</p></td>
+</tr>
+<tr class="row-odd"><td><p>Restore an environment to a previous revision</p></td>
+<td><p>conda install –name ENVNAME –revision REV_NUMBER</p></td>
+</tr>
+<tr class="row-even"><td><p>Delete an entire environment</p></td>
+<td><p>conda remove -name ENVNAME –all</p></td>
+</tr>
+<tr class="row-odd"><td><p>Install packages from a file into environment</p></td>
+<td><p>conda install –name ENVNAME –file</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="sharing-environments">
+<h2>Sharing Environments<a class="headerlink" href="#sharing-environments" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Conda Command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Make an exact copy of an environment</p></td>
+<td><p>conda create –clone ENVNAME –name NEWENV</p></td>
+</tr>
+<tr class="row-odd"><td><p>Export an environment to a YAML file that can be read on Windows, macOS, and Linux</p></td>
+<td><p>conda env export –name ENVNAME &gt; envname.yml</p></td>
+</tr>
+<tr class="row-even"><td><p>Create an environment from YAML file</p></td>
+<td><p>conda env create –file envname.yml</p></td>
+</tr>
+<tr class="row-odd"><td><p>Create an environment from the file named environment.yml in the current directory</p></td>
+<td><p>conda env create</p></td>
+</tr>
+<tr class="row-even"><td><p>Export an environment with exact package versions for one OS</p></td>
+<td><p>conda list –explicit &gt; pkgs.txt</p></td>
+</tr>
+<tr class="row-odd"><td><p>Create an environment based on exact package versions</p></td>
+<td><p>conda create –name NEWENV –file pkgs.txt</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="using-packages-and-channels">
+<h2>Using Packages and Channels<a class="headerlink" href="#using-packages-and-channels" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Conda Command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Find a package on all channels using the Anaconda Client</p></td>
+<td><p>anaconda search FUZZYNAME</p></td>
+</tr>
+<tr class="row-odd"><td><p>Install package from a specific channel</p></td>
+<td><p>conda install conda-forge::PKGNAME</p></td>
+</tr>
+<tr class="row-even"><td><p>Install a package by exact version number (3.1.4)</p></td>
+<td><p>conda install PKGNAME==3.1.4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Install one of the listed versions (OR)</p></td>
+<td><p>conda install “PKGNAME[version=’3.1.2|3.1.4’]”</p></td>
+</tr>
+<tr class="row-even"><td><p>Install following several constraints (AND)</p></td>
+<td><p>conda install “PKGNAME&gt;2.5,&lt;3.2”</p></td>
+</tr>
+<tr class="row-odd"><td><p>Add a channel to your Conda configuration</p></td>
+<td><p>conda config –add channels CHANNELNAME</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="additional-useful-hints">
+<h2>Additional Useful Hints<a class="headerlink" href="#additional-useful-hints" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Conda Command</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Detailed information about package versions</p></td>
+<td><p>conda search PKGNAME –info</p></td>
+</tr>
+<tr class="row-odd"><td><p>Remove unused cached files including unused packages</p></td>
+<td><p>conda clean –all</p></td>
+</tr>
+<tr class="row-even"><td><p>Remove a package from an environment</p></td>
+<td><p>conda uninstall PKGNAME –name ENVNAME</p></td>
+</tr>
+<tr class="row-odd"><td><p>Update all packages within an environment</p></td>
+<td><p>conda update –all –name ENVNAME</p></td>
+</tr>
+<tr class="row-even"><td><p>Run most commands without requiring a user prompt. Useful for scripts.</p></td>
+<td><p>conda install –yes PKG1 PKG2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/zap.png" alt="Logo"/>
+            </a></p>
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Zapata</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CONDA Useful commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-environments">Working with Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sharing-environments">Sharing Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-packages-and-channels">Using Packages and Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-useful-hints">Additional Useful Hints</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="zeus.html"
+                        title="previous chapter">zeus module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/conda_doc_SO.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="zeus.html" title="zeus module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CONDA Useful commands</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, AN.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

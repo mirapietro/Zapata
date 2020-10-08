@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zapata.data module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -51,6 +51,10 @@
 <span id="zapata-data-module"></span><h1>zapata.data module<a class="headerlink" href="#module-zapata.data" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="a-module-to-store-and-treat-data">
 <h2>A module to store and treat data<a class="headerlink" href="#a-module-to-store-and-treat-data" title="Permalink to this headline">¶</a></h2>
+<p>in griglia nativa 1986-2020 giornaliera
+/data/products/GLOBAL_REANALYSES/C-GLORSv7/DAILY_MONTHLY</p>
+<p>in griglia nativa 1986-2020 mensile
+/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY</p>
 <dl class="py function">
 <dt id="zapata.data.read_month">
 <code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_month</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">vardir</span></em>, <em class="sig-param"><span class="n">var1</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">mm</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">option</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_month" title="Permalink to this definition">¶</a></dt>
@@ -101,10 +105,12 @@ described in <em>DataGrid()</em></p>
 <dt id="zapata.data.DataGrid">
 <code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">DataGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#DataGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.DataGrid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Routine that returns a Dictionary with information on the reuqested Data Set.</p>
-<p>Currently two data sets are supported</p>
+<p>Currently these data sets are supported</p>
 <ul class="simple">
 <li><p>ERA5 – Subset of monthly data of ERA5 (compiled by AN 2019)</p></li>
 <li><p>GPCP – Monthly data of precipitation data set</p></li>
+<li><p>OCRD’– cGLORS renalaysis V7 daily 1986-2020</p></li>
+<li><p>OCRM’– cGLORS renalaysis V7 monthly 1986-2020</p></li>
 </ul>
 <p>Info can be retrieved as <code class="docutils literal notranslate"><span class="pre">grid[dataset][var]['start']</span></code> for the starting years.
 See source for full explanation of the content.</p>
@@ -262,6 +268,7 @@ for limited region, longitude 0-360</p></li>
 <li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="conda_doc_SO.html">CONDA Useful commands</a></li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -314,7 +321,7 @@ for limited region, longitude 0-360</p></li>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

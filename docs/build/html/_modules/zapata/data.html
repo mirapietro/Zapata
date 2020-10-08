@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zapata.data &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -42,6 +42,11 @@
 <span></span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">A module to store and treat data</span>
 <span class="sd">================================</span>
+<span class="sd">in griglia nativa 1986-2020 giornaliera</span>
+<span class="sd">/data/products/GLOBAL_REANALYSES/C-GLORSv7/DAILY_MONTHLY</span>
+
+<span class="sd">in griglia nativa 1986-2020 mensile</span>
+<span class="sd">/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
@@ -181,10 +186,12 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Routine that returns a Dictionary with information on the reuqested Data Set.</span>
 
-<span class="sd">    Currently two data sets are supported   </span>
+<span class="sd">    Currently these data sets are supported   </span>
 
 <span class="sd">    * ERA5 -- Subset of monthly data of ERA5 (compiled by AN 2019)   </span>
 <span class="sd">    * GPCP -- Monthly data of precipitation data set </span>
+<span class="sd">    * OCRD&#39;-- cGLORS renalaysis V7 daily 1986-2020</span>
+<span class="sd">    * OCRM&#39;-- cGLORS renalaysis V7 monthly 1986-2020</span>
 
 <span class="sd">    Info can be retrieved as ``grid[dataset][var][&#39;start&#39;]`` for the starting years.</span>
 <span class="sd">    See source for full explanation of the content.</span>
@@ -203,7 +210,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">homedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;verbose&#39;</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Root Directory for Data &#39;</span><span class="p">,</span><span class="n">homedir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;verbose&#39;</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Root Directory for Local Data &#39;</span><span class="p">,</span><span class="n">homedir</span><span class="p">)</span>
     
     <span class="n">U</span> <span class="o">=</span><span class="p">{</span>      <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">600</span><span class="p">,</span><span class="mi">700</span><span class="p">,</span><span class="mi">850</span><span class="p">,</span><span class="mi">925</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span>
               <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
@@ -283,6 +290,7 @@
               <span class="s1">&#39;lonnp&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">360.1</span><span class="p">,</span><span class="mf">0.25</span><span class="p">)]),</span>
               <span class="s1">&#39;clim&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span> <span class="s1">&#39;/Dropbox (CMCC)/ERA5/CLIM&#39;</span><span class="p">,</span>
               <span class="s1">&#39;place&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span><span class="s1">&#39;/Dropbox (CMCC)/ERA5/DATA/ERA5_MM&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
               <span class="s1">&#39;source_url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings&#39;</span><span class="p">,</span>
               <span class="s1">&#39;desc&#39;</span><span class="p">:</span><span class="s1">&#39;ERA5 Monthly Mean for U,V,T,W,SLP 1979-2018&#39;</span><span class="p">,</span>
               <span class="s1">&#39;special_value&#39;</span><span class="p">:</span> <span class="mf">9999.</span><span class="p">,</span>
@@ -315,17 +323,38 @@
               <span class="s1">&#39;place&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span><span class="s1">&#39;/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP&#39;</span><span class="p">,</span>
               <span class="s1">&#39;clim&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span> <span class="s1">&#39;/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP&#39;</span><span class="p">,</span>
               <span class="s1">&#39;desc&#39;</span><span class="p">:</span> <span class="s1">&#39;Precipitation from the GPCP Project&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;source_url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://gpcp.umd.edu/&#39;</span>
+              <span class="s1">&#39;source_url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://gpcp.umd.edu/&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span>
               <span class="p">}</span>
 
-
+    <span class="n">ocean_monthly</span><span class="o">=</span><span class="p">{</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span>  <span class="mi">1986</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span>    <span class="mi">2020</span><span class="p">,</span>
+              <span class="s1">&#39;place&#39;</span><span class="p">:</span> <span class="s1">&#39;/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;names&#39;</span><span class="p">:</span> <span class="s1">&#39;CMCC-CM2-HR4-pi_1m_&lt;year&gt;&lt;month&gt;01_&lt;year&gt;&lt;month&gt;31_grid_T.nc&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;desc&#39;</span><span class="p">:</span> <span class="s1">&#39;Ocean Reanalysis V7 Monthly&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;source_url&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="s1">&#39;DSS&#39;</span>
+              <span class="p">}</span>
+    <span class="n">ocean_daily</span><span class="o">=</span><span class="p">{</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span>  <span class="mi">1986</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span>    <span class="mi">2020</span><span class="p">,</span>
+              <span class="s1">&#39;place&#39;</span><span class="p">:</span> <span class="s1">&#39;/data/products/GLOBAL_REANALYSES/C-GLORSv7/DAILY_MONTHLY&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;names&#39;</span><span class="p">:</span> <span class="s1">&#39;CMCC-CM2-HR4-pi_1m_&lt;year&gt;&lt;month&gt;01_&lt;year&gt;&lt;month&gt;31_grid_T.nc&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;desc&#39;</span><span class="p">:</span> <span class="s1">&#39;Ocean Reanalysis V7 Daily&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;source_url&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="s1">&#39;DSS&#39;</span>
+              <span class="p">}</span>
     <span class="n">grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ERA5&#39;</span><span class="p">:</span> <span class="n">dataera5</span><span class="p">,</span>
-          <span class="s1">&#39;GPCP&#39;</span><span class="p">:</span> <span class="n">datagpcp</span>
+          <span class="s1">&#39;GPCP&#39;</span><span class="p">:</span> <span class="n">datagpcp</span><span class="p">,</span>
+          <span class="s1">&#39;OCRD&#39;</span><span class="p">:</span> <span class="n">ocean_daily</span><span class="p">,</span>
+          <span class="s1">&#39;OCRM&#39;</span><span class="p">:</span> <span class="n">ocean_monthly</span>
          <span class="p">}</span>
     <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;info&#39;</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;desc&#39;</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;place&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;host&#39;</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;source_url&#39;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span>
     
@@ -606,6 +635,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Zapata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conda_doc_SO.html">CONDA Useful commands</a></li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
@@ -638,7 +668,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

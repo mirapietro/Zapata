@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>interp module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -150,7 +150,7 @@ This methods can be used for scalar quantities.</p>
 
 <dl class="py class">
 <dt id="interp.Ocean_Interpolator">
-<em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Ocean_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_grid</span></em>, <em class="sig-param"><span class="n">tgt_grid</span></em>, <em class="sig-param"><span class="n">option</span><span class="o">=</span><span class="default_value">'Global'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">interp.</code><code class="sig-name descname">Ocean_Interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_grid_name</span></em>, <em class="sig-param"><span class="n">tgt_grid_name</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">window</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class creates weights for interpolation of ocean fields.</p>
 <p>This class create an interpolator operator from a <em>source grid</em>
@@ -164,21 +164,42 @@ of the points, indicating which points correspond to the (i,j) index.</p>
 <p>The <em>source grid</em> must be a <cite>xarray</cite> <cite>DataSet</cite> containing coordinates
 <cite>latitude</cite> and <cite>longitude</cite>.</p>
 <p>The <em>target grid</em> must be a <cite>xarray</cite> <cite>DataArray</cite> with variables <cite>lat</cite> and <cite>lon</cite></p>
+<p>Border land points at all levels are covered by a convolution value using a
+window that can be changed in <cite>sea_over_land</cite>.</p>
 <p>Works only on single <cite>DataArray</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>src_grid</strong> (<em>xarray</em>) – Source grid</p></li>
 <li><p><strong>tgt_grid</strong> (<em>xarray</em>) – Target grid</p></li>
-<li><p><strong>option</strong> (<em>str</em>) – ‘global’, for global grids (to be implemented regional )</p></li>
+<li><p><strong>level</strong> (<em>float</em>) – Depth to generate the interpolator</p></li>
+<li><p><strong>window</strong> (<em>int</em>) – Window for sea pver lnad</p></li>
+<li><p><strong>period</strong> (<em>int</em>) – Minimum number of points in the sea-over-land process</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – Lots of output</p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>tgt_grid</strong> – Target grid</p></li>
 <li><p><a class="reference internal" href="#interp.Ocean_Interpolator.mask" title="interp.Ocean_Interpolator.mask"><strong>mask</strong></a> – Mask of the target grid</p></li>
-<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.vt" title="interp.Ocean_Interpolator.vt"><strong>vt</strong></a> – Weights</p></li>
-<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.wt" title="interp.Ocean_Interpolator.wt"><strong>wt</strong></a> – Weights</p></li>
+<li><p><strong>vt</strong> – Weights</p></li>
+<li><p><strong>wt</strong> – Weights</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.mdir" title="interp.Ocean_Interpolator.mdir"><strong>mdir</strong></a> – Directory for masks files</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.ingrid" title="interp.Ocean_Interpolator.ingrid"><strong>ingrid</strong></a> – Input Grid, <cite>src_grid_name</cite></p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.outgrid" title="interp.Ocean_Interpolator.outgrid"><strong>outgrid</strong></a> – Output Grid <cite>tgt_grid_name</cite></p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.window" title="interp.Ocean_Interpolator.window"><strong>window</strong></a> – Window for convolution Sea-Over-Land (default 3)</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.periods" title="interp.Ocean_Interpolator.periods"><strong>periods</strong></a> – Minimum number of points into the window (default 1)</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.T_lon" title="interp.Ocean_Interpolator.T_lon"><strong>T_lon</strong></a> – Longitudes of input T-mask</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.T_lat" title="interp.Ocean_Interpolator.T_lat"><strong>T_lat</strong></a> – Latitudes of input T-mask</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.U_lon" title="interp.Ocean_Interpolator.U_lon"><strong>U_lon</strong></a> – Longitudes of input U-mask</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.U_lat" title="interp.Ocean_Interpolator.U_lat"><strong>U_lat</strong></a> – Latitudes of input U-mask</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.V_lon" title="interp.Ocean_Interpolator.V_lon"><strong>V_lon</strong></a> – Longitudes of input V-mask</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.V_lat" title="interp.Ocean_Interpolator.V_lat"><strong>V_lat</strong></a> – Latitudes of input V-mask</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.tangle" title="interp.Ocean_Interpolator.tangle"><strong>tangle</strong></a> – Angles of the T points of the input grid</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.mask_reg" title="interp.Ocean_Interpolator.mask_reg"><strong>mask_reg</strong></a> – Mask of the Target grid</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.cent_long" title="interp.Ocean_Interpolator.cent_long"><strong>cent_long</strong></a> – Central Longitude of the Target grid</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.name" title="interp.Ocean_Interpolator.name"><strong>name</strong></a> – Name of the Interpolator Object</p></li>
+<li><p><a class="reference internal" href="#interp.Ocean_Interpolator.level" title="interp.Ocean_Interpolator.level"><strong>level</strong></a> – Level of the Interpolator Object</p></li>
 </ul>
 </dd>
 </dl>
@@ -194,93 +215,206 @@ of the points, indicating which points correspond to the (i,j) index.</p>
 <dd><p>Interpolate Vector Velocities at (U,V)</p>
 </dd></dl>
 
+<dl class="py method">
+<dt>
+<code class="sig-name descname">mask_sea_over_land :</code></dt>
+<dd><p>Mask border point for Sea over land</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">UV_sea_over_land :</code></dt>
+<dd><p>Fill U,V values over land</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_file :</code></dt>
+<dd><p>Writes interpolator object to file (pickled format)</p>
+</dd></dl>
+
 <p class="rubric">Examples</p>
 <p>Create the weights for interpolation</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="o">=</span> <span class="n">zint</span><span class="o">.</span><span class="n">Ocean_Interpolator</span><span class="p">(</span><span class="n">src_grid</span><span class="p">,</span><span class="n">tgt_grid</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Interpolate temperature</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_T</span><span class="p">(</span><span class="n">src_xarray</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_T</span><span class="p">(</span><span class="n">src_xarray</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Interpolate U,V</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_UV</span><span class="p">(</span><span class="n">U_xarray</span><span class="p">,</span><span class="n">V_xarray</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">target_xarray</span><span class="o">=</span><span class="n">w</span><span class="o">.</span><span class="n">interp_UV</span><span class="p">(</span><span class="n">U_xarray</span><span class="p">,</span><span class="n">V_xarray</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py attribute">
 <dt id="interp.Ocean_Interpolator.mdir">
 <code class="sig-name descname">mdir</code><a class="headerlink" href="#interp.Ocean_Interpolator.mdir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mask Directory</p>
-</dd></dl>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.ingrid">
+<code class="sig-name descname">ingrid</code><a class="headerlink" href="#interp.Ocean_Interpolator.ingrid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.outgrid">
+<code class="sig-name descname">outgrid</code><a class="headerlink" href="#interp.Ocean_Interpolator.outgrid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.window">
+<code class="sig-name descname">window</code><a class="headerlink" href="#interp.Ocean_Interpolator.window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.periods">
+<code class="sig-name descname">periods</code><a class="headerlink" href="#interp.Ocean_Interpolator.periods" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.T_lon">
+<code class="sig-name descname">T_lon</code><a class="headerlink" href="#interp.Ocean_Interpolator.T_lon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.T_lat">
+<code class="sig-name descname">T_lat</code><a class="headerlink" href="#interp.Ocean_Interpolator.T_lat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.U_lon">
+<code class="sig-name descname">U_lon</code><a class="headerlink" href="#interp.Ocean_Interpolator.U_lon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.U_lat">
+<code class="sig-name descname">U_lat</code><a class="headerlink" href="#interp.Ocean_Interpolator.U_lat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.V_lon">
+<code class="sig-name descname">V_lon</code><a class="headerlink" href="#interp.Ocean_Interpolator.V_lon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.V_lat">
+<code class="sig-name descname">V_lat</code><a class="headerlink" href="#interp.Ocean_Interpolator.V_lat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#interp.Ocean_Interpolator.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.level">
+<code class="sig-name descname">level</code><a class="headerlink" href="#interp.Ocean_Interpolator.level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="interp.Ocean_Interpolator.tangle">
 <code class="sig-name descname">tangle</code><a class="headerlink" href="#interp.Ocean_Interpolator.tangle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Angles at t-points in the ocean C-grid</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.option">
-<code class="sig-name descname">option</code><a class="headerlink" href="#interp.Ocean_Interpolator.option" title="Permalink to this definition">¶</a></dt>
-<dd><p>Option for region (not implemented)</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="interp.Ocean_Interpolator.mask">
 <code class="sig-name descname">mask</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>T-mask</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="interp.Ocean_Interpolator.masku">
 <code class="sig-name descname">masku</code><a class="headerlink" href="#interp.Ocean_Interpolator.masku" title="Permalink to this definition">¶</a></dt>
-<dd><p>U-mask</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt id="interp.Ocean_Interpolator.maskv">
 <code class="sig-name descname">maskv</code><a class="headerlink" href="#interp.Ocean_Interpolator.maskv" title="Permalink to this definition">¶</a></dt>
-<dd><p>V-mask</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.lath">
-<code class="sig-name descname">lath</code><a class="headerlink" href="#interp.Ocean_Interpolator.lath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Latitudes of the target grid</p>
-</dd></dl>
+<dt id="interp.Ocean_Interpolator.latlon">
+<code class="sig-name descname">latlon</code><a class="headerlink" href="#interp.Ocean_Interpolator.latlon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.lonh">
-<code class="sig-name descname">lonh</code><a class="headerlink" href="#interp.Ocean_Interpolator.lonh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Longitudes of the target grid</p>
-</dd></dl>
+<dt id="interp.Ocean_Interpolator.sea_index">
+<code class="sig-name descname">sea_index</code><a class="headerlink" href="#interp.Ocean_Interpolator.sea_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.mask_H">
-<code class="sig-name descname">mask_H</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask_H" title="Permalink to this definition">¶</a></dt>
-<dd><p>Land-sea mask of the target grid</p>
-</dd></dl>
+<dt id="interp.Ocean_Interpolator.masT_vec">
+<code class="sig-name descname">masT_vec</code><a class="headerlink" href="#interp.Ocean_Interpolator.masT_vec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.vt">
-<code class="sig-name descname">vt</code><a class="headerlink" href="#interp.Ocean_Interpolator.vt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Weights</p>
-</dd></dl>
+<dt id="interp.Ocean_Interpolator.tri_sea_T">
+<code class="sig-name descname">tri_sea_T</code><a class="headerlink" href="#interp.Ocean_Interpolator.tri_sea_T" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="interp.Ocean_Interpolator.wt">
-<code class="sig-name descname">wt</code><a class="headerlink" href="#interp.Ocean_Interpolator.wt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Weights</p>
-</dd></dl>
+<dt id="interp.Ocean_Interpolator.sea_index_U">
+<code class="sig-name descname">sea_index_U</code><a class="headerlink" href="#interp.Ocean_Interpolator.sea_index_U" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.tri_sea_U">
+<code class="sig-name descname">tri_sea_U</code><a class="headerlink" href="#interp.Ocean_Interpolator.tri_sea_U" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.sea_index_V">
+<code class="sig-name descname">sea_index_V</code><a class="headerlink" href="#interp.Ocean_Interpolator.sea_index_V" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.tri_sea_V">
+<code class="sig-name descname">tri_sea_V</code><a class="headerlink" href="#interp.Ocean_Interpolator.tri_sea_V" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.mask_reg">
+<code class="sig-name descname">mask_reg</code><a class="headerlink" href="#interp.Ocean_Interpolator.mask_reg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.cent_long">
+<code class="sig-name descname">cent_long</code><a class="headerlink" href="#interp.Ocean_Interpolator.cent_long" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.latlon_reg">
+<code class="sig-name descname">latlon_reg</code><a class="headerlink" href="#interp.Ocean_Interpolator.latlon_reg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.sea_index_reg">
+<code class="sig-name descname">sea_index_reg</code><a class="headerlink" href="#interp.Ocean_Interpolator.sea_index_reg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="interp.Ocean_Interpolator.regmask_vec">
+<code class="sig-name descname">regmask_vec</code><a class="headerlink" href="#interp.Ocean_Interpolator.regmask_vec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="interp.Ocean_Interpolator.interp_T">
-<code class="sig-name descname">interp_T</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.interp_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.interp_T" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">interp_T</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xdata</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'linear'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.interp_T"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.interp_T" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform interpolation for T Grid point to the target grid.
 This methods can be used for scalar quantities.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>xdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p>
+<dd class="field-odd"><ul>
+<li><p><strong>xdata</strong> (<em>xarray</em>) – 2D array to be interpolated, it must be on the <cite>src_grid</cite></p></li>
+<li><p><strong>method</strong> (<em>str</em>) –</p>
+<dl class="simple">
+<dt>Method for interpolation</dt><dd><ul class="simple">
+<li><p>‘linear’  , Use linear interpolation</p></li>
+<li><p>‘nearest’ , use nearest interpolation</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Interpolated xarray on the target grid</p>
@@ -293,7 +427,7 @@ This methods can be used for scalar quantities.</p>
 
 <dl class="py method">
 <dt id="interp.Ocean_Interpolator.interp_UV">
-<code class="sig-name descname">interp_UV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">udata</span></em>, <em class="sig-param"><span class="n">vdata</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.interp_UV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.interp_UV" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">interp_UV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">udata</span></em>, <em class="sig-param"><span class="n">vdata</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'linear'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.interp_UV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.interp_UV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform interpolation for U,V Grid point to the target grid.
 This methods can be used for vector quantities.</p>
 <p>The present method interpolates the U,V points to the T points,
@@ -311,6 +445,72 @@ rotates them and then interpolates to the target grid.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="interp.Ocean_Interpolator.to_file">
+<code class="sig-name descname">to_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method writes to file the interpolating object in
+pickled format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="interp.Ocean_Interpolator.mask_sea_over_land">
+<code class="sig-name descname">mask_sea_over_land</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mask</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.mask_sea_over_land"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.mask_sea_over_land" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask border point for <cite>Sea over land</cite>.</p>
+<p>Sea over land is obtained by forward and backward filling NaN land
+value with an arbitrary value, then athey are masked to reveal only the
+coastal points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mask</strong> – original mask</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>border mask</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>border</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="interp.Ocean_Interpolator.UV_sea_over_land">
+<code class="sig-name descname">UV_sea_over_land</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">U</span></em>, <em class="sig-param"><span class="n">V</span></em>, <em class="sig-param"><span class="n">u_mask</span></em>, <em class="sig-param"><span class="n">v_mask</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#Ocean_Interpolator.UV_sea_over_land"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.Ocean_Interpolator.UV_sea_over_land" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put UV values Sea over land.</p>
+<p>Using the mask of the border points, the border points are filled
+with the convolution in 2D, using a window of width <cite>window</cite>, here
+The min_periods value is controlling the minimum number of points
+within the window that is necessary to yield a result.</p>
+<p>They can be fixed as attribues of the interpolator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>U</strong> – U Velocity</p></li>
+<li><p><strong>V</strong> – V Velocity</p></li>
+<li><p><strong>u_mask</strong> – Mask for U velocity</p></li>
+<li><p><strong>v_mask</strong> – Mask for V-velocity</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Filled arrays</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>U,V</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="interp.get_sea">
+<code class="sig-prename descclassname">interp.</code><code class="sig-name descname">get_sea</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">maskT</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#get_sea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.get_sea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain indexed coordinates for sea points</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="interp.from_file">
+<code class="sig-prename descclassname">interp.</code><code class="sig-name descname">from_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interp.html#from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interp.from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read interpolator object from <cite>file</cite></p>
 </dd></dl>
 
 </div>
@@ -335,6 +535,7 @@ rotates them and then interpolates to the target grid.</p>
 <li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="conda_doc_SO.html">CONDA Useful commands</a></li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -386,7 +587,7 @@ rotates them and then interpolates to the target grid.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

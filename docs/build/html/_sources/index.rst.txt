@@ -21,6 +21,7 @@ Happy Computing !
    :caption: Contents:
    
    modules
+   conda_doc_SO
    
 
 Indices and tables

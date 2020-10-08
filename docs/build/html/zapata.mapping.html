@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zapata.mapping module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -59,7 +59,7 @@
 <div class="section" id="zonal-plotting">
 <h3>Zonal Plotting<a class="headerlink" href="#zonal-plotting" title="Permalink to this headline">¶</a></h3>
 <p>These routine split zonal sections in pressures and latitude.</p>
-<p><strong>zonal_plot, zonal_stream_plot</strong></p>
+<p><strong>zonal_plot, zonal_stream_plot, ocean_zonal_plot</strong></p>
 </div>
 <div class="section" id="utilities">
 <h3>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h3>
@@ -102,10 +102,11 @@
 
 <dl class="py function">
 <dt id="zapata.mapping.xmap">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">d_xtick</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">d_ytick</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xmap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">data_cent_lon</span><span class="o">=</span><span class="default_value">180</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em>, <em class="sig-param"><span class="n">refline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">dxtick</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">dytick</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lat-Lon mapping function based on cartopy and NCAR GEOCAT.</p>
-<p>Data must on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
-referred to the projection chosen in <cite>init</cite>.</p>
+<p>The data is supposed to be on a Plate (lat-lon) projection and the central longitude can be defined
+via the paramater <cite>data_cent_lon</cite>. The defualt is <cite>data_cent_lon=180</cite>, meaning that the central longitude is over the pacific.
+Coordinates that go from 0 to 360 implicitly assume such a Pacific central longitude.</p>
 <p>For the <cite>Pacific</cite> view it is assumed that the central longitude is at the daetline
 whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich.</p>
 <dl class="field-list simple">
@@ -121,22 +122,26 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 </ul>
 </li>
 <li><p><strong>pro</strong> – Map Projection as initialized by init</p></li>
+<li><p><strong>data_cent_lon</strong> – Central longitude for the data projection</p></li>
 <li><p><strong>ax</strong> – Plot axis to be used</p></li>
 <li><p><strong>fill</strong> – True/False flag to have filled contours or not</p></li>
 <li><p><strong>contour</strong> – True/False flag to have  contours or not</p></li>
+<li><p><strong>refline</strong> – If a numeric value a single enhanced contour is pltted here</p></li>
 <li><p><strong>clabel</strong> – True/False flag to have labelled contours or not</p></li>
 <li><p><strong>c_format</strong> – Format for the contour labels</p></li>
-<li><p><strong>d_xtick</strong> – Tick interval for longitudes</p></li>
-<li><p><strong>d_ytick</strong> – Tick interval for latitudes</p></li>
-<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
-<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>dxtick</strong> – Tick interval for longitude</p></li>
+<li><p><strong>dytick</strong> – Tick interval for latitude</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignore</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the lef</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
 <li><p><strong>maintitle</strong> – Title string at the center</p></li>
 <li><p><strong>cmap</strong> – Colormap</p></li>
 <li><p><strong>coasts</strong> – False/True   Plotting or not empty coastlines</p></li>
 <li><p><strong>color_land</strong> – if coasts=False, use color_land for land</p></li>
-<li><p><strong>xlimit</strong> – Longitude limits of the map, if not set they are derived from the data</p></li>
-<li><p><strong>ylimit</strong> – Latitude limits of the map, if not set they are derived from the data</p></li>
+<li><p><strong>xlimit</strong> – Longitude limits of the map, if not set they are derived from the data.
+The projection used is the geographical projection <cite>pro</cite></p></li>
+<li><p><strong>ylimit</strong> – Latitude limits of the map, if not set they are derived from the data.
+The projection used is the geographical projection <cite>pro</cite></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -150,7 +155,7 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.xsmap">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xsmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em>, <em class="sig-param"><span class="n">Top_label</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Lat_labels</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xsmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xsmap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xsmap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">field</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">pro</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">refline</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Special_Value</span><span class="o">=</span><span class="default_value">9999.0</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'coolwarm'</span></em>, <em class="sig-param"><span class="n">coasts</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">color_land</span><span class="o">=</span><span class="default_value">'lightgray'</span></em>, <em class="sig-param"><span class="n">Top_label</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">Lat_labels</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:6.0f} '</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xsmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xsmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stereo mapping function for cartopy.</p>
 <p>Data must on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
 referred to the projection chosen in <cite>init</cite>.</p>
@@ -169,18 +174,24 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 </ul>
 </li>
 <li><p><strong>pro</strong> – Map Projection as initialized by init</p></li>
+<li><p><strong>data_cent_lon</strong> – Central longitude for the data projection</p></li>
 <li><p><strong>ax</strong> – Plot axis to be used</p></li>
 <li><p><strong>fill</strong> – True/False flag to have filled contours or not</p></li>
 <li><p><strong>contour</strong> – True/False flag to have  contours or not</p></li>
+<li><p><strong>refline</strong> – If a numeric value a single enhanced contour is pltted here</p></li>
 <li><p><strong>clabel</strong> – True/False flag to have labelled contours or not</p></li>
 <li><p><strong>c_format</strong> – Format for the contour labels</p></li>
-<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
-<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignore</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the lef</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
 <li><p><strong>maintitle</strong> – Title string at the center</p></li>
 <li><p><strong>cmap</strong> – Colormap</p></li>
 <li><p><strong>coasts</strong> – False/True   Plotting or not empty coastlines</p></li>
 <li><p><strong>color_land</strong> – if coasts=False, use color_land for land</p></li>
+<li><p><strong>xlimit</strong> – Longitude limits of the map, if not set they are derived from the data.
+The projection used is the geographical projection <cite>pro</cite></p></li>
+<li><p><strong>ylimit</strong> – Latitude limits of the map, if not set they are derived from the data.
+The projection used is the geographical projection <cite>pro</cite></p></li>
 <li><p><strong>Top_label</strong> – True/False  Turn off the top labels</p></li>
 <li><p><strong>Lat_labels</strong> – True/False  Turn off the latitude labels</p></li>
 </ul>
@@ -196,11 +207,12 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.xstmap">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xstmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">density=2</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">d_xtick=30</em>, <em class="sig-param">d_ytick=30</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">cscale=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xstmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xstmap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">xstmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">data_cent_lon=0</em>, <em class="sig-param">density=2</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">dxtick=30</em>, <em class="sig-param">dytick=30</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cscale=(0</em>, <em class="sig-param">1)</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">norm=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#xstmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.xstmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot streamline for field U and V.</p>
 <p>This routine draws streamlines for the fields U,V, optionally colored with the field <code class="docutils literal notranslate"><span class="pre">color</span></code>. Internally assume data is always on a latlon projection with central longitude at Greenwich.</p>
-<p>Data must on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
-referred to the projection chosen in <cite>init</cite>.</p>
+<p>The data is supposed to be on a Plate (lat-lon) projection and the central longitude can be defined
+via the paramater <cite>data_cent_lon</cite>. The defualt is <cite>data_cent_lon=180</cite>, meaning that the central longitude is over the pacific.
+Coordinates that go from 0 to 360 implicitly assume such a Pacific central longitude.</p>
 <p>For the <cite>Pacific</cite> view it is assumed that the central longitude is at the dateline
 whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich.</p>
 <dl class="field-list simple">
@@ -210,14 +222,15 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 <li><p><strong>V</strong> (<em>xarray</em>) – Y component of the streamlines</p></li>
 <li><p><strong>color</strong> – Color of the stremalines (‘black’). If it is xarray color the streamlines with the colormap <code class="docutils literal notranslate"><span class="pre">cmap</span></code></p></li>
 <li><p><strong>cscale</strong> – If an array is used in <cite>color</cite>, it normalize to cscale = ( min, max)</p></li>
+<li><p><strong>data_cent_lon</strong> – Central longitude for the data projection</p></li>
 <li><p><strong>density</strong> – Density of the streamlines</p></li>
 <li><p><strong>ax</strong> – Plot axis to be used</p></li>
 <li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
 <li><p><strong>lefttitle</strong> – Title string on the left</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
 <li><p><strong>maintitle</strong> – Title string at the center</p></li>
-<li><p><strong>d_xtick</strong> – Tick interval for longitudes</p></li>
-<li><p><strong>d_ytick</strong> – Tick interval for latitudes</p></li>
+<li><p><strong>dxtick</strong> – Tick interval for longitudes</p></li>
+<li><p><strong>dytick</strong> – Tick interval for latitudes</p></li>
 <li><p><strong>cmap</strong> – Colormap</p></li>
 <li><p><strong>colorbar</strong> – False/True</p></li>
 <li><p><strong>xlimit</strong> – Limit of the map (lon)</p></li>
@@ -235,10 +248,10 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.vecmap">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">vecmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">C</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">stride=10</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">veckey=None</em>, <em class="sig-param">d_xtick=30</em>, <em class="sig-param">d_ytick=30</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">cscale=None</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#vecmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.vecmap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">vecmap</code><span class="sig-paren">(</span><em class="sig-param">U</em>, <em class="sig-param">V</em>, <em class="sig-param">C</em>, <em class="sig-param">proj=&lt;cartopy.crs.PlateCarree object&gt;</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">color='black'</em>, <em class="sig-param">data_cent_lon=0</em>, <em class="sig-param">stride=10</em>, <em class="sig-param">Special_Value=9999.0</em>, <em class="sig-param">veckey=None</em>, <em class="sig-param">vec_min=0.0</em>, <em class="sig-param">dxtick=30</em>, <em class="sig-param">dytick=30</em>, <em class="sig-param">lefttitle=''</em>, <em class="sig-param">righttitle=''</em>, <em class="sig-param">maintitle=''</em>, <em class="sig-param">xlimit=None</em>, <em class="sig-param">ylimit=None</em>, <em class="sig-param">colorbar=False</em>, <em class="sig-param">cmap='coolwarm'</em>, <em class="sig-param">cscale=None</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#vecmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.vecmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vector plot for field U and V.</p>
-<p>This routine draws streamlines for the fields U,V, optionally colored with the field <code class="docutils literal notranslate"><span class="pre">color</span></code>. Internally assume data is always on a latlon projection with central longitude at Greenwich.</p>
-<p>Data must on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
+<p>This routine draws vectors for the fields U,V, optionally colored with the field <code class="docutils literal notranslate"><span class="pre">color</span></code>. Internally assume data is always on a latlon projection with central longitude at Greenwich.</p>
+<p>Data must be on a (0,360) longitude coordinate referred to Greenwich, but the <cite>xlimit</cite> are
 referred to the projection chosen in <cite>init</cite>.</p>
 <p>For the <cite>Pacific</cite> view it is assumed that the central longitude is at the dateline
 whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich.</p>
@@ -262,13 +275,14 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 </dd>
 </dl>
 </li>
+<li><p><strong>vec_min</strong> – Minimum value to represent with the vectors</p></li>
 <li><p><strong>ax</strong> – Plot axis to be used</p></li>
 <li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
 <li><p><strong>lefttitle</strong> – Title string on the left</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
 <li><p><strong>maintitle</strong> – Title string at the center</p></li>
-<li><p><strong>d_xtick</strong> – Tick interval for longitudes</p></li>
-<li><p><strong>d_ytick</strong> – Tick interval for latitudes</p></li>
+<li><p><strong>dxtick</strong> – Tick interval for longitudes</p></li>
+<li><p><strong>dytick</strong> – Tick interval for latitudes</p></li>
 <li><p><strong>cmap</strong> – Colormap</p></li>
 <li><p><strong>colorbar</strong> – False/True</p></li>
 <li><p><strong>xlimit</strong> – Limit of the map (lon)</p></li>
@@ -286,24 +300,27 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.zonal_plot">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">zonal_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">cmap</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">zeroline</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#zonal_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.zonal_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">zonal_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">cmap</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">refline</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#zonal_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.zonal_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Zonal mapping function for xarray (lat,pressure).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> – xarray  –  cyclic point added in the routine (latitude, pressure)</p></li>
-<li><p><strong>cont</strong> – Choose contours according to length of _cont_</p></li>
-<li><p><strong>* [cmin,cmax,cinc]       _fixed increment from cmin to cmax step cinc_</strong></p></li>
-<li><p><strong>* [ c1,c2, …, cn]      _fixed contours at [ c1,c2, …, cn]_</strong></p></li>
-<li><p><strong>* n                      _n contours_</strong></p></li>
-<li><p><strong>* []                     _automatic choice_</strong></p></li>
+<li><p><strong>cont</strong> –</p>
+<ul>
+<li><p>[cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc</p></li>
+<li><p>[ c1,c2, …, cn]      fixed contours at [ c1,c2, …, cn]</p></li>
+<li><p>n                      n contours</p></li>
+<li><p>[]                     automatic choice</p></li>
+</ul>
+</li>
 <li><p><strong>ax</strong> – Plot axis to be used</p></li>
 <li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
 <li><p><strong>lefttitle</strong> – Title string on the left</p></li>
 <li><p><strong>righttitle</strong> – Title string on the right</p></li>
 <li><p><strong>maintitle</strong> – Title string at the center</p></li>
 <li><p><strong>cmap</strong> – Colormap</p></li>
-<li><p><strong>zeroline</strong> – False/True if a zero line is desired</p></li>
+<li><p><strong>refline</strong> – False/True if a zero line is desired</p></li>
 <li><p><strong>colorbar</strong> – False/True if a colorbar is desired</p></li>
 </ul>
 </dd>
@@ -315,7 +332,7 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zonal_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">ax</span><span class="p">,[],</span><span class="s1">&#39;BYR&#39;</span><span class="p">,</span><span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">maintitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lefttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">righttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">zeroline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zonal_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">ax</span><span class="p">,[],</span><span class="s1">&#39;BYR&#39;</span><span class="p">,</span><span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">maintitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lefttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">righttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">refline</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -347,16 +364,21 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 
 <dl class="py function">
 <dt id="zapata.mapping.choose_contour">
-<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">choose_contour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cont</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#choose_contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.choose_contour" title="Permalink to this definition">¶</a></dt>
-<dd><p>Choose contours according to length of cont.</p>
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">choose_contour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vmin</span></em>, <em class="sig-param"><span class="n">vmax</span></em>, <em class="sig-param"><span class="n">cont</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#choose_contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.choose_contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Choose contours according to length of <cite>cont</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cont</strong> –</p>
-<ul class="simple">
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vmin</strong> – Max Value of the field</p></li>
+<li><p><strong>vmax</strong> – Min Value of the field</p></li>
+<li><p><strong>cont</strong> –</p>
+<ul>
 <li><p>[cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc</p></li>
 <li><p>[ c1,c2, …, cn]      fixed contours at [ c1,c2, …, cn]</p></li>
 <li><p>n                      n contours</p></li>
 <li><p>[]                     automatic choice</p></li>
+</ul>
+</li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -412,7 +434,7 @@ whereas for the <cite>Atlantic</cite> view the central longitude is at Greenwich
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>handle</strong> – Handle to plot</p></li>
 <li><p><strong>ax</strong> – Axis to which to add the colorbar</p></li>
-<li><p><strong>colorbar_size</strong> – Size of colorbar as a fraxtion of the axis</p></li>
+<li><p><strong>colorbar_size</strong> – Size of colorbar as a fraction of the axis</p></li>
 <li><p><strong>label_size</strong> – Size of labels</p></li>
 <li><p><strong>edges</strong> – Draw edges of the color bar</p></li>
 </ul>
@@ -486,6 +508,96 @@ but for some plot types, a righttitle likely with a left-aligned title, lefttitl
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="zapata.mapping.ocean_zonal_plot">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">ocean_zonal_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">cont</span></em>, <em class="sig-param"><span class="n">cmap</span></em>, <em class="sig-param"><span class="n">colorbar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">fill</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">contour</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">clabel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">c_format</span><span class="o">=</span><span class="default_value">' {:4.0f} '</span></em>, <em class="sig-param"><span class="n">maintitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lefttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">righttitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">xlimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylimit</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">refline</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">view</span><span class="o">=</span><span class="default_value">'Atlantic'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#ocean_zonal_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.ocean_zonal_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ocean Zonal mapping function for xarray (lat,depth).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – xarray  –  cyclic point added in the routine (latitude, depth)</p></li>
+<li><p><strong>cont</strong> –</p>
+<ul>
+<li><p>[cmin,cmax,cinc]       fixed increment from cmin to cmax step cinc</p></li>
+<li><p>[ c1,c2, …, cn]      fixed contours at [ c1,c2, …, cn]</p></li>
+<li><p>n                      n contours</p></li>
+<li><p>[]                     automatic choice</p></li>
+</ul>
+</li>
+<li><p><strong>ax</strong> – Plot axis to be used</p></li>
+<li><p><strong>Special_Value</strong> – Values to be ignored</p></li>
+<li><p><strong>lefttitle</strong> – Title string on the left</p></li>
+<li><p><strong>righttitle</strong> – Title string on the right</p></li>
+<li><p><strong>maintitle</strong> – Title string at the center</p></li>
+<li><p><strong>cmap</strong> – Colormap</p></li>
+<li><p><strong>refline</strong> – False/True if a zero line is desired</p></li>
+<li><p><strong>colorbar</strong> – False/True if a colorbar is desired</p></li>
+<li><p><strong>fill</strong> – True/False flag to have filled contours or not</p></li>
+<li><p><strong>contour</strong> – True/False flag to have  contours or not</p></li>
+<li><p><strong>refline</strong> – If a numeric value a single enhanced contour is pltted here</p></li>
+<li><p><strong>clabel</strong> – True/False flag to have labelled contours or not</p></li>
+<li><p><strong>c_format</strong> – Format for the contour labels</p></li>
+<li><p><strong>xlimit</strong> – x axis limits
+A Pacific view is obtained by giving limits in coordinae with
+the central longitude at Greenwich, e.g.  (120,-120) will produce a
+shifted Pacific section</p></li>
+<li><p><strong>ylimit</strong> – y axis limits</p></li>
+<li><p><strong>view</strong> – Shift between <cite>Atlantic</cite> and <cite>Pacific</cite> views</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dict with plot parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>handle</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ocean_zonal_plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">ax</span><span class="p">,[],</span><span class="s1">&#39;BYR&#39;</span><span class="p">,</span><span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">maintitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lefttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">righttitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">refline</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.small_map">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">small_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">cent_lon</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">lat</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lon</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#small_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.small_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add small map for sections. The line is drawn at one
+<cite>lat</cite> or <cite>lon</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> – <cite>fig</cite> to add the small map</p></li>
+<li><p><strong>ax</strong> – <cite>ax</cite> to used</p></li>
+<li><p><strong>cent_lon</strong> – central longitude for longitude sections</p></li>
+<li><p><strong>lat</strong> (<em>(None)</em>) – Latitude of the longitude section</p></li>
+<li><p><strong>lon</strong> (<em>(None)</em>) – Longitude of the latitude section</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.mapping.adjust_data_centlon">
+<code class="sig-prename descclassname">zapata.mapping.</code><code class="sig-name descname">adjust_data_centlon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">centlon_old</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">centlon_new</span><span class="o">=</span><span class="default_value">180.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/mapping.html#adjust_data_centlon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.mapping.adjust_data_centlon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust xarray to a different central longitude.
+The data are rolled without rolling the coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>xarray</em>) – xarray data to be shifed. it is assumed to have dimension <cite>lat</cite> and <cite>lon</cite></p></li>
+<li><p><strong>centlon_old</strong> – Original Central longitude of the data</p></li>
+<li><p><strong>centlon_new</strong> – New central longitude of the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Rolled xarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 </div>
@@ -514,6 +626,7 @@ but for some plot types, a righttitle likely with a left-aligned title, lefttitl
 <li class="toctree-l2"><a class="reference internal" href="zeus.html">zeus module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="conda_doc_SO.html">CONDA Useful commands</a></li>
 </ul>
 
   <h4>Previous topic</h4>
@@ -566,7 +679,7 @@ but for some plot types, a righttitle likely with a left-aligned title, lefttitl
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

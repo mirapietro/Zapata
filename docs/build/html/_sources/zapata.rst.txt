@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   zapata.colormap
    zapata.computation
    zapata.data
    zapata.lib

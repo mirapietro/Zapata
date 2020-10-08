@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>zeus module &#8212; CMCC-Applications 0.1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,6 +17,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CONDA Useful commands" href="conda_doc_SO.html" />
     <link rel="prev" title="zapata.work_in_progress module" href="zapata.work_in_progress.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -28,6 +29,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="conda_doc_SO.html" title="CONDA Useful commands"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="zapata.work_in_progress.html" title="zapata.work_in_progress module"
              accesskey="P">previous</a> |</li>
@@ -47,23 +51,25 @@
 <p>Zeus utility functions</p>
 <p>This Python module provides some basic utility functions to interact with
 the Zeus SuperComputer at CMCC. It manages file upload and download,
-submission of scripts on LSF and execution of general bash commands.</p>
+submission of scripts on LSF, execution of general bash commands and creation
+and shutdown of Dask clusters.</p>
 <p>The module has been tested with Python 3.6, but it should work with most
-Python 3 versions. It requires IPython and ipywidgets modules; to install
-the dependencies run for example:</p>
+Python 3 versions. It requires IPython, ipywidgets, dask and distributed
+modules; to install the dependencies run for example:</p>
 <blockquote>
-<div><p>pip3 install IPython ipywidgets</p>
+<div><p>pip3 install IPython ipywidgets dask==2.12.0 distributed==2.12.0</p>
 </div></blockquote>
 <p>Import the module using:</p>
 <blockquote>
-<div><p>import zeus_util as zeus</p>
+<div><p>import zeus</p>
 </div></blockquote>
 <p>Before calling any other function from this module run the <cite>init</cite> function.</p>
 <dl class="py function">
 <dt id="zeus.init">
 <code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">user</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize the module with the Zeus login username.</p>
-<p>This function must be called before any other function from the module.</p>
+<p>It inizializes the module and checks if the ssh connection can be made.
+This function must be called before any other function from the module.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>user</strong> (<em>str</em>) – Username on Zeus.</p>
@@ -217,6 +223,93 @@ is shown, otherwise all recent jobs will be listed.</p>
 </div>
 </dd></dl>
 
+<dl class="py function">
+<dt id="zeus.start_dask">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">start_dask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project</span></em>, <em class="sig-param"><span class="n">cores</span></em>, <em class="sig-param"><span class="n">memory</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'Dask-Test'</span></em>, <em class="sig-param"><span class="n">processes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">queue</span><span class="o">=</span><span class="default_value">'p_short'</span></em>, <em class="sig-param"><span class="n">local_directory</span><span class="o">=</span><span class="default_value">'~/dask-space'</span></em>, <em class="sig-param"><span class="n">interface</span><span class="o">=</span><span class="default_value">'ib0'</span></em>, <em class="sig-param"><span class="n">walltime</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">job_extra</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">env_extra</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">log_directory</span><span class="o">=</span><span class="default_value">'~/dask-space'</span></em>, <em class="sig-param"><span class="n">death_timeout</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">n_workers</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#start_dask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.start_dask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a new Dask cluster on Zeus</p>
+<p>This function starts a new Dask scheduler on the cluster front-end node
+and a set of worker process on the cluster compute nodes. The function
+returns a ready-to-use Dask client object. The arguments defined in the
+interface are lent from the Dask Jobqueue interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> (<em>str</em>) – Accounting string associated with each worker job. Passed to
+<cite>#BSUB -P</cite> option.</p></li>
+<li><p><strong>cores</strong> (<em>int</em>) – Number of cores for the worker nodes. Passed to <cite>#BSUB -n</cite> option.</p></li>
+<li><p><strong>memory</strong> (<em>str</em>) – Total amount of memory per worker job. Passed to <cite>#BSUB -M</cite> option.</p></li>
+<li><p><strong>name</strong> (<em>str, optional</em>) – Name of Dask workers. By default set to Dask-test.</p></li>
+<li><p><strong>processes</strong> (<em>int, optional</em>) – Cut the job up into this many processes. Good for GIL workloads or for
+nodes with many cores. By default, process ~= sqrt(cores) so that the
+number of processes and the number of threads per process is roughly
+the same.</p></li>
+<li><p><strong>queue</strong> (<em>str, optional</em>) – Destination queue for each worker job. Passed to #BSUB -q option. By
+default <cite>p_short</cite> queue is used.</p></li>
+<li><p><strong>local_directory</strong> (<em>str, optional</em>) – Dask worker local directory for file spilling. By default the folder
+<cite>dask-space</cite> in the home directory is used.</p></li>
+<li><p><strong>interface</strong> (<em>str, optional</em>) – Network interface like <cite>eth0</cite> or <cite>ib0</cite>. This will be used for the Dask
+workers interface. By default <cite>ib0</cite> is used.</p></li>
+<li><p><strong>walltime</strong> (<em>str, optional</em>) – Walltime for each worker job in HH:MM. Passed to <cite>#BSUB -W</cite> option. If
+not specified the default queue walltime is used.</p></li>
+<li><p><strong>job_extra</strong> (<em>list, optional</em>) – List of optional LSF options, for example -x. Each option will be
+prepended with the #BSUB prefix.</p></li>
+<li><p><strong>env_extra</strong> (<em>list, optional</em>) – Optional commands to add to script before launching worker.</p></li>
+<li><p><strong>log_directory</strong> (<em>str, optional</em>) – Directory to use for job scheduler logs. By default the folder
+<cite>dask-space</cite> in the home directory is used.</p></li>
+<li><p><strong>death_timeout</strong> (<em>float, optional</em>) – Seconds to wait for a scheduler before closing workers (default is 60).</p></li>
+<li><p><strong>n_workers</strong> (<em>int, optional</em>) – Number of worker process to startup, i.e. jobs on LSF (default is 1).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A ready-to-use Dask distributed client connected to the scheduler</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dask.distributed.Client</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">zeus</span><span class="o">.</span><span class="n">start_dask</span><span class="p">(</span>
+<span class="go">          project=&quot;R000&quot;,</span>
+<span class="go">          cores=36,</span>
+<span class="go">          memory=&quot;50 GB&quot;,</span>
+<span class="go">          name=&quot;Test&quot;,</span>
+<span class="go">          processes=12,</span>
+<span class="go">          local_directory=&quot;~/dask-space&quot;,</span>
+<span class="go">          interface=&quot;ib0&quot;,</span>
+<span class="go">          walltime=&quot;00:30&quot;,</span>
+<span class="go">          job_extra=[&quot;-x&quot;],</span>
+<span class="go">          n_workers=1</span>
+<span class="go">         )</span>
+<span class="go">Create a new cluster with a single worker on a whole Zeus node, using 12</span>
+<span class="go">processes (3 threads/process), 50GB of RAM memory</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zeus.stop_dask">
+<code class="sig-prename descclassname">zeus.</code><code class="sig-name descname">stop_dask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zeus.html#stop_dask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zeus.stop_dask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop a running Dask cluster on Zeus</p>
+<p>This function stops a running Dask scheduler on the cluster, both
+scheduler and worker processes. Note that this function will stop every
+Dask cluster running under the provided username on Zeus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>client</strong> (<em>dask.distributed.Client, optional</em>) – Optional Dask Client refering to a running Dask cluster</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zeus</span><span class="o">.</span><span class="n">stop_dask</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 
 
@@ -239,11 +332,15 @@ is shown, otherwise all recent jobs will be listed.</p>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">zeus module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="conda_doc_SO.html">CONDA Useful commands</a></li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="zapata.work_in_progress.html"
                         title="previous chapter">zapata.work_in_progress module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="conda_doc_SO.html"
+                        title="next chapter">CONDA Useful commands</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -275,6 +372,9 @@ is shown, otherwise all recent jobs will be listed.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
+          <a href="conda_doc_SO.html" title="CONDA Useful commands"
+             >next</a> |</li>
+        <li class="right" >
           <a href="zapata.work_in_progress.html" title="zapata.work_in_progress module"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
@@ -284,7 +384,7 @@ is shown, otherwise all recent jobs will be listed.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2020, AN.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
