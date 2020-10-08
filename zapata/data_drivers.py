@@ -54,7 +54,7 @@ def cglorsv7(dataset, var, level, period):
     # rename dimensions and coordinates
     out = fix_coords(out, files['coord_map'])
 
-    # apply mask to data if available
+    # apply mask to data if provided
     if 'mask' in files.keys():
         out = mask_data(out, files['mask']['name'], files['mask']['file'], files['mask']['coord_map'])
 

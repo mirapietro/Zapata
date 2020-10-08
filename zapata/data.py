@@ -54,7 +54,8 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
     if season is not None:
         out = da_time_mean(out, season)
 
-    # horizontal sampling (need test)
+    # horizontal sampling
+    #TODO  need test with NEMO grid as coordinate are not associated to dimensions (maybe a dedicated function)
     if region is not None:
         out = out.sel(lon = slice(region[0],region[1]), lat = slice(region[2],region[3]))
 
@@ -198,7 +199,7 @@ def load_dataarray(dataset, var, level, period):
         if 'coord_map' in files.keys():
             out = fix_coords(out, files['coord_map'])
 
-        # apply mask to data if available
+        # apply mask to data if provided
         if 'mask' in files.keys():
             out = mask_data(out, files['mask']['name'], files['mask']['file'],files['mask']['coord_map'])
 
@@ -210,7 +211,37 @@ def load_dataarray(dataset, var, level, period):
             print('Driver %s not defined in data_drivers.py.' % data_driver)
             sys.exit(1)
 
+    out = roll_long(out)
+
     return out
+
+
+def roll_long(da):
+    '''
+    Roll longitude coordinate between 0..360. Note that longitude dimension name must be 'lon'.
+
+    Parameters
+    ----------
+    da : dataArray
+        Xarray data structure
+
+    Returns
+    -------
+    da: dataArray
+        Xarray data structure
+
+    '''
+    coord = da.coords
+    # 1D coordinate
+    if 'lon' in coord:
+        if np.min(da.lon) < 0.:
+            da = da.assign_coords(lon=(((da.lon + 180) % 360) - 180))
+    # 2D coordinate for NEMO default name
+    elif 'nav_lon' in coord:
+        if np.min(da.nav_lon) < 0.:
+            da = da.assign_coords(nav_lon=(da.nav_lon % 360))
+
+    return da
 
 
 def mask_data(da, mask_name, mask_file, coord_map):
