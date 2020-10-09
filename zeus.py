@@ -39,6 +39,8 @@ hostname = "192.168.118.11"
 home = ""
 # Global variable to store the user tmp folder
 tmp_path = ""
+# Global variable to store the conda environment to use
+conda_env = "data-science-cmcc-v1"
 
 
 def init(user):
@@ -74,6 +76,36 @@ def init(user):
             "Error in connection to Zeus cluster. Check provided username, "
             "network/VPN connection and ssh key setup"
         )
+    return None
+
+
+def set_env(env_name):
+    """Set the name of the conda environment to use remotely on Zeus.
+
+    Parameters
+    ----------
+    env_name : str
+         Name of the conda environment to use.
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    >>> zeus.set_env('condaenv')
+
+    """
+    global conda_env
+    ret = _remote_cmd(
+        "module load anaconda/3.7; conda env list | grep %s" % env_name,
+        None,
+        False,
+    )
+    if ret == 0:
+        conda_env = env_name
+    else:
+        print("Unable to find specified conda env. Using default one.")
     return None
 
 
@@ -117,9 +149,7 @@ def _remote_scp(src, dst, way, out=None):
         cmd = [
             "scp",
             "-r",
-            "{user}@{host}:{src}".format(
-                user=username, host=hostname, src=src
-            ),
+            "{user}@{host}:{src}".format(user=username, host=hostname, src=src),
             "{dst}".format(dst=dst),
         ]
     elif way == "put":
@@ -127,9 +157,7 @@ def _remote_scp(src, dst, way, out=None):
             "scp",
             "-r",
             "{src}".format(src=src),
-            "{user}@{host}:{dst}".format(
-                user=username, host=hostname, dst=dst
-            ),
+            "{user}@{host}:{dst}".format(user=username, host=hostname, dst=dst),
         ]
     else:
         if out:
@@ -397,9 +425,7 @@ def process(script_name, data, compress=False, frequency=10):
                 tmp_path, os.path.basename(data) + ".tar.gz "
             )
         else:
-            local_path = os.path.join(
-                os.environ["PWD"], os.path.basename(data)
-            )
+            local_path = os.path.join(os.environ["PWD"], os.path.basename(data))
             remote_path = data
 
         if _remote_scp(remote_path, local_path, "get", out):
@@ -533,7 +559,7 @@ def start_dask(
     >>> client = zeus.start_dask(
               project="R000",
               cores=36,
-              memory="50 GB",
+              memory="80 GB",
               name="Test",
               processes=12,
               local_directory="~/dask-space",
@@ -543,7 +569,8 @@ def start_dask(
               n_workers=1
              )
     Create a new cluster with a single worker on a whole Zeus node, using 12
-    processes (3 threads/process), 50GB of RAM memory
+    processes (3 threads/process), 80GB of RAM memory requested. Note that each
+    process will get a maximum of 80/12GB of memory
 
     """
 
@@ -612,7 +639,7 @@ def start_dask(
         # Zeus specific lines
         sched_script_lines.append("")
         sched_script_lines.append("module load anaconda/3.7")
-        sched_script_lines.append("source activate data-science-cmcc-v1")
+        sched_script_lines.append("source activate %s" % conda_env)
 
         if env_extra is not None:
             sched_script_lines.extend(["%s" % arg for arg in env_extra])
@@ -686,7 +713,7 @@ def start_dask(
         # Python env specific lines
         worker_script_lines.append("")
         worker_script_lines.append("module load anaconda/3.7")
-        worker_script_lines.append("source activate data-science-cmcc-v1")
+        worker_script_lines.append("source activate %s" % conda_env)
 
         if env_extra is not None:
             worker_script_lines.extend(["%s" % arg for arg in env_extra])
@@ -929,6 +956,7 @@ def stop_dask(client=None):
     """
 
     import warnings
+
     warnings.filterwarnings("ignore")
 
     if client is not None:
@@ -939,3 +967,139 @@ def stop_dask(client=None):
     _remote_cmd("bkill -J dask_worker*")
 
     return None
+
+
+def run_dask(client, fn_name, args, timeout=60, frequency=1):
+    """Run a function on a Dask cluster on Zeus
+
+    This function submits the execution of the function `fn_name` with
+    arguments `args` on the Dask cluster associated to `client`. The result
+    can be accessed with the `.result()` method.
+
+    `client` is the result of the Dask cluster deployed on Zeus with
+    `start_dask` function. If the cluster is not yet ready, this function
+    will periodically check the status every `freqeuncy` seconds to check
+    if `fn_name` can be submitted. If the `timeout` value in seconds is
+    reached before the cluster is ready, the function will simply abort the
+    execution.
+
+    The function is non-blocking, which means that other cells in the notebook
+    can be executed right after this function is started, without needing to
+    wait for the function to end.
+
+    Parameters
+    ----------
+    client : dask.distributed.Client
+        Dask Client refering to a running Dask cluster
+    fn_name : function
+        Function to be executed remotely on the Dask cluster
+    args : tuple
+        Tuple with arguments to be passed to the function `fn_name`
+    timeout : int, optional
+        Timeout in seconds for checking the cluster status, after which the
+        execution is aborted (default is 60s).
+    frequency : int, optional
+        Interval for checking Dask cluster status in seconds (default is 1s).
+
+    Returns
+    -------
+    <locals>.async_submit
+        A pointer to the thread executing the function
+
+    Examples
+    --------
+    >>> def simple_function(a,b):
+        ... c = a + b
+        ... return c
+
+    Start function execution
+    >>> res = run_dask(client, simple_function, (1,2))
+
+    Get result from the execution
+    >>> print(res.result())
+    """
+
+    class async_submit(threading.Thread):
+        def __init__(self, args):
+            threading.Thread.__init__(self, args=args)
+            self.res = None
+            self.exception = None
+
+        def run(self):
+            try:
+                self.res = thread_func(*self._args)
+            except Exception as e:
+                self.exception = e
+
+        def result(self):
+            threading.Thread.join(self)
+            if self.exception:
+                raise self.exception
+            return self.res
+
+    def thread_func(client, timeout, frequency, out, fn_name, args):
+
+        from distributed import get_client
+
+        def remote_fn(fn_name, args):
+            import dask
+
+            client = get_client()
+            return fn_name(*args)
+
+        # Check if Dask worker is available
+        import time
+
+        iterations = int(timeout / frequency)
+        exec_flag = False
+        result = None
+        for i in range(0, iterations):
+            if (
+                "workers" in client._scheduler_identity
+                and client._scheduler_identity["workers"]
+            ):
+                out.append_stdout("Execution started on remote Dask cluster\n")
+                exec_flag = True
+                future = client.submit(remote_fn, fn_name, args)
+                try:
+                    result = future.result()
+                except Exception as e:
+                    out.append_stdout(
+                        "Error during execution on Dask. Access the result"
+                        " method to get the full error stack.\n"
+                    )
+                    out.append_stderr("ERROR: %sn" % str(e))
+                    raise
+                break
+            else:
+                time.sleep(frequency)
+
+        if exec_flag:
+            out.append_stdout("Function execution completed\n")
+        else:
+            out.append_stdout(
+                "Unable to run the function within the provided timeout\n"
+            )
+
+        return result
+
+    # Check input type
+    if not isinstance(client, Client):
+        print("client is not a valid Dask client")
+        return None
+
+    if not callable(fn_name):
+        print("fn_name is not a valid function")
+        return None
+
+    if not isinstance(args, tuple) or not args:
+        print("args is not a valid tuple")
+        return None
+
+    display("Starting Remote Dask function")
+    out = widgets.Output()
+    display(out)
+
+    thread = async_submit(args=(client, timeout, frequency, out, fn_name, args))
+    thread.start()
+    return thread
