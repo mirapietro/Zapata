@@ -1,0 +1,644 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>zapata.data &#8212; CMCC-Applications 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for zapata.data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A module to store and treat data</span>
+<span class="sd">================================</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">zapata.lib</span> <span class="k">as</span> <span class="nn">lib</span>
+<span class="kn">import</span> <span class="nn">netCDF4</span> <span class="k">as</span> <span class="nn">net</span>
+
+<span class="c1"># NCEP Reanalysis standard pressure levels</span>
+<span class="c1"># 1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10</span>
+<span class="c1"># 1000  925  850  700  600, 500  400  300, 250, 200, 150, 100      50          10</span>
+<span class="c1">#</span>
+
+
+
+<div class="viewcode-block" id="read_month"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_month">[docs]</a><span class="k">def</span> <span class="nf">read_month</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">vardir</span><span class="p">,</span><span class="n">var1</span><span class="p">,</span><span class="n">level</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">mm</span><span class="p">,</span><span class="nb">type</span><span class="p">,</span><span class="n">option</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A routine to read one month of data from various datasets.</span>
+<span class="sd">    </span>
+<span class="sd">    This routine will read data one month at a time from various data sets</span>
+<span class="sd">    described in *DataGrid()*</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset :   </span>
+<span class="sd">        Name of the dataset, ``ERA5``, ``GPCP``  </span>
+
+<span class="sd">    vardir :   </span>
+<span class="sd">        Path to the dataset </span>
+
+<span class="sd">    var1 :   </span>
+<span class="sd">        Variable to extract </span>
+
+<span class="sd">    level :   </span>
+<span class="sd">        Level of the Variable   </span>
+
+<span class="sd">    yy :    </span>
+<span class="sd">        Year</span>
+<span class="sd">    </span>
+<span class="sd">    mm :    </span>
+<span class="sd">        Month</span>
+
+<span class="sd">    type :   </span>
+<span class="sd">        Type of data to reay. Currently hardwired to ``npy``</span>
+
+<span class="sd">    option :    </span>
+<span class="sd">        &#39;Celsius&#39;     For temperature Transform to Celsius</span>
+<span class="sd">    </span>
+<span class="sd">    verbose: </span>
+<span class="sd">        Tons of Output</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    </span>
+<span class="sd">    average :</span>
+<span class="sd">        Monthly data. </span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; read_month(&#39;ERA5&#39;,&#39;.&#39;,&#39;Z&#39;,&#39;500&#39;,1979,12,&#39;npy&#39;,[],verbose=verbose)</span>
+<span class="sd">    &gt;&gt;&gt; read_month(&#39;GPCP&#39;,&#39;.&#39;,&#39;TPREP&#39;,&#39;SURF&#39;,1979,12,&#39;nc&#39;,[],verbose=verbose) </span>
+<span class="sd">    &gt;&gt;&gt; read_month(&#39;ERA5&#39;,&#39;.&#39;,&#39;T&#39;,&#39;850&#39;,1979,12,&#39;npy&#39;,option=Celsius,verbose=verbose)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">info</span><span class="o">=</span><span class="n">DataGrid</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;ERA5&#39;</span><span class="p">:</span>
+ <span class="c1">#       def adddir(name,dir):</span>
+ <span class="c1">#   return dir +&#39;/&#39; + name.split(&#39;.&#39;)[0]+&#39;.npy&#39;</span>
+        <span class="n">fil1</span><span class="o">=</span><span class="n">lib</span><span class="o">.</span><span class="n">adddir</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">makemm</span><span class="p">(</span><span class="n">var1</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">),</span><span class="n">yy</span><span class="p">,</span><span class="n">mm</span><span class="p">),</span><span class="n">info</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;place&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">fil1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">var1</span> <span class="o">==</span> <span class="s1">&#39;T&#39;</span> <span class="ow">and</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;Celsius&#39;</span><span class="p">:</span>
+            <span class="n">data1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fil1</span><span class="p">)</span> <span class="o">-</span> <span class="mf">273.16</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fil1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s1">&#39;GPCP&#39;</span><span class="p">:</span>       
+        <span class="n">file</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;place&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/gpcp_cdr_v23rB1_y&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_m&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:02d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mm</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.nc&#39;</span>      
+        <span class="n">data1</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;precip&quot;</span><span class="p">][:,:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Print</span><span class="p">(</span><span class="s1">&#39; Error in read_month, datset set as </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data1</span></div>
+
+<div class="viewcode-block" id="date_param"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.date_param">[docs]</a><span class="k">def</span> <span class="nf">date_param</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Data Bank to resolve Month and Season averaging information</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; index = data_param()</span>
+<span class="sd">    &gt;&gt;&gt; mon=index[&#39;DJF&#39;][&#39;month_index&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">months</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="s1">&#39;FEB&#39;</span><span class="p">,</span><span class="s1">&#39;MAR&#39;</span><span class="p">,</span><span class="s1">&#39;APR&#39;</span><span class="p">,</span><span class="s1">&#39;MAY&#39;</span><span class="p">,</span><span class="s1">&#39;JUN&#39;</span><span class="p">,</span><span class="s1">&#39;JUL&#39;</span><span class="p">,</span><span class="s1">&#39;AUG&#39;</span><span class="p">,</span><span class="s1">&#39;SEP&#39;</span><span class="p">,</span><span class="s1">&#39;OCT&#39;</span><span class="p">,</span><span class="s1">&#39;NOV&#39;</span><span class="p">,</span><span class="s1">&#39;DEC&#39;</span><span class="p">]</span>
+    <span class="n">DJF</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]}</span>
+    <span class="n">JFM</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;JFM&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]}</span>
+    <span class="n">AMJ</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;AMJ&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]}</span>
+    <span class="n">JJA</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;JAS&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
+    <span class="n">JAS</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;JAS&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]}</span>
+    <span class="n">SON</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;SON&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">]}</span>
+    <span class="n">ANN</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;ANN&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">13</span><span class="p">)]}</span>
+    <span class="n">JAN</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">1</span><span class="p">]}</span>
+    <span class="n">FEB</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;FEB&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">2</span><span class="p">]}</span>
+    <span class="n">MAR</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">3</span><span class="p">]}</span>
+    <span class="n">APR</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;APR&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">4</span><span class="p">]}</span>
+    <span class="n">MAY</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;MAY&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">5</span><span class="p">]}</span>
+    <span class="n">JUN</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;JUN&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">6</span><span class="p">]}</span>
+    <span class="n">JUL</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;JUL&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">7</span><span class="p">]}</span>
+    <span class="n">AUG</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;AUG&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">8</span><span class="p">]}</span>
+    <span class="n">SEP</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;SEP&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">9</span><span class="p">]}</span>
+    <span class="n">OCT</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;OCT&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">10</span><span class="p">]}</span>
+    <span class="n">NOV</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;NOV&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">11</span><span class="p">]}</span>
+    <span class="n">DEC</span> <span class="o">=</span><span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span><span class="s1">&#39;DEC&#39;</span><span class="p">,</span><span class="s1">&#39;month_index&#39;</span><span class="p">:[</span><span class="mi">12</span><span class="p">]}</span>
+    <span class="n">out</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;DJF&#39;</span><span class="p">:</span><span class="n">DJF</span><span class="p">,</span>
+        <span class="s1">&#39;JFM&#39;</span><span class="p">:</span> <span class="n">JFM</span><span class="p">,</span>
+        <span class="s1">&#39;AMJ&#39;</span><span class="p">:</span> <span class="n">AMJ</span><span class="p">,</span>
+        <span class="s1">&#39;JAS&#39;</span><span class="p">:</span> <span class="n">JAS</span><span class="p">,</span>
+        <span class="s1">&#39;JJA&#39;</span><span class="p">:</span> <span class="n">JJA</span><span class="p">,</span>
+        <span class="s1">&#39;SON&#39;</span><span class="p">:</span> <span class="n">SON</span><span class="p">,</span>
+        <span class="s1">&#39;ANN&#39;</span><span class="p">:</span> <span class="n">ANN</span><span class="p">,</span>
+        <span class="s1">&#39;JAN&#39;</span><span class="p">:</span> <span class="n">JAN</span><span class="p">,</span>
+        <span class="s1">&#39;FEB&#39;</span><span class="p">:</span> <span class="n">FEB</span><span class="p">,</span>
+        <span class="s1">&#39;MAR&#39;</span><span class="p">:</span> <span class="n">MAR</span><span class="p">,</span>
+        <span class="s1">&#39;APR&#39;</span><span class="p">:</span> <span class="n">APR</span><span class="p">,</span>
+        <span class="s1">&#39;MAY&#39;</span><span class="p">:</span> <span class="n">MAY</span><span class="p">,</span>
+        <span class="s1">&#39;JUN&#39;</span><span class="p">:</span> <span class="n">JUN</span><span class="p">,</span>
+        <span class="s1">&#39;JUL&#39;</span><span class="p">:</span> <span class="n">JUL</span><span class="p">,</span>
+        <span class="s1">&#39;AUG&#39;</span><span class="p">:</span> <span class="n">AUG</span><span class="p">,</span>
+        <span class="s1">&#39;SEP&#39;</span><span class="p">:</span> <span class="n">SEP</span><span class="p">,</span>
+        <span class="s1">&#39;OCT&#39;</span><span class="p">:</span> <span class="n">OCT</span><span class="p">,</span>
+        <span class="s1">&#39;NOV&#39;</span><span class="p">:</span> <span class="n">NOV</span><span class="p">,</span>
+        <span class="s1">&#39;DEC&#39;</span><span class="p">:</span> <span class="n">DEC</span><span class="p">,</span>
+        <span class="s1">&#39;MONTHS&#39;</span><span class="p">:</span> <span class="n">months</span>
+        <span class="p">}</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="DataGrid"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.DataGrid">[docs]</a><span class="k">def</span> <span class="nf">DataGrid</span><span class="p">(</span><span class="n">option</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Routine that returns a Dictionary with information on the reuqested Data Set.</span>
+
+<span class="sd">    Currently two data sets are supported   </span>
+
+<span class="sd">    * ERA5 -- Subset of monthly data of ERA5 (compiled by AN 2019)   </span>
+<span class="sd">    * GPCP -- Monthly data of precipitation data set </span>
+
+<span class="sd">    Info can be retrieved as ``grid[dataset][var][&#39;start&#39;]`` for the starting years.</span>
+<span class="sd">    See source for full explanation of the content.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Option :       </span>
+<span class="sd">        * &#39;Verbose&#39;      Tons of Output   </span>
+<span class="sd">        * &#39;Info&#39;         Info on data sets  </span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; DataGrid(&#39;info&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; dat = DataGrid(&#39;verbose&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">homedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;verbose&#39;</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Root Directory for Data &#39;</span><span class="p">,</span><span class="n">homedir</span><span class="p">)</span>
+    
+    <span class="n">U</span> <span class="o">=</span><span class="p">{</span>      <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">600</span><span class="p">,</span><span class="mi">700</span><span class="p">,</span><span class="mi">850</span><span class="p">,</span><span class="mi">925</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Zonal Wind&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span>
+               <span class="p">}</span>
+    <span class="n">V</span> <span class="o">=</span><span class="p">{</span>      <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">600</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span><span class="mi">850</span><span class="p">,</span><span class="mi">925</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Meridional Wind&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span>
+               <span class="p">}</span>
+    <span class="n">T</span> <span class="o">=</span><span class="p">{</span>      <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span><span class="mi">600</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span><span class="mi">850</span><span class="p">,</span><span class="mi">925</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Temperature&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span>
+               <span class="p">}</span>
+    <span class="n">W</span> <span class="o">=</span><span class="p">{</span>      <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="mi">850</span><span class="p">,</span> <span class="mi">925</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Vertical Velocity&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span>
+               <span class="p">}</span>
+    <span class="n">Z</span> <span class="o">=</span><span class="p">{</span>      <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Geopotential Height&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span>
+               <span class="p">}</span>
+    <span class="n">tp</span> <span class="o">=</span><span class="p">{</span>     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;SURF&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;TP&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Precipitation&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">60</span>
+               <span class="p">}</span>
+    <span class="n">MSL</span> <span class="o">=</span><span class="p">{</span>     <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;SURF&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;MSL&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Mean Sea Level Pressure&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span><span class="o">/</span><span class="mf">100.</span>
+               <span class="p">}</span>
+    <span class="n">SST</span> <span class="o">=</span><span class="p">{</span>    <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;SURF&#39;</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;SST&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Sea Surface Tenperature&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span>
+               <span class="p">}</span>
+    <span class="n">THETA</span> <span class="o">=</span><span class="p">{</span>      <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span><span class="mi">250</span><span class="p">,</span><span class="mi">300</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span><span class="mi">600</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span><span class="mi">850</span><span class="p">,</span><span class="mi">925</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;cv&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Potential Temperature&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span>
+               <span class="p">}</span>
+    <span class="n">dataera5</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nlat&#39;</span><span class="p">:</span> <span class="mi">721</span><span class="p">,</span>
+              <span class="s1">&#39;nlon&#39;</span><span class="p">:</span> <span class="mi">1440</span><span class="p">,</span>
+              <span class="s1">&#39;latvec&#39;</span><span class="p">:[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span class="mf">90.1</span><span class="p">,</span><span class="mf">0.25</span><span class="p">)],</span>
+              <span class="s1">&#39;lonvec&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">360.1</span><span class="p">,</span><span class="mf">0.25</span><span class="p">)],</span>
+              <span class="s1">&#39;latnp&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span class="mf">90.1</span><span class="p">,</span><span class="mf">0.25</span><span class="p">)][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># For plotting</span>
+              <span class="s1">&#39;lonnp&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">360.1</span><span class="p">,</span><span class="mf">0.25</span><span class="p">)]),</span>
+              <span class="s1">&#39;clim&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span> <span class="s1">&#39;/Dropbox (CMCC)/ERA5/CLIM&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;place&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span><span class="s1">&#39;/Dropbox (CMCC)/ERA5/DATA/ERA5_MM&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;source_url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;desc&#39;</span><span class="p">:</span><span class="s1">&#39;ERA5 Monthly Mean for U,V,T,W,SLP 1979-2018&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;special_value&#39;</span><span class="p">:</span> <span class="mf">9999.</span><span class="p">,</span>
+              <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">U</span><span class="p">,</span>
+              <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span>
+              <span class="s1">&#39;V&#39;</span><span class="p">:</span> <span class="n">V</span><span class="p">,</span>
+              <span class="s1">&#39;W&#39;</span><span class="p">:</span> <span class="n">W</span><span class="p">,</span>
+              <span class="s1">&#39;Z&#39;</span><span class="p">:</span> <span class="n">Z</span><span class="p">,</span>
+              <span class="s1">&#39;tp&#39;</span><span class="p">:</span> <span class="n">tp</span><span class="p">,</span>
+              <span class="s1">&#39;MSL&#39;</span><span class="p">:</span> <span class="n">MSL</span><span class="p">,</span>
+              <span class="s1">&#39;SST&#39;</span><span class="p">:</span> <span class="n">SST</span><span class="p">,</span>
+              <span class="s1">&#39;THETA&#39;</span><span class="p">:</span> <span class="n">THETA</span>
+              <span class="p">}</span>
+    
+    <span class="n">precip_gpcp</span> <span class="o">=</span><span class="p">{</span>  <span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="s1">&#39;SURF&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="mi">1979</span><span class="p">,</span>
+              <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="mi">2018</span><span class="p">,</span>
+              <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;precip&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;factor&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span>
+              <span class="s1">&#39;longname&#39;</span><span class="p">:</span> <span class="s1">&#39;Precipitation GPCP&#39;</span><span class="p">,</span>
+               <span class="p">}</span>
+    
+    <span class="n">datagpcp</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nlat&#39;</span><span class="p">:</span> <span class="mi">72</span><span class="p">,</span>
+              <span class="s1">&#39;nlon&#39;</span><span class="p">:</span> <span class="mi">144</span><span class="p">,</span>
+              <span class="s1">&#39;latvec&#39;</span><span class="p">:[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">88.75</span><span class="p">,</span><span class="mf">90.1</span><span class="p">,</span><span class="mf">2.5</span><span class="p">)],</span>
+              <span class="s1">&#39;lonvec&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1.25</span><span class="p">,</span><span class="mf">360.1</span><span class="p">,</span><span class="mf">2.5</span><span class="p">)],</span>
+              <span class="s1">&#39;latnp&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mf">88.75</span><span class="p">,</span><span class="mf">90.1</span><span class="p">,</span><span class="mf">2.5</span><span class="p">)][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>  <span class="c1"># For plotting</span>
+              <span class="s1">&#39;lonnp&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1.25</span><span class="p">,</span><span class="mf">360.</span><span class="p">,</span><span class="mf">2.5</span><span class="p">)]),</span>
+              <span class="s1">&#39;precip&#39;</span><span class="p">:</span> <span class="n">precip_gpcp</span><span class="p">,</span>
+              <span class="s1">&#39;place&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span><span class="s1">&#39;/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;clim&#39;</span><span class="p">:</span> <span class="n">homedir</span> <span class="o">+</span> <span class="s1">&#39;/Dropbox (CMCC)/ERA5/DATA/GPCP/TPREP&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;desc&#39;</span><span class="p">:</span> <span class="s1">&#39;Precipitation from the GPCP Project&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;source_url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://gpcp.umd.edu/&#39;</span>
+              <span class="p">}</span>
+
+
+    <span class="n">grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ERA5&#39;</span><span class="p">:</span> <span class="n">dataera5</span><span class="p">,</span>
+          <span class="s1">&#39;GPCP&#39;</span><span class="p">:</span> <span class="n">datagpcp</span>
+         <span class="p">}</span>
+    <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s1">&#39;info&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;desc&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;place&#39;</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;source_url&#39;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+    
+    <span class="k">return</span> <span class="n">grid</span></div>
+
+
+<div class="viewcode-block" id="readvar_grid"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.readvar_grid">[docs]</a><span class="k">def</span> <span class="nf">readvar_grid</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="s1">&#39;JAN&#39;</span><span class="p">,</span><span class="n">Celsius</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read Variable from data sets</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    region :    </span>
+<span class="sd">        *globe* for global maps, or [east, west, north, south]</span>
+<span class="sd">        for limited region, longitude 0-360</span>
+<span class="sd">    dataset :   </span>
+<span class="sd">         name of data set</span>
+<span class="sd">    var :   </span>
+<span class="sd">         variable name</span>
+<span class="sd">    level : </span>
+<span class="sd">        level, either a value or &#39;SURF&#39; for surface fields</span>
+
+<span class="sd">    season :    </span>
+<span class="sd">        Month (&#39;JAN&#39;) or season (,&#39;DJF&#39;) or annual &#39;ANN&#39;)</span>
+<span class="sd">     </span>
+<span class="sd">    Celsius :   </span>
+<span class="sd">        True/False for temperature transform to Celsius</span>
+<span class="sd">    </span>
+<span class="sd">    verbose :   </span>
+<span class="sd">        True/False -- tons of output</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    xdat : numpy    </span>
+<span class="sd">        array data </span>
+<span class="sd">    nlon :  </span>
+<span class="sd">        Number of longitudes</span>
+<span class="sd">    nlat :  </span>
+<span class="sd">        Number of Latitudes</span>
+<span class="sd">    lat :   </span>
+<span class="sd">        Latitudes</span>
+<span class="sd">    lon :   </span>
+<span class="sd">        Longitudes</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; readvar_grid(region=&#39;globe&#39;,dataset=&#39;ERA5&#39;,var=&#39;Z&#39;,level=&#39;500&#39;,season=&#39;JAN&#39;,Celsius=False,verbose=False)</span>
+<span class="sd">    &gt;&gt;&gt; readvar_grid(region=&#39;globe&#39;,dataset=&#39;ERA5&#39;,var=&#39;SST&#39;,level=&#39;SURF&#39;,season=&#39;JAN&#39;,Celsius=True,verbose=False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">vardir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+
+    <span class="n">dat</span><span class="o">=</span><span class="n">date_param</span><span class="p">()</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">DataGrid</span><span class="p">()</span>
+    <span class="n">nlat</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;nlat&#39;</span><span class="p">]</span>
+    <span class="n">nlon</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;nlon&#39;</span><span class="p">]</span>
+
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;latnp&#39;</span><span class="p">]</span>
+    <span class="n">lon</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;lonnp&#39;</span><span class="p">]</span>
+    <span class="c1">#Correct for longitude in ERA5</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span><span class="s1">&#39;ERA5&#39;</span><span class="p">:</span>
+        <span class="n">lon</span><span class="o">=</span><span class="n">lon</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sv</span><span class="o">=</span><span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sv</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;special_value&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Using Special Value ----&gt;&#39;</span><span class="p">,</span> <span class="n">sv</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Special Value not defined for dataset </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+        
+    <span class="n">ys</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">]</span>
+    <span class="n">ye</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">]</span>
+    <span class="n">ys</span><span class="o">=</span><span class="mi">1979</span>
+    <span class="n">ye</span><span class="o">=</span><span class="mi">2018</span>
+    <span class="n">lname</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;longname&#39;</span><span class="p">]</span>
+
+    <span class="n">nyears</span><span class="o">=</span> <span class="n">ye</span><span class="o">-</span><span class="n">ys</span>
+    <span class="n">years</span> <span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span><span class="n">ye</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="n">factor</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;factor&#39;</span><span class="p">]</span>
+
+    <span class="n">xdat</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nlat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span><span class="n">nyears</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">tim</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
+        <span class="n">itim</span> <span class="o">=</span><span class="n">years</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">tim</span><span class="p">)</span>
+        <span class="n">dat</span><span class="o">=</span><span class="n">date_param</span><span class="p">()</span>
+        <span class="n">mon</span><span class="o">=</span><span class="n">dat</span><span class="p">[</span><span class="n">season</span><span class="p">][</span><span class="s1">&#39;month_index&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Plotting &#39;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s1">&#39; from dataset &#39;</span> <span class="o">+</span> <span class="n">dataset</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Printing year  &#39;</span><span class="p">,</span> <span class="n">tim</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mon</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Mean on these months: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mon</span><span class="p">))</span>
+            <span class="n">temp</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nlat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">mon</span><span class="p">)])</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mon</span><span class="p">)):</span>
+                <span class="n">temp</span><span class="p">[:,:,</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">read_month</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="n">vardir</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="p">,</span><span class="n">tim</span><span class="p">,</span><span class="n">mon</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="s1">&#39;npy&#39;</span><span class="p">,[],</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span> 
+            <span class="n">xdat</span><span class="p">[:,:,</span><span class="n">itim</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">xdat</span><span class="p">[:,:,</span><span class="n">itim</span><span class="p">]</span><span class="o">=</span><span class="n">read_month</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">vardir</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="p">,</span><span class="n">tim</span><span class="p">,</span><span class="n">mon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="s1">&#39;npy&#39;</span><span class="p">,[],</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span> 
+
+    <span class="k">return</span> <span class="n">xdat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">sv</span></div>
+
+<div class="viewcode-block" id="read_xarray"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_xarray">[docs]</a><span class="k">def</span> <span class="nf">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Read npy files from data and generates xarray.</span>
+
+<span class="sd">    This a xarray implementation of read_var. It always grabs the global data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset :   </span>
+<span class="sd">        Name of data set   </span>
+<span class="sd">    region: </span>
+<span class="sd">        Select region   </span>
+<span class="sd">        * *globe*, Entire globe</span>
+<span class="sd">        * [East, West, North, South], Specific Region</span>
+<span class="sd">    var :   </span>
+<span class="sd">         variable name</span>
+<span class="sd">    level : </span>
+<span class="sd">        level, either a value or &#39;SURF&#39; for surface fields</span>
+
+<span class="sd">    season :    </span>
+<span class="sd">        Month (&#39;JAN&#39;) or season (,&#39;DJF&#39;) or annual &#39;ANN&#39;), or &#39;ALL&#39; for every year</span>
+<span class="sd">    verbose:    </span>
+<span class="sd">        True/False -- Tons of Output</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : xarray   </span>
+<span class="sd">        array data </span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="k">if</span> <span class="n">season</span> <span class="o">!=</span> <span class="s1">&#39;ALL&#39;</span><span class="p">:</span>
+        <span class="n">xdat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">sv</span><span class="o">=</span><span class="n">readvar_grid</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> \
+                            <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="n">season</span><span class="p">,</span><span class="n">Celsius</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;1979-01-01&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;YS&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">season</span> <span class="o">==</span> <span class="s1">&#39;ALL&#39;</span><span class="p">:</span>
+        <span class="n">xdat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">sv</span><span class="o">=</span><span class="n">readvar_year</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> \
+                            <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span><span class="n">period</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span><span class="n">Celsius</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;1979-01-01&#39;</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="mi">480</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">)</span>
+    
+    <span class="n">out</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">xdat</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="p">[</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">times</span><span class="p">],</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">sv</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">out</span> <span class="o">==</span> <span class="n">sv</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">region</span> <span class="o">!=</span> <span class="s1">&#39;globe&#39;</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lon</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">region</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">lat</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">region</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">region</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+
+    
+    <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="read_dataset"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_dataset">[docs]</a><span class="k">def</span> <span class="nf">read_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="s1">&#39;DJF&#39;</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Similar to `read_xarray` but returns a ``xarray DataSet``</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">out</span> <span class="o">=</span> <span class="n">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> \
+                            <span class="n">var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span><span class="n">season</span><span class="o">=</span><span class="n">season</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="n">var</span><span class="p">:</span> <span class="n">out</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+<div class="viewcode-block" id="readvar_year"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.readvar_year">[docs]</a><span class="k">def</span> <span class="nf">readvar_year</span><span class="p">(</span><span class="n">region</span><span class="o">=</span><span class="s1">&#39;globe&#39;</span><span class="p">,</span><span class="n">period</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5&#39;</span><span class="p">,</span><span class="n">var</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;500&#39;</span><span class="p">,</span>
+                 <span class="n">Celsius</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read Variable from data banks, all month, no averaging</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    region :    </span>
+<span class="sd">        &#39;globe&#39; for global maps, or [east, west, north, south]</span>
+<span class="sd">        for limited region, longitude 0-360</span>
+<span class="sd">    dataset :   </span>
+<span class="sd">         name of data set</span>
+<span class="sd">    var :   </span>
+<span class="sd">         variable name</span>
+<span class="sd">    level : </span>
+<span class="sd">        level, either a value or &#39;SURF&#39; for surface fields</span>
+
+<span class="sd">    period :    </span>
+<span class="sd">        Time period to be read  </span>
+<span class="sd">            * &#39;all&#39; Every time level in databank  </span>
+<span class="sd">            * [start_year,end_year] period in those years</span>
+<span class="sd">     </span>
+<span class="sd">    Celsius :   </span>
+<span class="sd">        True/False for temperature transform to Celsius</span>
+<span class="sd">    </span>
+<span class="sd">    verbose :   </span>
+<span class="sd">        True/False -- tons of output</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    xdat : numpy    </span>
+<span class="sd">        array data </span>
+<span class="sd">    nlon :  </span>
+<span class="sd">        Number of longitudes</span>
+<span class="sd">    nlat :  </span>
+<span class="sd">        Number of Latitudes</span>
+<span class="sd">    lat :   </span>
+<span class="sd">        Latitudes</span>
+<span class="sd">    lon :   </span>
+<span class="sd">        Longitudes</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; readvar_year(region=&#39;globe&#39;,dataset=&#39;ERA5&#39;,var=&#39;Z&#39;,level=&#39;500&#39;,season=&#39;JAN&#39;,Celsius=False,verbose=False)</span>
+<span class="sd">    &gt;&gt;&gt; readvar_year(region=&#39;globe&#39;,dataset=&#39;ERA5&#39;,var=&#39;SST&#39;,level=&#39;SURF&#39;,season=&#39;JAN&#39;,Celsius=True,verbose=False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">vardir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+
+    <span class="n">dat</span><span class="o">=</span><span class="n">date_param</span><span class="p">()</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">DataGrid</span><span class="p">()</span>
+    <span class="n">nlat</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;nlat&#39;</span><span class="p">]</span>
+    <span class="n">nlon</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;nlon&#39;</span><span class="p">]</span>
+
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;latnp&#39;</span><span class="p">]</span>
+    <span class="n">lon</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;lonnp&#39;</span><span class="p">]</span>
+    <span class="c1">#Correct for longitude in ERA5</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span><span class="s1">&#39;ERA5&#39;</span><span class="p">:</span>
+        <span class="n">lon</span><span class="o">=</span><span class="n">lon</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sv</span><span class="o">=</span><span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sv</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="s1">&#39;special_value&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Using Special Value ----&gt;&#39;</span><span class="p">,</span> <span class="n">sv</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Special Value not defined for dataset </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+
+    <span class="n">ys</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">]</span>
+    <span class="n">ye</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">]</span>
+    <span class="n">ys</span><span class="o">=</span><span class="mi">1979</span>
+    <span class="n">ye</span><span class="o">=</span><span class="mi">2018</span>
+    <span class="n">lname</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;longname&#39;</span><span class="p">]</span>
+    <span class="c1">#Choose period</span>
+    <span class="k">if</span> <span class="n">period</span> <span class="o">==</span><span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="n">nyears</span><span class="o">=</span> <span class="n">ye</span><span class="o">-</span><span class="n">ys</span>
+        <span class="n">years</span> <span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span><span class="n">ye</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nyears</span><span class="o">=</span> <span class="n">period</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">period</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">years</span> <span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">period</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">period</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="n">factor</span><span class="o">=</span><span class="n">grid</span><span class="p">[</span><span class="n">dataset</span><span class="p">][</span><span class="n">var</span><span class="p">][</span><span class="s1">&#39;factor&#39;</span><span class="p">]</span>
+
+    <span class="n">xdat</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nlat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span><span class="mi">12</span><span class="o">*</span><span class="p">(</span><span class="n">nyears</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span>
+   
+    <span class="n">itim</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">dat</span><span class="o">=</span><span class="n">date_param</span><span class="p">()</span>
+    <span class="n">mon</span><span class="o">=</span><span class="n">dat</span><span class="p">[</span><span class="s1">&#39;ANN&#39;</span><span class="p">][</span><span class="s1">&#39;month_index&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">verbose</span> <span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; Reading &#39;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s1">&#39; from databank &#39;</span> <span class="o">+</span> <span class="n">dataset</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">tim</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reading year  &#39;</span><span class="p">,</span> <span class="n">tim</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">imon</span> <span class="ow">in</span> <span class="n">mon</span><span class="p">:</span>       
+            <span class="k">if</span> <span class="n">verbose</span> <span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reading mon  &#39;</span><span class="p">,</span> <span class="n">imon</span><span class="p">)</span>
+            <span class="n">xdat</span><span class="p">[:,:,</span><span class="n">itim</span><span class="p">]</span><span class="o">=</span><span class="n">read_month</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="n">vardir</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">level</span><span class="p">,</span><span class="n">tim</span><span class="p">,</span><span class="n">mon</span><span class="p">[</span><span class="n">imon</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;npy&#39;</span><span class="p">,[],</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>            
+            <span class="k">if</span> <span class="n">verbose</span> <span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Reading time  &#39;</span><span class="p">,</span> <span class="n">itim</span><span class="p">)</span>
+            <span class="n">itim</span> <span class="o">=</span> <span class="n">itim</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">xdat</span><span class="p">,</span><span class="n">nlon</span><span class="p">,</span> <span class="n">nlat</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">sv</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/zap.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Zapata</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CMCC-Applications 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">zapata.data</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, AN.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.0.
+    </div>
+  </body>
+</html>
