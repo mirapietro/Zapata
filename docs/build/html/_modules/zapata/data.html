@@ -55,7 +55,85 @@
 
 <span class="n">xr</span><span class="o">.</span><span class="n">set_options</span><span class="p">(</span><span class="n">keep_attrs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="read_xarray"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_xarray">[docs]</a><span class="k">def</span> <span class="nf">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">season</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="inquire_catalogue"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.inquire_catalogue">[docs]</a><span class="k">def</span> <span class="nf">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Retrieve requested dataset informative structure from general catalogue (YAML file).</span>
+
+<span class="sd">    If no dataset is requested, print a list of available datasets name and description.</span>
+
+<span class="sd">    If info is True print additional details without loading dataset if provided</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : string</span>
+<span class="sd">        Name of data set</span>
+<span class="sd">    info: boolean</span>
+<span class="sd">        Print additional details for all or selected dataset</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dict</span>
+<span class="sd">        requested dataset informative structure</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; datacat = inquire_catalogue(dataset=&#39;C-GLORSv7&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; inquire_catalogue()</span>
+<span class="sd">        List of datasets in catalogue:</span>
+<span class="sd">        C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means</span>
+<span class="sd">        ERA5_MM : ERA5 Monthly Mean on Pressure Levels</span>
+<span class="sd">    &gt;&gt;&gt; inquire_catalogue(dataset=&#39;ERA5_MM&#39;, info=True)</span>
+<span class="sd">        Access dataset ERA5_MM</span>
+<span class="sd">        atm component [IFS]</span>
+<span class="sd">         Data Stream monthly 3D variables:</span>
+<span class="sd">         - U : Zonal Wind</span>
+<span class="sd">         - V : Meridional Wind</span>
+<span class="sd">         - W : Vertical Velocity</span>
+<span class="sd">         ...</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+    <span class="c1"># Load catalogue</span>
+    <span class="n">catalogue</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">pwd</span> <span class="o">+</span> <span class="s1">&#39;/catalogue.yml&#39;</span><span class="p">),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+
+    <span class="c1"># Print list of available datasets</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;List of datasets in catalogue:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">cat</span><span class="p">,</span> <span class="n">catalogue</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">]]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># retrieve dataset information</span>
+    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Requested dataset &#39;</span> <span class="o">+</span> <span class="n">dataset</span> <span class="o">+</span> <span class="s1">&#39; is not available in catalogue.&#39;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Access dataset &#39;</span> <span class="o">+</span> <span class="n">dataset</span> <span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">catalogue</span><span class="p">[</span><span class="n">dataset</span><span class="p">]</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span>
+
+    <span class="k">if</span> <span class="n">info</span><span class="p">:</span>
+       <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]:</span>
+           <span class="n">thecomp</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">comp</span><span class="p">]</span>
+           <span class="nb">print</span><span class="p">(</span> <span class="n">comp</span> <span class="o">+</span> <span class="s1">&#39; component [&#39;</span> <span class="o">+</span><span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">)</span>
+           <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+               <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Data Stream : &#39;</span> <span class="o">+</span> <span class="n">ss</span><span class="p">)</span>
+               <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">ss</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                   <span class="k">if</span> <span class="n">grp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">,</span> <span class="s1">&#39;coord_map&#39;</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">]:</span>
+                       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">grp</span>  <span class="o">+</span><span class="s1">&#39; variables&#39;</span><span class="p">)</span>
+                       <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">ss</span><span class="p">][</span><span class="n">grp</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                           <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="n">vv</span> <span class="o">+</span> <span class="s1">&#39; : &#39;</span> <span class="o">+</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">ss</span><span class="p">][</span><span class="n">grp</span><span class="p">][</span><span class="n">vv</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="read_data"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.read_data">[docs]</a><span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">season</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Load into a DataArray the requested variable from dataset source.</span>
 
@@ -113,6 +191,60 @@
                 <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;Warning: approximate requested level </span><span class="si">%s</span><span class="s1"> to nearest one </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">lev_sel</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
 
         <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lev</span> <span class="o">=</span> <span class="n">lev_sel</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="load_dataarray"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.load_dataarray">[docs]</a><span class="k">def</span> <span class="nf">load_dataarray</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Read requested data into an xarray DataArray using dataset driver</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataset : dict</span>
+<span class="sd">        Dataset informative structure</span>
+<span class="sd">    var : string</span>
+<span class="sd">         variable name</span>
+<span class="sd">    level : list</span>
+<span class="sd">        vertical levels float value</span>
+<span class="sd">    period : list</span>
+<span class="sd">        Might be None or a two element list with initial and final year</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : DataArray</span>
+<span class="sd">        Output data from dataset</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">data_driver</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;driver&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">data_driver</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+
+        <span class="c1"># get files list to read</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">get_data_files</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+
+        <span class="c1"># open files as a dataset</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">],</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;netcdf4&#39;</span><span class="p">,</span> <span class="n">combine</span> <span class="o">=</span> <span class="s1">&#39;by_coords&#39;</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="s1">&#39;minimal&#39;</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="s1">&#39;override&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">]]</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;realm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;component&#39;</span><span class="p">]</span>
+
+        <span class="c1"># rename dimensions and coordinates if mapping provided</span>
+        <span class="k">if</span> <span class="s1">&#39;coord_map&#39;</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">fix_coords</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;coord_map&#39;</span><span class="p">])</span>
+
+        <span class="c1"># apply mask to data if provided</span>
+        <span class="k">if</span> <span class="s1">&#39;mask&#39;</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">mask_data</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">][</span><span class="s1">&#39;file&#39;</span><span class="p">],</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">][</span><span class="s1">&#39;coord_map&#39;</span><span class="p">])</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># check if external driver exist</span>
+        <span class="k">if</span> <span class="n">data_driver</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">zdrv</span><span class="p">):</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">zdrv</span><span class="p">,</span> <span class="n">data_driver</span><span class="p">)(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Driver </span><span class="si">%s</span><span class="s1"> not defined in data_drivers.py.&#39;</span> <span class="o">%</span> <span class="n">data_driver</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">roll_long</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">out</span></div>
 
@@ -201,60 +333,6 @@
     <span class="n">weights</span> <span class="o">=</span> <span class="n">months</span> <span class="o">/</span> <span class="n">cummon</span>
 
     <span class="k">return</span> <span class="n">weights</span></div>
-
-
-<div class="viewcode-block" id="load_dataarray"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.load_dataarray">[docs]</a><span class="k">def</span> <span class="nf">load_dataarray</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Read requested data into an xarray DataArray using dataset driver</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    dataset : dict</span>
-<span class="sd">        Dataset informative structure</span>
-<span class="sd">    var : string</span>
-<span class="sd">         variable name</span>
-<span class="sd">    level : list</span>
-<span class="sd">        vertical levels float value</span>
-<span class="sd">    period : list</span>
-<span class="sd">        Might be None or a two element list with initial and final year</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : DataArray</span>
-<span class="sd">        Output data from dataset</span>
-
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">data_driver</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;driver&#39;</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">data_driver</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
-
-        <span class="c1"># get files list to read</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="n">get_data_files</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
-
-        <span class="c1"># open files as a dataset</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">],</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;netcdf4&#39;</span><span class="p">,</span> <span class="n">combine</span> <span class="o">=</span> <span class="s1">&#39;by_coords&#39;</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="s1">&#39;minimal&#39;</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="s1">&#39;override&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">]]</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;realm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;component&#39;</span><span class="p">]</span>
-
-        <span class="c1"># rename dimensions and coordinates if mapping provided</span>
-        <span class="k">if</span> <span class="s1">&#39;coord_map&#39;</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">fix_coords</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;coord_map&#39;</span><span class="p">])</span>
-
-        <span class="c1"># apply mask to data if provided</span>
-        <span class="k">if</span> <span class="s1">&#39;mask&#39;</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">mask_data</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">files</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">][</span><span class="s1">&#39;file&#39;</span><span class="p">],</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">][</span><span class="s1">&#39;coord_map&#39;</span><span class="p">])</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># check if external driver exist </span>
-        <span class="k">if</span> <span class="n">data_driver</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">zdrv</span><span class="p">):</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">zdrv</span><span class="p">,</span> <span class="n">data_driver</span><span class="p">)(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Driver </span><span class="si">%s</span><span class="s1"> not defined in data_drivers.py.&#39;</span> <span class="o">%</span> <span class="n">data_driver</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">out</span> <span class="o">=</span> <span class="n">roll_long</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">out</span></div>
 
 
 <div class="viewcode-block" id="roll_long"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.roll_long">[docs]</a><span class="k">def</span> <span class="nf">roll_long</span><span class="p">(</span><span class="n">da</span><span class="p">):</span>
@@ -520,82 +598,6 @@
 
     <span class="k">return</span> <span class="n">var_info</span></div>
 
-
-<div class="viewcode-block" id="inquire_catalogue"><a class="viewcode-back" href="../../zapata.data.html#zapata.data.inquire_catalogue">[docs]</a><span class="k">def</span> <span class="nf">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Retrieve requested dataset informative structure from general catalogue (YAML file).</span>
-
-<span class="sd">    If no dataset is requested, print a list of available datasets name and description.</span>
-
-<span class="sd">    If info is True print additional details without loading dataset if provided</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    dataset : string</span>
-<span class="sd">        Name of data set</span>
-<span class="sd">    info: boolean</span>
-<span class="sd">        Print additional details for all or selected dataset</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dict</span>
-<span class="sd">        requested dataset informative structure</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-
-<span class="sd">    &gt;&gt;&gt; datacat = inquire_catalogue(dataset=&#39;C-GLORSv7&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; inquire_catalogue()</span>
-<span class="sd">        List of datasets in catalogue:</span>
-<span class="sd">        C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means</span>
-<span class="sd">        ERA5_MM : ERA5 Monthly Mean on Pressure Levels</span>
-<span class="sd">    &gt;&gt;&gt; inquire_catalogue(dataset=&#39;ERA5_MM&#39;, info=True)</span>
-<span class="sd">        Access dataset ERA5_MM</span>
-<span class="sd">        atm component [IFS]</span>
-<span class="sd">         Data Stream monthly 3D variables:</span>
-<span class="sd">         - U : Zonal Wind</span>
-<span class="sd">         - V : Meridional Wind</span>
-<span class="sd">         - W : Vertical Velocity</span>
-<span class="sd">         ...</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
-
-    <span class="c1"># Load catalogue</span>
-    <span class="n">catalogue</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">pwd</span> <span class="o">+</span> <span class="s1">&#39;/catalogue.yml&#39;</span><span class="p">),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
-
-    <span class="c1"># Print list of available datasets    </span>
-    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;List of datasets in catalogue:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> : </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">cat</span><span class="p">,</span> <span class="n">catalogue</span><span class="p">[</span><span class="n">cat</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">]]))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span>
-
-    <span class="c1"># retrieve dataset information</span>
-    <span class="k">if</span> <span class="n">dataset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Requested dataset &#39;</span> <span class="o">+</span> <span class="n">dataset</span> <span class="o">+</span> <span class="s1">&#39; is not available in catalogue.&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Access dataset &#39;</span> <span class="o">+</span> <span class="n">dataset</span> <span class="p">)</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">catalogue</span><span class="p">[</span><span class="n">dataset</span><span class="p">]</span>
-        <span class="n">out</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span>
-
-    <span class="k">if</span> <span class="n">info</span><span class="p">:</span>
-       <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]:</span>
-           <span class="n">thecomp</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">comp</span><span class="p">]</span>
-           <span class="nb">print</span><span class="p">(</span> <span class="n">comp</span> <span class="o">+</span> <span class="s1">&#39; component [&#39;</span> <span class="o">+</span><span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">)</span>
-           <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-               <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Data Stream : &#39;</span> <span class="o">+</span> <span class="n">ss</span><span class="p">)</span>
-               <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">ss</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                   <span class="k">if</span> <span class="n">grp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">,</span> <span class="s1">&#39;coord_map&#39;</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">]:</span>
-                       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">grp</span>  <span class="o">+</span><span class="s1">&#39; variables&#39;</span><span class="p">)</span>
-                       <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">ss</span><span class="p">][</span><span class="n">grp</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                           <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="n">vv</span> <span class="o">+</span> <span class="s1">&#39; : &#39;</span> <span class="o">+</span> <span class="n">thecomp</span><span class="p">[</span><span class="s1">&#39;data_stream&#39;</span><span class="p">][</span><span class="n">ss</span><span class="p">][</span><span class="n">grp</span><span class="p">][</span><span class="n">vv</span><span class="p">])</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">out</span></div>
 </pre></div>
 
             <div class="clearer"></div>

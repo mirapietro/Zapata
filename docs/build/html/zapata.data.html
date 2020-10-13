@@ -47,13 +47,59 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-zapata.data">
-<span id="zapata-data-module"></span><h1>zapata.data module<a class="headerlink" href="#module-zapata.data" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="data-retrieve-and-resampling-module">
+  <div class="section" id="zapata-data-module">
+<h1>zapata.data module<a class="headerlink" href="#zapata-data-module" title="Permalink to this headline">¶</a></h1>
+<p>This module contains the two main functions of the data interface (see below for usage details):</p>
+<ul class="simple">
+<li><p><strong>inquire_catalogue</strong> : Retrieve requested dataset informative structure from catalogue</p></li>
+<li><p><strong>read_data</strong> : Load into a DataArray the requested variable from specified dataset</p></li>
+</ul>
+<p>The data extraction from each dataset is performed by the function <strong>load_dataarray</strong> that contains the <cite>default</cite> driver for extraction operations
+and also handles the call to specific data drivers, which are contained in module <cite>data_drivers.py</cite> (see <a class="reference internal" href="#data-drivers">data_drivers</a>).</p>
+<p>The dataset catalogue is located within the zapata library, named <cite>catalogue.yml</cite> (YAML format).</p>
+<span class="target" id="module-zapata.data"></span><div class="section" id="data-retrieve-and-resampling-module">
 <h2>Data retrieve and resampling module<a class="headerlink" href="#data-retrieve-and-resampling-module" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="zapata.data.read_xarray">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_xarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_xarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_xarray" title="Permalink to this definition">¶</a></dt>
+<dt id="zapata.data.inquire_catalogue">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">inquire_catalogue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">info</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#inquire_catalogue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.inquire_catalogue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve requested dataset informative structure from general catalogue (YAML file).</p>
+<p>If no dataset is requested, print a list of available datasets name and description.</p>
+<p>If info is True print additional details without loading dataset if provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>string</em>) – Name of data set</p></li>
+<li><p><strong>info</strong> (<em>boolean</em>) – Print additional details for all or selected dataset</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – requested dataset informative structure</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">datacat</span> <span class="o">=</span> <span class="n">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;C-GLORSv7&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inquire_catalogue</span><span class="p">()</span>
+<span class="go">    List of datasets in catalogue:</span>
+<span class="go">    C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means</span>
+<span class="go">    ERA5_MM : ERA5 Monthly Mean on Pressure Levels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5_MM&#39;</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">    Access dataset ERA5_MM</span>
+<span class="go">    atm component [IFS]</span>
+<span class="go">     Data Stream monthly 3D variables:</span>
+<span class="go">     - U : Zonal Wind</span>
+<span class="go">     - V : Meridional Wind</span>
+<span class="go">     - W : Vertical Velocity</span>
+<span class="go">     ...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.read_data">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">read_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">var</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">period</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">season</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">region</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.read_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load into a DataArray the requested variable from dataset source.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -79,6 +125,28 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">da</span> <span class="o">=</span> <span class="n">read_xarray</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;C-GLORSv7&#39;</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="s1">&#39;votemper&#39;</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="p">[</span><span class="mi">2000</span> <span class="mi">2010</span><span class="p">],</span> <span class="n">season</span><span class="o">=</span><span class="s1">&#39;DJF&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data.load_dataarray">
+<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">load_dataarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">period</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#load_dataarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.load_dataarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read requested data into an xarray DataArray using dataset driver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>dict</em>) – Dataset informative structure</p></li>
+<li><p><strong>var</strong> (<em>string</em>) – variable name</p></li>
+<li><p><strong>level</strong> (<em>list</em>) – vertical levels float value</p></li>
+<li><p><strong>period</strong> (<em>list</em>) – Might be None or a two element list with initial and final year</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Output data from dataset</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataArray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -119,28 +187,6 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>weights</strong> – weights to be applied at data before subyear time averaging</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>DataArray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="zapata.data.load_dataarray">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">load_dataarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">period</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#load_dataarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.load_dataarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read requested data into an xarray DataArray using dataset driver</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<em>dict</em>) – Dataset informative structure</p></li>
-<li><p><strong>var</strong> (<em>string</em>) – variable name</p></li>
-<li><p><strong>level</strong> (<em>list</em>) – vertical levels float value</p></li>
-<li><p><strong>period</strong> (<em>list</em>) – Might be None or a two element list with initial and final year</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Output data from dataset</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>DataArray</p>
@@ -251,42 +297,53 @@
 </dl>
 </dd></dl>
 
+</div>
+<span class="target" id="module-zapata.data_drivers"><span id="data-drivers"></span></span><div class="section" id="drivers-for-data-retrieve-of-specific-dataset">
+<h2>Drivers for data retrieve of specific dataset<a class="headerlink" href="#drivers-for-data-retrieve-of-specific-dataset" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="zapata.data.inquire_catalogue">
-<code class="sig-prename descclassname">zapata.data.</code><code class="sig-name descname">inquire_catalogue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">info</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data.html#inquire_catalogue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data.inquire_catalogue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve requested dataset informative structure from general catalogue (YAML file).</p>
-<p>If no dataset is requested, print a list of available datasets name and description.</p>
-<p>If info is True print additional details without loading dataset if provided</p>
+<dt id="zapata.data_drivers.cglorsv7">
+<code class="sig-prename descclassname">zapata.data_drivers.</code><code class="sig-name descname">cglorsv7</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">period</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data_drivers.html#cglorsv7"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data_drivers.cglorsv7" title="Permalink to this definition">¶</a></dt>
+<dd><p>Driver for data retrieve of C-GLORS V7 global ocean reanalyses
+Read requested data into an xarray DataArray</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<em>string</em>) – Name of data set</p></li>
-<li><p><strong>info</strong> (<em>boolean</em>) – Print additional details for all or selected dataset</p></li>
+<li><p><strong>dataset</strong> (<em>dict</em>) – Dataset informative structure</p></li>
+<li><p><strong>var</strong> (<em>string</em>) – variable name</p></li>
+<li><p><strong>level</strong> (<em>list</em>) – vertical levels float value</p></li>
+<li><p><strong>period</strong> (<em>list</em>) – Might be None or a two element list with initial and final year</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – requested dataset informative structure</p>
+<dd class="field-even"><p><strong>out</strong> – Output data from dataset</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
+<dd class="field-odd"><p>DataArray</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">datacat</span> <span class="o">=</span> <span class="n">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;C-GLORSv7&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">inquire_catalogue</span><span class="p">()</span>
-<span class="go">    List of datasets in catalogue:</span>
-<span class="go">    C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means</span>
-<span class="go">    ERA5_MM : ERA5 Monthly Mean on Pressure Levels</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">inquire_catalogue</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;ERA5_MM&#39;</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">    Access dataset ERA5_MM</span>
-<span class="go">    atm component [IFS]</span>
-<span class="go">     Data Stream monthly 3D variables:</span>
-<span class="go">     - U : Zonal Wind</span>
-<span class="go">     - V : Meridional Wind</span>
-<span class="go">     - W : Vertical Velocity</span>
-<span class="go">     ...</span>
-</pre></div>
-</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="zapata.data_drivers.era5_numpy">
+<code class="sig-prename descclassname">zapata.data_drivers.</code><code class="sig-name descname">era5_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span></em>, <em class="sig-param"><span class="n">var</span></em>, <em class="sig-param"><span class="n">level</span></em>, <em class="sig-param"><span class="n">period</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/zapata/data_drivers.html#era5_numpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#zapata.data_drivers.era5_numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Driver for data retrieve of ERA5 in numpy format
+Read requested data into an xarray DataArray</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>dict</em>) – Dataset informative structure</p></li>
+<li><p><strong>var</strong> (<em>string</em>) – variable name</p></li>
+<li><p><strong>level</strong> (<em>list</em>) – vertical levels float value</p></li>
+<li><p><strong>period</strong> (<em>list</em>) – Might be None or a two element list with initial and final year</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Output data from dataset</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataArray</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
