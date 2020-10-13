@@ -27,11 +27,11 @@ zdat.inquire_catalogue(dataset=mycat, info=True)
 
 ## Read data
 if mycat == 'BSFS-NRT_daily':
-    xx=zdat.read_xarray(dataset=mycat, var='vomecrty', period=[2019, 2019], season='ANN', level=[3.])
+    xx=zdat.read_data(dataset=mycat, var='vomecrty', period=[2019, 2019], season='ANN', level=[3.])
 
 if mycat == 'C-GLORSv7':
-    #xx=zdat.read_xarray(dataset=mycat, var='votemper', period=[2000, 2000], season='JFM', level=[500.])
-    xx=zdat.read_xarray(dataset=mycat, var='sosstsst', period=[2000, 2000], season='JFM')
+    #xx=zdat.read_data(dataset=mycat, var='votemper', period=[2000, 2000], season='JFM', level=[500.])
+    xx=zdat.read_data(dataset=mycat, var='sosstsst', period=[2000, 2000], season='JFM')
 
 if mycat == 'ERA5_MM':
     xx=zcom.zonal_var(mycat, 'T', period=[2000, 2001], season='DJF',level=[100,], option='Time')

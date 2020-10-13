@@ -14,7 +14,85 @@ import zapata.data_drivers as zdrv
 
 xr.set_options(keep_attrs=True)
 
-def read_xarray(dataset=None, var=None, period=None, level=None, season=None, region=None, verbose=False):
+
+def inquire_catalogue(dataset=None, info=False):
+    '''
+    Retrieve requested dataset informative structure from general catalogue (YAML file).
+
+    If no dataset is requested, print a list of available datasets name and description.
+
+    If info is True print additional details without loading dataset if provided
+
+    Parameters
+    ----------
+    dataset : string
+        Name of data set
+    info: boolean
+        Print additional details for all or selected dataset
+
+    Returns
+    -------
+    out : dict
+        requested dataset informative structure
+
+    Examples
+    --------
+
+    >>> datacat = inquire_catalogue(dataset='C-GLORSv7')
+    >>> inquire_catalogue()
+        List of datasets in catalogue:
+        C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means
+        ERA5_MM : ERA5 Monthly Mean on Pressure Levels
+    >>> inquire_catalogue(dataset='ERA5_MM', info=True)
+        Access dataset ERA5_MM
+        atm component [IFS]
+         Data Stream monthly 3D variables:
+         - U : Zonal Wind
+         - V : Meridional Wind
+         - W : Vertical Velocity
+         ...
+    '''
+    out = None
+    pwd = os.path.dirname(os.path.abspath(__file__))
+
+    # Load catalogue
+    catalogue = yaml.load(open(pwd + '/catalogue.yml'), Loader=yaml.FullLoader)
+
+    # Print list of available datasets
+    if dataset is None:
+        print('List of datasets in catalogue:\n')
+        for cat in catalogue.keys():
+            print('%s : %s' % tuple([cat, catalogue[cat]['description']]))
+        print('\n')
+        return
+
+    # retrieve dataset information
+    if dataset not in catalogue.keys():
+        print('Requested dataset ' + dataset + ' is not available in catalogue.')
+        sys.exit(1)
+    else:
+        print('Access dataset ' + dataset )
+        out = catalogue[dataset]
+        out['name'] = dataset
+
+    if info:
+       for comp in out['components']:
+           thecomp = out['components'][comp]
+           print( comp + ' component [' +thecomp['model'] + ']')
+           for ss in thecomp['data_stream'].keys():
+               print('\nData Stream : ' + ss)
+               for grp in thecomp['data_stream'][ss].keys():
+                   if grp not in ['coords', 'coord_map', 'mask']:
+                       print(' ' + grp  +' variables')
+                       for vv in thecomp['data_stream'][ss][grp].keys():
+                           print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
+
+    print('\n')
+
+    return out
+
+
+def read_data(dataset=None, var=None, period=None, level=None, season=None, region=None, verbose=False):
     '''
     Load into a DataArray the requested variable from dataset source.
 
@@ -72,6 +150,60 @@ def read_xarray(dataset=None, var=None, period=None, level=None, season=None, re
                 print ('Warning: approximate requested level %s to nearest one %s' % (str(level),str(lev_sel[-1])))
 
         out = out.sel(lev = lev_sel)
+
+    return out
+
+
+def load_dataarray(dataset, var, level, period):
+    '''
+    Read requested data into an xarray DataArray using dataset driver
+
+    Parameters
+    ----------
+    dataset : dict
+        Dataset informative structure
+    var : string
+         variable name
+    level : list
+        vertical levels float value
+    period : list
+        Might be None or a two element list with initial and final year
+
+    Returns
+    -------
+    out : DataArray
+        Output data from dataset
+
+    '''
+    data_driver = dataset['driver']
+
+    if data_driver == 'default':
+
+        # get files list to read
+        files = get_data_files(dataset, var, level, period)
+
+        # open files as a dataset
+        ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override', parallel=True)
+        out = ds[files['var']]
+        out.attrs['realm'] = files['component']
+
+        # rename dimensions and coordinates if mapping provided
+        if 'coord_map' in files.keys():
+            out = fix_coords(out, files['coord_map'])
+
+        # apply mask to data if provided
+        if 'mask' in files.keys():
+            out = mask_data(out, files['mask']['name'], files['mask']['file'],files['mask']['coord_map'])
+
+    else:
+        # check if external driver exist
+        if data_driver in dir(zdrv):
+            out = getattr(zdrv, data_driver)(dataset, var, level, period)
+        else:
+            print('Driver %s not defined in data_drivers.py.' % data_driver)
+            sys.exit(1)
+
+    out = roll_long(out)
 
     return out
 
@@ -160,60 +292,6 @@ def subyear_weights(time, freq):
     weights = months / cummon
 
     return weights
-
-
-def load_dataarray(dataset, var, level, period):
-    '''
-    Read requested data into an xarray DataArray using dataset driver
-
-    Parameters
-    ----------
-    dataset : dict
-        Dataset informative structure
-    var : string
-         variable name
-    level : list
-        vertical levels float value
-    period : list
-        Might be None or a two element list with initial and final year
-
-    Returns
-    -------
-    out : DataArray
-        Output data from dataset
-
-    '''
-    data_driver = dataset['driver']
-
-    if data_driver == 'default':
-
-        # get files list to read
-        files = get_data_files(dataset, var, level, period)
-
-        # open files as a dataset
-        ds = xr.open_mfdataset(files['files'], engine='netcdf4', combine = 'by_coords', coords='minimal', compat='override', parallel=True)
-        out = ds[files['var']]
-        out.attrs['realm'] = files['component']
-
-        # rename dimensions and coordinates if mapping provided
-        if 'coord_map' in files.keys():
-            out = fix_coords(out, files['coord_map'])
-
-        # apply mask to data if provided
-        if 'mask' in files.keys():
-            out = mask_data(out, files['mask']['name'], files['mask']['file'],files['mask']['coord_map'])
-
-    else:
-        # check if external driver exist 
-        if data_driver in dir(zdrv):
-            out = getattr(zdrv, data_driver)(dataset, var, level, period)
-        else:
-            print('Driver %s not defined in data_drivers.py.' % data_driver)
-            sys.exit(1)
-
-    out = roll_long(out)
-
-    return out
 
 
 def roll_long(da):
@@ -479,79 +557,3 @@ def dataset_request_var(dataset, var, level, period):
 
     return var_info
 
-
-def inquire_catalogue(dataset=None, info=False):
-    '''
-    Retrieve requested dataset informative structure from general catalogue (YAML file).
-
-    If no dataset is requested, print a list of available datasets name and description.
-
-    If info is True print additional details without loading dataset if provided
-
-    Parameters
-    ----------
-    dataset : string
-        Name of data set
-    info: boolean
-        Print additional details for all or selected dataset
-
-    Returns
-    -------
-    out : dict
-        requested dataset informative structure
-
-    Examples
-    --------
-
-    >>> datacat = inquire_catalogue(dataset='C-GLORSv7')
-    >>> inquire_catalogue()
-        List of datasets in catalogue:
-        C-GLORSv7 : Ocean Global Reanalyses at 1/4° resolution monthly means
-        ERA5_MM : ERA5 Monthly Mean on Pressure Levels
-    >>> inquire_catalogue(dataset='ERA5_MM', info=True)
-        Access dataset ERA5_MM
-        atm component [IFS]
-         Data Stream monthly 3D variables:
-         - U : Zonal Wind
-         - V : Meridional Wind
-         - W : Vertical Velocity
-         ...
-    '''
-    out = None
-    pwd = os.path.dirname(os.path.abspath(__file__))
-
-    # Load catalogue
-    catalogue = yaml.load(open(pwd + '/catalogue.yml'), Loader=yaml.FullLoader)
-
-    # Print list of available datasets    
-    if dataset is None:
-        print('List of datasets in catalogue:\n')
-        for cat in catalogue.keys():
-            print('%s : %s' % tuple([cat, catalogue[cat]['description']]))
-        print('\n')
-        return
-
-    # retrieve dataset information
-    if dataset not in catalogue.keys():
-        print('Requested dataset ' + dataset + ' is not available in catalogue.')
-        sys.exit(1)
-    else:
-        print('Access dataset ' + dataset )
-        out = catalogue[dataset]
-        out['name'] = dataset
-
-    if info:
-       for comp in out['components']:
-           thecomp = out['components'][comp]
-           print( comp + ' component [' +thecomp['model'] + ']')
-           for ss in thecomp['data_stream'].keys():
-               print('\nData Stream : ' + ss)
-               for grp in thecomp['data_stream'][ss].keys():
-                   if grp not in ['coords', 'coord_map', 'mask']:
-                       print(' ' + grp  +' variables')
-                       for vv in thecomp['data_stream'][ss][grp].keys():
-                           print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
-
-    print('\n')
-
-    return out

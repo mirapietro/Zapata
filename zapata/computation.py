@@ -79,7 +79,7 @@ def zonal_var(dataset, var, season=None, level=None, period=None, option='LonTim
     >>> zonal_var('GPCP','TPREP','DJF',option='Time',verbose=True)   # Time average 
     """
 
-    xx=zdat.read_xarray(dataset=dataset, var=var, level=level, season=season, period=period, verbose=verbose)
+    xx=zdat.read_data(dataset=dataset, var=var, level=level, season=season, period=period, verbose=verbose)
 
     if option == 'LonTime':
         zon = xx.mean(dim='lon').mean(dim='time')
