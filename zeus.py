@@ -43,7 +43,7 @@ tmp_path = ""
 conda_env = "data-science-cmcc-v1"
 
 
-def init(user, host=None):
+def init(user, host=None, remote_env=None):
     """Initialize the module with the Zeus login username.
 
     It inizializes the module and checks if the ssh connection can be made.
@@ -53,6 +53,10 @@ def init(user, host=None):
     ----------
     user : str
          Username on Zeus.
+    host : str
+         Local hostname for Zeus cluster (default: 192.168.118.11).
+    remote_env : str
+         Name of the conda environment to use on Zeus (default: data-science-cmcc-v1).
 
     Returns
     -------
@@ -72,6 +76,9 @@ def init(user, host=None):
         hostname = "192.168.118.11"
     else:
         hostname = host
+
+    if remote_env:
+        set_env(remote_env)
 
     ret, res = _remote_cmd("echo $HOME", None, True)
     if ret == 0:
