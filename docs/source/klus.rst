@@ -1,4 +1,4 @@
-klus package
+Klus package
 ============
 
 Submodules

@@ -1,5 +1,5 @@
-interp module
-=============
+Interpolation module
+====================
 
 .. automodule:: interp
    :members:

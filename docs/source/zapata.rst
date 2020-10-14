@@ -1,4 +1,4 @@
-zapata package
+Zapata package
 ==============
 
 Submodules

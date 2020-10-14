@@ -9,9 +9,9 @@ The directory `examples_notebook` contains working Jupyter Notebooks to illustar
 ## Documentation
 
 Zapata documentation is created using `sphinx` and it is sourced from the code itself.
-HTML documentation can be accessed at `docs/build/html/index.html`
+To create a local copy of HTML documentation go to `docs` folder and type `gmake html`.
 
-To update the documetation of the tool go to `docs` folder and type `gmake html`.
+HTML documentation can be accessed opening the main page at `docs/build/html/index.html`
 
 ## Setup working environemt
 Python working environment can be setup using the provided conda environment.yml file:

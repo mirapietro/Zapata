@@ -1,6 +1,3 @@
-Zapata
-======
-
 .. toctree::
    :maxdepth: 4
 

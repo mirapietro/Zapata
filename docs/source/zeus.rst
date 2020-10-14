@@ -1,4 +1,4 @@
-zeus module
+Zeus module
 ===========
 
 .. automodule:: zeus
