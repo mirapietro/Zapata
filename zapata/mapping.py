@@ -1528,6 +1528,3 @@ def adjust_data_centlon(data,centlon_old=0, centlon_new=180.):
     new = data.roll(lon=720,roll_coords=False)
 
     return new
-        
-
-    
