@@ -192,5 +192,5 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 # Options for logo
-html_logo = 'zap.png'
+html_logo = '../resources/zap.png'
 # -- Extension configuration -------------------------------------------------

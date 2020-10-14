@@ -1,4 +1,4 @@
-Welcome to CMCC shared Data Analysis Librazy !
+Welcome to CMCC Data Analysis Library !
 ==================================
 
 This is the assembled library and codes jointly developed at CMCC.
@@ -12,8 +12,6 @@ The source of this library is available at CMCC GitHub repository https://github
 Installation instructions are given in the README.md file of the package.
 
 Checkout the available Jupyterlab Notebooks within the examples_notebook folder to see the potential applications of the library.
-
-Happy Computing !
 
 
 .. toctree::
