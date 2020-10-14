@@ -1,4 +1,4 @@
-Welcome to Zapata's documentation!
+Welcome to CMCC shared Data Analysis Librazy !
 ==================================
 
 This is the assembled library and codes jointly developed at CMCC.
@@ -22,6 +22,7 @@ Happy Computing !
    :caption: Contents:
    
    modules
+   datainfo
    conda_doc_SO
    
 

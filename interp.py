@@ -1,12 +1,26 @@
 '''
-Documentation for interpolation of ocean and atmospheric model
+Interpolation for Ocean and Atmospheric Data 
+============================================
+
+Routines and methods for interpolation of ocean and atmospheric model
 field, either on regular grids or rotated, multi-pole grids.
-Actually is set for the CMCC Ocean model at the nominal resolution of 0.25 and 1 degree
+For the ocean, is set for the CMCC Ocean model at the nominal resolution of 0.25 
 respectively.
 
 The staggering requires different interpolators operators for scalar points at T-points 
 and vector quantities carried at (u,v) points. For the moment a simple interpolation is carried out
 but a more accurate vector interpolation is under development.
+
+The interpolation is obtained by triangulation of the starting grid and seaprate interpolation to the new grid.
+The weights are preserved and they can be used for repeated application of the same set of grids.
+
+Classes 
+-------
+| **Atmosphere_Interpolator**
+| **Ocean_Interpolator**
+
+
+
 '''
 
 import os

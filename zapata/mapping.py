@@ -118,7 +118,7 @@ def init_figure(rows,cols,proview,constrained_layout=True,figsize=(16,8)):
 def xmap(field, cont, pro, ax=None, fill=True,contour=True, \
                     data_cent_lon=180, \
                     clabel=True, c_format = ' {:6.0f} ', \
-                    refline=False, Special_Value = 9999.,\
+                    refline=None, Special_Value = 9999.,\
                     lefttitle='',righttitle='',maintitle='',\
                     dxtick=30,dytick=30,\
                     xlimit=None,ylimit=None,\
@@ -155,7 +155,7 @@ def xmap(field, cont, pro, ax=None, fill=True,contour=True, \
     contour :  
         True/False flag to have  contours or not
     refline :
-        If a numeric value a single enhanced contour is pltted here
+        If a numeric value a single enhanced contour is plotted here
     clabel :
         True/False flag to have labelled contours or not
     c_format :
@@ -311,7 +311,7 @@ d.delete_params('xmap.parameters','dxtick')
 d.delete_params('xmap.parameters.no_dxtick','dytick')
 @d.dedent
 def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
-                      refline=False, Special_Value = 9999.,\
+                      refline=None, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
                       xlimit=None,ylimit=None,\
                       colorbar=False,cmap='coolwarm',
@@ -419,7 +419,7 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
     if refline:
         handles["refline"] = data.plot.contour(
         ax=ax,
-        levels=refline,
+        levels=[refline],
         colors="k",  # note plurals in this and following kwargs
         linestyles="-",
         linewidths=1.0,
