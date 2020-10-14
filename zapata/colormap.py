@@ -4,7 +4,7 @@ Color control and choice
 
 Colormap Selection 
 ------------------
-A number of colormap obtained from SciVis (`https://sciviscolor.org/`). The presently available colormap are shown below.
+The following colormaps obtained from SciVis (`https://sciviscolor.org/`) are available in `zapata/SciVis_colormaps`.
 
 .. image:: ../resources/colormap.png
         :scale: 100 %
