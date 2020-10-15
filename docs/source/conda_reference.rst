@@ -1,5 +1,5 @@
 =====================
-CONDA Useful commands
+Conda useful commands
 =====================
 
 Getting Started

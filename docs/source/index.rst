@@ -22,7 +22,7 @@ Checkout the available Jupyterlab Notebooks within the examples_notebook folder 
    
    modules
    datainfo
-   conda_doc_SO
+   conda_reference
    
 
 Indices and tables

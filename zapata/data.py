@@ -19,16 +19,16 @@ def inquire_catalogue(dataset=None, info=False):
     '''
     Retrieve requested dataset informative structure from general catalogue (YAML file).
 
-    If no dataset is requested, print a list of available datasets name and description.
+    If no dataset is requested, print a compact list of available datasets (name and description).
 
     If info is True print additional details without loading dataset if provided
 
     Parameters
     ----------
     dataset : string
-        Name of data set
+        Name of dataset
     info: boolean
-        Print additional details for all or selected dataset
+        Print additional details for the selected dataset
 
     Returns
     -------
