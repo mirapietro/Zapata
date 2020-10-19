@@ -1,21 +1,10 @@
-"""Zeus utility functions
+"""
 
-This Python module provides some basic utility functions to interact with
-the Zeus SuperComputer at CMCC. It manages file upload and download,
-submission of scripts on LSF, execution of general bash commands and creation
-and shutdown of Dask clusters.
+This module provides core utility functions to interact with the Zeus cluster at CMCC Supercomputing Center. 
 
-The module has been tested with Python 3.6, but it should work with most
-Python 3 versions. It requires IPython, ipywidgets, dask and distributed
-modules; to install the dependencies run for example:
+It manages file upload and download, submission of scripts on LSF, execution of general bash commands and creation and shutdown of Dask clusters.
 
-    pip3 install IPython ipywidgets dask==2.12.0 distributed==2.12.0
-
-Import the module using:
-
-    import zeus
-
-Before calling any other function from this module run the `init` function.
+**USAGE NOTE**: Before calling any other function from this module run the `init` function.
 
 """
 from __future__ import division

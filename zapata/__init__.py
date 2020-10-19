@@ -1,9 +1,11 @@
 """
-*Zapata*
-========
 
+This is the assembled library of codes jointly developed at CMCC that contains computation, plotting, and dataset reading modules.
 
-A revolutionary library for analysis and plotting of meteorological data.  
+The library core is composed by the following **modules**: 
+
+**computation**: Routines for averaging and various computations 
+
 
 The mapping is based on cartopy and GEOCAT libraries from NCAR.
 It uses `xarray` as a basic data structure. 
