@@ -9,7 +9,8 @@ The directory `examples_notebook` contains working Jupyter Notebooks to illustar
 ## Documentation
 
 Zapata documentation is created using `sphinx` and it is sourced from the code itself.
-To create a local copy of HTML documentation go to `docs` folder and type `gmake html`.
+To create a local copy of HTML documentation go to `docs` folder and type `gmake html`. 
+If a previous compilation of the documentation exist, it is a good practice to clean up with `gmake clean` before updating the HTML files.
 
 HTML documentation can be accessed opening the main page at `docs/build/html/index.html`
 
