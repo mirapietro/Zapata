@@ -1,5 +1,7 @@
 '''
-Drivers for data retrieve of specific dataset
+Drivers for data retrieve of specific dataset.
+
+Reading and processing of inputs from dataset is performed by module :meth:`data.py<zapata.data>`
 
 ===================================
 '''
