@@ -6,6 +6,7 @@ It manages file upload and download, submission of scripts on LSF, execution of 
 
 **USAGE NOTE**: Before calling any other function from this module run the `init` function.
 
+===================================
 """
 from __future__ import division
 from __future__ import print_function

@@ -1,5 +1,10 @@
-Klus package
+klus package
 ============
+
+.. automodule:: klus
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------
@@ -11,11 +16,3 @@ Submodules
    klus.kernels
    klus.observables
    klus.tools
-
-Module contents
----------------
-
-.. automodule:: klus
-   :members:
-   :undoc-members:
-   :show-inheritance:

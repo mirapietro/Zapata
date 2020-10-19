@@ -20,7 +20,10 @@ Checkout the available Jupyterlab Notebooks within the examples_notebook folder 
    :maxdepth: 2
    :caption: Contents:
    
-   modules
+   interp
+   klus
+   zapata
+   zeus
    datainfo
    conda_reference
    

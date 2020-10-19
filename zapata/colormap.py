@@ -1,16 +1,15 @@
 '''
 Color control and choice 
-========================
 
-Colormap Selection 
-------------------
+SciVis Colormaps 
+----------------
 The following colormaps obtained from SciVis (`https://sciviscolor.org/`) are available in `zapata/SciVis_colormaps`.
 
 .. image:: ../resources/colormap.png
         :scale: 100 %
         :align: center
 
-Utilities 
+Functions
 ---------
 **convert_colormap**    
 
