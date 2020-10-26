@@ -4,7 +4,8 @@ Interpolation for Ocean and Atmospheric Data
 
 Routines and methods for interpolation of ocean and atmospheric model
 field, either on regular grids or rotated, multi-pole grids.
-For the ocean, is set for the CMCC Ocean model at the nominal resolution of 0.25 respectively.
+For the ocean, is set for the CMCC Ocean model at the nominal resolution of 0.25 
+respectively.
 
 The staggering requires different interpolators operators for scalar points at T-points 
 and vector quantities carried at (u,v) points. For the moment a simple interpolation is carried out
@@ -13,12 +14,13 @@ but a more accurate vector interpolation is under development.
 The interpolation is obtained by triangulation of the starting grid and seaprate interpolation to the new grid.
 The weights are preserved and they can be used for repeated application of the same set of grids.
 
-There two main classes: 
+Classes 
+-------
+| **Atmosphere_Interpolator**
+| **Ocean_Interpolator**
 
-- :meth:`Atmosphere Interpolator<interp.Atmosphere_Interpolator>`: creates weights for interpolation of atmospheric fields
-- :meth:`Ocean Interpolator<interp.Ocean_Interpolator>`: creates weights for interpolation of ocean fields
 
-===================================
+
 '''
 
 import os
@@ -184,7 +186,7 @@ class Ocean_Interpolator():
     level : float
         Depth to generate the interpolator
     window : int
-        Window for sea pver lnad
+        Window for sea over land
     period : int
         Minimum number of points in the sea-over-land process
     verbose: bool
@@ -209,7 +211,7 @@ class Ocean_Interpolator():
         Output Grid `tgt_grid_name`
     window : 
         Window for convolution Sea-Over-Land (default 3)
-    periods :
+    period :
         Minimum number of points into the window (default 1)
     T_lon :
         Longitudes of input T-mask
@@ -272,11 +274,11 @@ class Ocean_Interpolator():
 
     __slots__ = ('mask','masku','maskv','mdir', 'mask_reg', \
                 'sea_index','sea_index_U','sea_index_V', \
-                'latlon', 'masT_vec', \
+                'latlon', 'masT_vec', 'maskub','maskvb','masktb',\
                 'latlon_reg','sea_index_reg','regmask_vec', \
                 'T_lat','T_lon','U_lat','U_lon','V_lat','V_lon',\
                 'name','cent_long','tri_sea_T','tri_sea_U','tri_sea_V','tangle',\
-                    'ingrid','outgrid','level','window','periods')
+                    'ingrid','outgrid','level','window','period')
 
     def __init__(self, src_grid_name, tgt_grid_name,level=1,verbose=False,window=3,period=1):
         # Put here info on grids to be obtained from __call__
@@ -293,7 +295,7 @@ class Ocean_Interpolator():
         
         # Parameter for sea over land
         self.window = window
-        self.periods = period
+        self.period = period
      
         # Check levels
         if level > 0:
@@ -331,12 +333,16 @@ class Ocean_Interpolator():
         self.tangle = s_in['tangle']
       
         #Sea over land
-        self.mask = self.mask_sea_over_land(mask)
-        self.masku = self.mask_sea_over_land(masku)
-        self.maskv = self.mask_sea_over_land(maskv)
-
+       
+        self.mask = xr.where(mask !=0, 1,np.nan)
+        self.masktb,dum = self.mask_sea_over_land(mask)
+    
+        self.maskub,self.masku = self.mask_sea_over_land(masku)
+        self.maskvb,self.maskv = self.mask_sea_over_land(maskv)
+ 
         print(f' Generating interpolator for {self.name}')
-        print(self.mask,self.masku,self.maskv)
+        if verbose:
+            print(self.mask,self.masku,self.maskv)
         
         # Get triangulation for all grids
         self.latlon,self.sea_index, self.masT_vec = get_sea(self.mask)
@@ -392,6 +398,7 @@ class Ocean_Interpolator():
         out :  xarray
             Interpolated xarray on the target grid
         '''
+
         # Compute interpolation T
         Tstack = xdata.stack(ind=('y','x'))
         sea_T = Tstack[self.sea_index]
@@ -436,7 +443,9 @@ class Ocean_Interpolator():
         udata = xr.where(udata < 200,udata, np.nan)
         vdata = xr.where(vdata < 200,vdata, np.nan)
 
-        udata,vdata = self.UV_sea_over_land(udata, vdata, self.masku,self.maskv)
+        #udata,vdata = self.UV_sea_over_land(udata, vdata, self.masku,self.maskv)
+        udata = self.fill_sea_over_land(udata,self.masku)
+        vdata = self.fill_sea_over_land(vdata,self.maskv)
 
         # Compute interpolation  for U,V
         Ustack = udata.stack(ind=('y','x'))
@@ -512,67 +521,15 @@ class Ocean_Interpolator():
             border mask
 
         '''
-    
-        um1 = mask.ffill(dim='x',limit=1).fillna(0.)+  mask.bfill(dim='x',limit=1).fillna(0.)- 2*mask.fillna(0)
-        um2 = mask.ffill(dim='y',limit=1).fillna(0.)+  mask.bfill(dim='y',limit=1).fillna(0.)- 2*mask.fillna(0)
-        um = (um1+um2)/2+ mask.fillna(0)
-        um=xr.where(um!=0, 1,np.nan)
+        masknan=xr.where(mask != 0, 1, np.nan)
+        um1 = masknan.ffill(dim='x',limit=1).fillna(0.)+  masknan.bfill(dim='x',limit=1).fillna(0.)- 2*masknan.fillna(0)
+        um2 = masknan.ffill(dim='y',limit=1).fillna(0.)+  masknan.bfill(dim='y',limit=1).fillna(0.)- 2*masknan.fillna(0)
+        bord = (um1+um2)/2
+        um = bord + masknan.fillna(0)
+        um = xr.where(um!=0, 1,np.nan)
+        mb = xr.where(bord !=0, 1,np.nan)
 
-        return um
-    
-    def UV_sea_over_land(self,U,V,u_mask,v_mask):
-        '''
-        Put UV values Sea over land.
-
-        Using the mask of the border points, the border points are filled 
-        with the convolution in 2D, using a window of width `window`, here
-        The min_periods value is controlling the minimum number of points
-        within the window that is necessary to yield a result.
-
-        They can be fixed as attribues of the interpolator
-
-        Parameters
-        ==========
-
-        U:
-            U Velocity
-        V:
-            V Velocity
-        u_mask:
-            Mask for U velocity
-        v_mask:
-            Mask for V-velocity
-
-        Returns
-        =======
-        U,V:
-            Filled arrays
-        '''
-        window=3
-        r = U.rolling(x=self.window, y=self.window, min_periods=self.periods,center=True)
-        r1=r.mean()
-
-        rv = V.rolling(x=self.window, y=self.window, min_periods=self.periods,center=True)
-        rv1=rv.mean()
-        
-        border = ~np.isnan(u_mask).drop_vars({'lat','lon'}).stack(ind=u_mask.dims)
-        UU=U.stack(ind=U.dims)
-        rs = r1.stack(ind=r1.dims)
-        UU[border] = rs[border]
-
-        border = ~np.isnan(v_mask).drop_vars({'lat','lon'}).stack(ind=v_mask.dims)
-        VV=V.stack(ind=V.dims)
-        rsv = rv1.stack(ind=rv1.dims)
-        VV[border] = rsv[border]
-
-        UUU = UU.unstack()
-        UUU = UUU.assign_coords({'lon':u_mask.lon,'lat':u_mask.lat})
-
-        VVV = VV.unstack()
-        VVV = VVV.assign_coords({'lon':v_mask.lon,'lat':v_mask.lat})
-
-
-        return UUU,VVV
+        return mb, um
 
     def _resolve_grid(self,ingrid,level,verbose=False):
         '''
@@ -617,6 +574,44 @@ class Ocean_Interpolator():
             for i in struct.keys():
               print(f' {i} \n')
         return struct
+    def fill_sea_over_land(self,U,u_mask):
+        '''
+        Put values Sea over land.
+
+        Using the mask of the border points, the border points are filled 
+        with the convolution in 2D, using a window of width `window`, here
+        The min_periods value is controlling the minimum number of points
+        within the window that is necessary to yield a result.
+
+        They can be fixed as attributes of the interpolator
+
+        Parameters
+        ==========
+
+        U:
+            Field to be treated
+        u_mask:
+            Mask for the field
+
+        Returns
+        =======
+        U:
+            Filled array
+        '''
+        
+        r = U.rolling(x=self.window, y=self.window, min_periods=self.period,center=True)
+        r1=r.mean()
+        
+        border = ~np.isnan(self.maskub).drop_vars({'lat','lon'}).stack(ind=self.maskub.dims)
+        UU=U.stack(ind=U.dims)
+        rs = r1.stack(ind=r1.dims)
+        UU[border] = rs[border]
+
+        UUU = UU.unstack()
+        UUU = UUU.assign_coords({'lon':u_mask.lon,'lat':u_mask.lat})
+
+        return UUU
+    
 
 def get_sea(maskT):
     '''
@@ -644,3 +639,5 @@ def from_file(file):
     with gzip.open(file, 'rb') as input:
         w = pickle.load(input)
     return w
+
+    

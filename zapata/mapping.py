@@ -12,7 +12,7 @@ Zonal Plotting
 --------------
 These routine split zonal sections in pressures and latitude.
 
-**zonal_plot, zonal_stream_plot, ocean_zonal_plot**
+**zonal_plot, zonal_stream_plot, ocean_section_plot**
 
 Utilities 
 ---------
@@ -23,6 +23,7 @@ Detailed Description:
 
 '''
 import math as mp
+import sys
 import cartopy.crs as car
 import cartopy.util as utl
 import matplotlib.ticker as mticker
@@ -460,6 +461,7 @@ def xsmap(field, cont, pro, ax=None, fill=True, contour=True, clabel=True,\
     return handles
 def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
                       data_cent_lon=0, \
+                      lw=1,\
                       density=2, Special_Value = 9999.,\
                       lefttitle='',righttitle='',maintitle='',\
                       dxtick=30,dytick=30,\
@@ -492,6 +494,9 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
     
     cscale :
         If an array is used in `color`, it normalize to cscale = ( min, max)
+
+    lw : float or array
+        Linewidth, if a numpy array it is varying with the array values
 
     data_cent_lon : 
         Central longitude for the data projection
@@ -595,8 +600,8 @@ def xstmap(U, V,  color='black', proj=car.PlateCarree(),ax=None, \
     # There is no Xarray streamplot function, yet. So need to call matplotlib.streamplot directly. Not sure why, but can't
     # pass xarray.DataArray objects directly: fetch NumPy arrays via 'data' attribute'
     sp=ax.streamplot(this_U.lon.data, this_U.lat.data, this_U.data, this_V.data, \
-        linewidth=1, density=density, color=color_scale, transform=proj,\
-                      cmap=cmap,  zorder=1, norm = normuv)
+        linewidth=lw, density=density, color=color_scale, transform=proj,\
+                      arrowstyle='fancy',cmap=cmap,  zorder=1, norm = normuv)
     
 
     # Use geocat.viz.util convenience function to add main title as well as titles to left and right of the plot axes.
@@ -1308,25 +1313,25 @@ def set_titles_and_labels(ax, maintitle=None, maintitlefontsize=18, \
 
 d.delete_params('zonal_plot.parameters','data')
 @d.dedent
-def ocean_zonal_plot(data,ax,cont,cmap,colorbar=True, \
+def ocean_section_plot(data,ax,cont,cmap,colorbar=True, \
     fill=True,contour=True, \
     clabel=True, c_format = ' {:4.0f} ', \
     maintitle=None, lefttitle=None, righttitle=None,\
           xlimit=None,ylimit=None,refline=None,view='Atlantic'):
     """
-    Ocean Zonal mapping function for xarray (lat,depth). 
+    Ocean Section mapping function for xarray (`lat,lon` ,depth). 
     
     Parameters
     ----------
     data :    
-            xarray  --  cyclic point added in the routine (latitude, depth)   
+        xarray  --   latitude or longitude, depth)   
     %(zonal_plot.parameters.no_data)s
     fill :
         True/False flag to have filled contours or not 
     contour :  
         True/False flag to have  contours or not
-    refline :
-        If a numeric value a single enhanced contour is pltted here
+    refline : 
+        If a numeric value inlist form a single enhanced contour is pltted here
     clabel :
         True/False flag to have labelled contours or not
     c_format :
@@ -1354,7 +1359,7 @@ def ocean_zonal_plot(data,ax,cont,cmap,colorbar=True, \
     """
     #Set a working view
     work = data
-    
+
     #Choose Contours
     vmin = data.min()
     vmax = data.max()
@@ -1382,7 +1387,7 @@ def ocean_zonal_plot(data,ax,cont,cmap,colorbar=True, \
         #Check longitude zero line
         if view == 'Pacific':
             #Pacific View
-            print(f'Shifting Coordinates fro Pacific View')
+            print(f'Shifting Coordinates for Pacific View')
             work=work.roll(lon=-720,roll_coords=False)
             xlab = 'Longitude'
             xtick_loc = np.arange(-180,181,20)
@@ -1395,7 +1400,6 @@ def ocean_zonal_plot(data,ax,cont,cmap,colorbar=True, \
             xtick_lab = [zlib.long_string(i) for i in xtick_loc]
     else:
         xlab = 'Missing'
-    
     
     handles = dict()
     if fill:
@@ -1481,12 +1485,13 @@ def small_map(fig,ax,cent_lon=0,lat=None, lon=None):
     pro = car.PlateCarree(central_longitude=cent_lon)
     X,Y = ax.get_position().get_points()
     r_ax = fig.add_axes([0.125,0.125,Y[0]/8,Y[1]/8], anchor='SW', facecolor='w',projection=pro)
-   
+    lim = ax.get_xlim()
+
     r_ax.set_global()
     if lat is not None:
-        r_ax.plot([-180,180],[lat,lat],transform=pro,ls='-',color='r')
+        r_ax.plot(lim,[lat,lat],transform=pro,ls='-',color='r')
     if lon is not None:
-        r_ax.plot([lon,lon],[-90,90],transform=pro,ls='-',color='r')
+        r_ax.plot([lon,lon],lim,transform=pro,ls='-',color='r')
     r_ax.coastlines(resolution='110m')
     r_ax.gridlines()
     return
@@ -1528,3 +1533,161 @@ def adjust_data_centlon(data,centlon_old=0, centlon_new=180.):
     new = data.roll(lon=720,roll_coords=False)
 
     return new
+
+def lon_sect(fig, ax, field, lon_sec,labelR=[],maintit=[],lmax=1000, xl=None,cmap='coolwarm', \
+             contour=True,levels=[], sharp=0):
+    '''
+    Latitude section at a fixed longitude.
+
+    This routine performs a section at the chosen longutude. The `sharpness` of he section is controlled by the parameter `sharp`. 
+    A `sharp = 0` indicates a precise section at the nominal longitude, where any value different from zero will result
+    in average on an interval of length 2*sharpness centered at the longitude.
+
+    Parameters
+    ==========
+    
+    fig:
+        Figure to be used
+    ax :
+        Plot axis to be used
+    field: xarray
+        Data to be plotted
+    lon_sec:
+        Longitude of the section
+    lmax:
+        Maximum depth of the section
+    xl:
+        Extent of the section
+    cmap:
+        colormap
+    contour:
+        True/false for having contours
+    levels:
+        Contour Levels ( see `choose_contour`)
+    sharp: positive float
+        Semi-width of the averaging interval around the section.
+        The average ignore NaN and therefore small features can be lost in the averaging.
+    labelR:
+        Label ont he top roght of the plot
+    maintit:
+        Main title
+    
+    Returns
+    =======
+
+    handle:
+        handle to the plot
+    '''
+    
+    #lon_sec = -140
+    lev_min = 0
+    lev_max = lmax
+    #
+    label2= zlib.long_string(lon_sec) + ' Longitude'
+    # Check sharpness
+    if sharp > 0:
+        T0 = field.sel(deptht=slice(lev_min,lev_max),lon=slice(lon_sec-sharp,lon_sec+sharp)).mean(dim='lon')
+    elif sharp < 0:
+        raise SystemExit(f'Wrong sharp in lon_sect --> {sharp}')
+    else:
+        try:
+            T0 = field.sel(deptht=slice(lev_min,lev_max),lon=lon_sec)
+        except:
+            raise SystemExit(f'Longitude missing in data set  --> {field.lon.data}')
+    
+    #fig,ax=plt.subplots(1,1, constrained_layout=False, figsize=(24,6) )
+    handle=ocean_section_plot(T0, ax, levels,cmap, refline=None, contour=contour,\
+                                 xlimit=xl,\
+                     colorbar=True,maintitle=maintit, lefttitle=label2,righttitle=labelR)
+
+    small_map(fig,ax,cent_lon=0,lat=None, lon=lon_sec)
+    infofile = 'Sect'+zlib.long_string(lon_sec)+ str(lmax) +'.pdf'
+    print(f'PDF Figure Ready on file  --->  {infofile}')
+    return infofile
+@d.dedent
+def lat_sect(fig, ax, field, lat_sec,labelR=[],view='Atlantic',
+           maintit=[],lmax=1000, xl=None,cmap='coolwarm', contour=True,levels=[], sharp=[]):
+
+    '''
+    Longitude section at a fixed latitude.
+
+    This routine performs a section at the chosen latitude. The `sharpness` of he section is controlled by the parameter `sharp`. 
+    A `sharp = 0` indicates a precise section at the nominal latitude, where any value different from zero will result
+    in average on an interval of length 2*sharpness centered at the latitude.
+
+    Parameters
+    ==========
+    
+    fig:
+        Figure to be used
+    ax :
+        Plot axis to be used
+    field: xarray
+        Data to be plotted
+    lon_sec:
+        Longitude of the section
+    lmax:
+        Maximum depth of the section
+    view:
+        * Atlantic      Atlantic at the center
+        * Pacific       Pacific at the center
+    xl:
+        Extent of the section
+    cmap:
+        colormap
+    contour:
+        True/false for having contours
+    levels:
+        Contour Levels ( see `choose_contour`)
+    sharp: positive float
+        Semi-width of the averaging interval around the section.
+        The average ignore NaN and therefore small features can be lost in the averaging.
+    labelR:
+        Label ont he top roght of the plot
+    maintit:
+        Main title
+    
+    Returns
+    =======
+
+    handle:
+        handle to the plot
+    '''
+
+    print(f'Sharpness set to  {sharp}')
+
+    #lon_sec = -140
+    lev_min = 0
+    lev_max = lmax
+    #
+    
+    if lat_sec == 0:
+        label2= zlib.lat_string(lat_sec) 
+    else:
+        label2= zlib.lat_string(lat_sec) + ' Latitude'
+
+    # Check sharpness
+    if sharp > 0:
+        T0 = field.sel(deptht=slice(lev_min,lev_max),lat=slice(lat_sec-sharp,lat_sec+sharp)).mean(dim='lat')
+    elif sharp < 0:
+        raise SystemExit(f'Wrong sharp in lat_sect --> {sharp}')
+    else:
+        try:
+            T0 = field.sel(deptht=slice(lev_min,lev_max),lat=lat_sec)
+        except:
+            raise SystemExit(f'Latitude missing in data set  --> {field.lat.data}')
+   
+    if view == 'Atlantic':
+        cent = 0.0
+    else:
+        cent=180.
+
+    handle=ocean_section_plot(T0, ax, levels ,cmap, refline=None,contour=contour,\
+                                 view=view,xlimit=xl,\
+                     colorbar=True,maintitle=maintit, lefttitle=label2,righttitle=labelR)
+    small_map(fig,ax,cent_lon=cent,lat=lat_sec, lon=None)
+   
+    infofile = 'Sect'+zlib.lat_string(lat_sec)+ str(lmax) + '.pdf'
+    print(f'PDF Figure Ready on file  --->  {infofile}')
+    return infofile
+    
