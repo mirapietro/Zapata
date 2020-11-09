@@ -1,6 +1,6 @@
 BSFS-NRT_daily:
-  remote: False
-  path: /Users/lstefanizzi/files/native/
+  remote: True
+  path: /data/products/BSFS/bsfs_v3.2/analysis_daily_mean/<year>/<month>
   subtree:
   source_url: http://bsfs.cmcc.it/
   description: Black Sea Forecasting System (BSFS) NRT analisys daily means
@@ -116,8 +116,8 @@ ERA5_MM:
 
 #
 SST:
-  remote: False
-  path: /Users/lstefanizzi/files/sat/
+  remote: True
+  path: /data/inputs/metocean/historical/obs/satellite/SST/CNR/L3/day/<year>/<month>
   subtree:
   source_url: http://marine.copernicus.eu/
   description: Black Sea SST, L3S, 1/16deg daily (SST_BS_SST_L3S_NRT_OBSERVATIONS_010_013_a)
@@ -136,7 +136,5 @@ SST:
         L3S:
           2D: {'sea_surface_temperature':'sea_surface_temperature', 'quality_level':'quality_level'}
           coord_map: {'lon':'lon', 'lat':'lat', 'time':'time',}
-  # contained in <path>
-  metrics:
-    landsea: 'MESHMASK/mesh_mask.nc'
+
 
