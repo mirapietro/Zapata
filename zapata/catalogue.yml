@@ -1,7 +1,7 @@
 BSFS-NRT_daily:
   remote: True
-  path: /data/products/BSFS/bsfs_v3.2/analysis_daily_mean/<year>/<month>
-  subtree:
+  path: /data/products/BSFS/bsfs_v3.2/analysis_daily_mean
+  subtree: <year>/<month>
   source_url: http://bsfs.cmcc.it/
   description: Black Sea Forecasting System (BSFS) NRT analisys daily means
   contact: Stefania Ciliberti
@@ -117,12 +117,12 @@ ERA5_MM:
 #
 SST:
   remote: True
-  path: /data/inputs/metocean/historical/obs/satellite/SST/CNR/L3/day/<year>/<month>
-  subtree:
+  path: /data/inputs/metocean/historical/obs/satellite/SST/CNR/L3/day
+  subtree: <year>/<month>
   source_url: http://marine.copernicus.eu/
   description: Black Sea SST, L3S, 1/16deg daily (SST_BS_SST_L3S_NRT_OBSERVATIONS_010_013_a)
   contact: ISAC - Institute of Atmospheric Sciences and Climate (CNR - Rome)
-  year_bounds: [2014, 2019]
+  year_bounds: [2009, 2020]
   data_block: daily
   driver: 'default'
   levels: None
@@ -130,7 +130,7 @@ SST:
   components:
     ocn:
       source: 'SST_BS_SST_L3S_NRT_OBSERVATIONS_010_013_a'
-      filename: <year><month>*000000-GOS-L3S_GHRSST-SSTsubskin-night_SST_HR_NRT-BLK-v02.0-fv01.0.nc
+      filename: <year><month>*000000-GOS-<data_stream>_GHRSST-SSTsubskin-night_SST_HR_NRT-BLK-v02.0-fv01.0.nc
       grid: {'x':257, 'y':162}
       data_stream:
         L3S:
