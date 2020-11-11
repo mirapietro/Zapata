@@ -88,7 +88,7 @@ def inquire_catalogue(dataset=None, info=False):
     if info:
        for comp in out['components']:
            thecomp = out['components'][comp]
-           print( comp + ' component [' +thecomp['model'] + ']')
+           print( comp + ' component [' +thecomp['source'] + ']')
            for ss in thecomp['data_stream'].keys():
                print('\nData Stream : ' + ss)
                for grp in thecomp['data_stream'][ss].keys():
@@ -96,6 +96,7 @@ def inquire_catalogue(dataset=None, info=False):
                        print(' ' + grp  +' variables')
                        for vv in thecomp['data_stream'][ss][grp].keys():
                            print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
+       return
 
     print('\n')
 

@@ -12,7 +12,7 @@ BSFS-NRT_daily:
   # data
   components:
     ocn:
-      model: 'NEMO 3.6'
+      source: 'NEMO 3.6'
       filename: <data_stream>_<year><month>*_dm_CMCC_BSFS1b_BLKSEA_*_an12-v01.nc
       grid: {'x':395, 'y':215, 'z':31}
       data_stream:
@@ -51,7 +51,7 @@ C-GLORSv7:
   # data
   components:
     ocn:
-      model: 'NEMO 3.6'
+      source: 'NEMO 3.6'
       filename: NEMO_1m_<year>_<data_stream>.nc
       grid: {'x':1442, 'y':1050, 'z':75}
       data_stream:
@@ -102,7 +102,7 @@ ERA5_MM:
   # data
   components:
     atm:
-      model: 'IFS'
+      source: 'IFS'
       grid: {'x':1440, 'y':721, 'z':14}
       filename: <var>_<lev>_<year>_<mon>_MM.npy
       data_stream:
@@ -129,12 +129,11 @@ SST:
   # data
   components:
     ocn:
-      model: 'NEMO 3.6'
+      source: 'SST_BS_SST_L3S_NRT_OBSERVATIONS_010_013_a'
       filename: <year><month>*000000-GOS-L3S_GHRSST-SSTsubskin-night_SST_HR_NRT-BLK-v02.0-fv01.0.nc
       grid: {'x':257, 'y':162}
       data_stream:
         L3S:
           2D: {'sea_surface_temperature':'sea_surface_temperature', 'quality_level':'quality_level'}
-          coord_map: {'lon':'lon', 'lat':'lat', 'time':'time',}
 
 
