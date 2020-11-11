@@ -86,6 +86,10 @@ def inquire_catalogue(dataset=None, info=False):
         out['name'] = dataset
 
     if info:
+       print(out['description'])
+       print('(Contact: ' + out['contact'] + ', URL: ' + out['source_url'] + ')')
+       yr_bnd = [str(x) for x in out['year_bounds']]
+       print('Time window: ' + '-'.join(yr_bnd) + '\nLocation: ' + out['path'] + '\n')
        for comp in out['components']:
            thecomp = out['components'][comp]
            print( comp + ' component [' +thecomp['source'] + ']')
@@ -96,6 +100,7 @@ def inquire_catalogue(dataset=None, info=False):
                        print(' ' + grp  +' variables')
                        for vv in thecomp['data_stream'][ss][grp].keys():
                            print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
+       print('\n')
        return
 
     print('\n')
