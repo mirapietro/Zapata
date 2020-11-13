@@ -14,8 +14,8 @@
 #
 import os
 import sys
-homedir = os.path.expanduser("~")
-root_path = homedir +'/Dropbox (CMCC)/GitHub/Zapata/docs'
+here = os.getcwd()
+root_path = os.path.abspath('../')
 os.chdir(root_path)
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
@@ -29,9 +29,9 @@ copyright = '2020, AN'
 author = 'AN'
 
 # The short X.Y version
-version = '0.1'
+version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -104,7 +104,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['ystatic']
+html_static_path = ['']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -192,5 +192,5 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 # Options for logo
-html_logo = 'zap.png'
+html_logo = '../resources/zap.png'
 # -- Extension configuration -------------------------------------------------

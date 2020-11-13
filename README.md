@@ -2,55 +2,59 @@
 ## Computational and Mapping Library   
 
 A revolutionary library for analysis and plotting of meteorological data. The mapping is based on cartopy and GEOCAT libraries from NCAR.
-It uses `xarray` as a basic data structure. 
+It uses `xarray` as a core data structure for all processing. 
 
-The folder `docs` contains documentation for the modules. The subdirectory `html` contains the html file for the documentation produced by Sphinx. 
+The directory `examples_notebook` contains working Jupyter Notebooks to illustarte different applications of Zapata.
 
-The directory 
+## Documentation
 
-The module `data` contains the information on the data banks. The routine `data_grid` in `data` must be modified to the location of the basic data for each installation.
+Zapata documentation is created using `sphinx` and it is sourced from the code itself.
 
-# Packages
+To create a local copy of HTML documentation go to `docs` folder and type `gmake html`. 
+If a previous compilation of the documentation exist, it is a good practice to clean up with `gmake clean` before updating the HTML files.
 
-## zapata
-contains computation modules and plotting modules. Examples of working Jupyterlab Notebooks are in `examples_notebook`
+HTML documentation can be accessed opening the main page at `docs/build/html/index.html`
 
-SubModules
--------
+To update the entire content of the documentation (e.g., after the inclusion of new modules) go to `docs` folder and use **sphinx-apidoc**:
+`sphinx-apidoc -f -e -M -o source ..`
+
+## Setup working environemt
+Python working environment can be setup using the provided conda environment.yml file:
+
+`conda env create -f environment.yml`
+
+`conda activate zapata`
+
+To update your `zapata` environment with following updates use
+
+`conda env update -f environment.yml`
+
+# Library content
+
+## zapata package
+Contains computation modules and plotting modules along with dedicated functions to read input data form different datasets (local and remote).
     
-**computation** :   
-    Routines for averaging and various computations
+- **computation** : Routines for averaging and various computations
     
-**data** :  
-    Information on data sets and routine to get data from the data sets
+- **data** : Information on data sets and routine to get data from the data sets
 
-**mapping** :   
-    Mapping routines based on *Cartopy*
+- **mapping** : Mapping routines based on *Cartopy*
     
-**lib** :   
-    Utilties for the rest of the modules.
+- **lib** : Utilties for the rest of the modules.
 
 
-##  klus
-contains algorithms for data analysis contributed by Stefan Klus
-
-SubModules
--------
+##  klus package
+Contains algorithms for data analysis contributed by Stefan Klus
     
-**algorithms** :   
-    Routines for averaging and various computations
+- **algorithms** : Routines for averaging and various computations
     
-**kernel** :  
-    Information on data sets and routine to get data from the data sets
+- **kernel** : Information on data sets and routine to get data from the data sets
 
-**osbervables** :   
-    Mapping routines based on *Cartopy*
-    
-Modules
--------
+- **osbervables** : Mapping routines based on *Cartopy*
 
-## interp
-subroutine for interpolation
 
-## zeus
-Routine for remote working on Zeus
+## interp module
+subroutines for data interpolation
+
+## Zeus module
+Functions to access and remote working on Zeus cluster

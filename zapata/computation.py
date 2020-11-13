@@ -30,7 +30,7 @@ import pandas as pd
 import scipy.ndimage as ndimage
 
 import zapata.lib as lib
-import zapata.data as era
+import zapata.data as zdat
 import klus.kernels as ker
 
 from geocat.viz import cmaps as gvcmaps
@@ -39,7 +39,7 @@ from geocat.viz import util as gvutil
 import tqdm as tm
 import mpl_toolkits.axes_grid1 as tl
 
-def zonal_var(dataset,var,season,option='LonTime',verbose=False):
+def zonal_var(dataset, var, season=None, level=None, period=None, option='LonTime',verbose=False):
     """
     A routine to average xarray 
     
@@ -53,6 +53,10 @@ def zonal_var(dataset,var,season,option='LonTime',verbose=False):
         Variable
     season :     
         Month or Season. Resolved from `dat_param`
+    level : list
+        Vertical level to extract
+    period : list
+        Might be None or a two element list with initial and final years
     option :       
         Control Averaging   
             -  None        No Averaging   
@@ -75,35 +79,15 @@ def zonal_var(dataset,var,season,option='LonTime',verbose=False):
     >>> zonal_var('GPCP','TPREP','DJF',option='Time',verbose=True)   # Time average 
     """
 
-    info=era.DataGrid()
-    lev=info[dataset][var]['level']
-    nlev=len(lev)
-    xx=era.read_xarray(dataset='ERA5',var=var,level=str(lev[0]),season=season,verbose=verbose)
-    
-    if option == 'LonTime':
-        zon=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[0]])
-        print(' Averaging on longitude and time ')
-    elif option == 'Time':
-        zon=xr.DataArray.expand_dims(xx.mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[0]])
-        print(' Averaging on  time ')
-    elif option == 'Lon':
-        zon=xr.DataArray.expand_dims(xx.mean(dim='lon'),dim='pressure').assign_coords(pressure=[lev[0]])
-        print(' Averaging on longitude ')
-    else:
-        zon=xr.DataArray.expand_dims(xx,dim='pressure').assign_coords(pressure=[lev[0]])
+    xx=zdat.read_data(dataset=dataset, var=var, level=level, season=season, period=period, verbose=verbose)
 
-    for i in tm.tnrange(1,nlev):
-        xx=era.read_xarray(dataset='ERA5',var=var,level=str(lev[i]),season=season)
-        if option == 'LonTime':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon').mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[i]])
-        elif option == 'Time':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='time'),dim='pressure').assign_coords(pressure=[lev[i]])
-        elif option == 'Lon':
-            xx1=xr.DataArray.expand_dims(xx.mean(dim='lon'),dim='pressure').assign_coords(pressure=[lev[i]])
-        else:
-            xx1=xr.DataArray.expand_dims(xx,dim='pressure').assign_coords(pressure=[lev[i]])       
-        zon=xr.concat([zon,xx1],dim='pressure')
-        
+    if option == 'LonTime':
+        zon = xx.mean(dim='lon').mean(dim='time')
+    elif option == 'Time':
+        zon = xx.mean(dim='time')
+    elif option == 'Lon':
+        zon = xx.mean(dim='lon')
+
     return zon
 
 def smooth_xarray(X,sigma=5,order=0,mode='wrap'):
@@ -255,6 +239,10 @@ class Xmat():
         X,
         dims: Union[Hashable, Sequence[Hashable], None] = None,
         ):
+
+        if not dims:
+            SystemError('Xmat needs some dimensions')
+            
         self.A = X.stack(z=dims).transpose()
         self._ntime = len(X.time.data)
         self._npoints = len(X.stack(z=dims).z.data)
@@ -412,8 +400,8 @@ class Xmat():
         This method compute the correlation of the data matrix
         with an index of the same length of the `time` dimension of `A`
 
-        Example
-        -------
+        Examples
+        --------
         Covariance of data matrix `Z` with `index`
 
         >>> cov = Z.cov(index)
