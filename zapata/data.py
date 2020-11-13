@@ -86,9 +86,13 @@ def inquire_catalogue(dataset=None, info=False):
         out['name'] = dataset
 
     if info:
+       print(out['description'])
+       print('(Contact: ' + out['contact'] + ', URL: ' + out['source_url'] + ')')
+       yr_bnd = [str(x) for x in out['year_bounds']]
+       print('Time window: ' + '-'.join(yr_bnd) + '\nLocation: ' + out['path'] + '\n')
        for comp in out['components']:
            thecomp = out['components'][comp]
-           print( comp + ' component [' +thecomp['model'] + ']')
+           print( comp + ' component [' +thecomp['source'] + ']')
            for ss in thecomp['data_stream'].keys():
                print('\nData Stream : ' + ss)
                for grp in thecomp['data_stream'][ss].keys():
@@ -96,6 +100,8 @@ def inquire_catalogue(dataset=None, info=False):
                        print(' ' + grp  +' variables')
                        for vv in thecomp['data_stream'][ss][grp].keys():
                            print(' - ' + vv + ' : ' + thecomp['data_stream'][ss][grp][vv])
+       print('\n')
+       return
 
     print('\n')
 
@@ -213,7 +219,9 @@ def load_dataarray(dataset, var, level, period):
             print('Driver %s not defined in data_drivers.py.' % data_driver)
             sys.exit(1)
 
-    out = roll_long(out)
+    out = roll_longitude(out)
+
+    out = check_nptime(out)
 
     return out
 
@@ -304,7 +312,7 @@ def subyear_weights(time, freq):
     return weights
 
 
-def roll_long(da):
+def roll_longitude(da):
     '''
     Roll longitude coordinate between 0..360. Note that longitude dimension name must be 'lon'.
 
@@ -328,6 +336,32 @@ def roll_long(da):
     elif 'nav_lon' in coord:
         if np.min(da.nav_lon) < 0.:
             da = da.assign_coords(nav_lon=(da.nav_lon % 360))
+
+    return da
+
+
+def check_nptime(da):
+    '''
+    Check if dataArray time axis format is numpy datetime64 and apply conversion if not.
+
+    Parameters
+    ----------
+    da : dataArray
+        Xarray data structure
+
+    Returns
+    -------
+    da: dataArray
+        Xarray data structure
+
+    '''
+    if not np.issubdtype(da['time'].dtype, np.datetime64):
+        try:
+            from xarray.coding.times import cftime_to_nptime
+            da['time'] = cftime_to_nptime(da['time'])
+        except ValueError as e:
+            print(e)
+            pass
 
     return da
 
