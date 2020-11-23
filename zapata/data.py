@@ -8,7 +8,7 @@ This module contains the two main functions of the data interface (see below for
 
 The data extraction from each dataset is performed by the function :meth:`load_dataarray<zapata.data.load_dataarray>` that contains the `default` driver for extraction operations and also handles the call to specific data drivers, which are contained in module :meth:`data_drivers.py<zapata.data_drivers>`.
 
-The dataset catalogue is located within the zapata library, named `catalogue.yml` (YAML format).
+The maintained dataset catalogue is located within the zapata library, named `catalogue.yml` (YAML format), while users can add their own datasets by editing the file `user_catalogue.yml` located in the root path of zapata.
 
 ===================================
 '''
@@ -67,6 +67,14 @@ def inquire_catalogue(dataset=None, info=False):
 
     # Load catalogue
     catalogue = yaml.load(open(pwd + '/catalogue.yml'), Loader=yaml.FullLoader)
+ 
+    # if user defined catalogue exists, update generale one
+    user_catalogue = pwd + '/../user_catalogue.yml'
+    if os.path.isfile(user_catalogue):
+       tmp_dict = yaml.load(open(user_catalogue), Loader=yaml.FullLoader)
+       if (tmp_dict is not None):
+          catalogue.update(tmp_dict)
+          print('Appned user defined lists of datasets to catalogue:\n')
 
     # Print list of available datasets
     if dataset is None:
