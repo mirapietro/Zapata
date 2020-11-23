@@ -10,6 +10,42 @@ The data extraction from each dataset is performed by the function :meth:`load_d
 
 The maintained dataset catalogue is located within the zapata library, named `catalogue.yml` (YAML format), while users can add their own datasets by editing the file `user_catalogue.yml` located in the root path of zapata.
 
+A new dataset can be included by editing the catalogue YAML files (either main or user), by means of a python dictionary structured as in the following:
+
+.. code-block:: python
+
+   <DATASET_NAME>:
+       remote: logical                         # used to indentify data on remote filesystem (True) ot not (False)
+       path: /path_to_data/                    # path of data without the subtree elements (see next item)
+       subtree: <t_card>(/<t_card>)            # wildcards used to define data organization on temporal basis, availables cards
+                                               # <year>: YYYY, <month>:MM, <day>:DD
+       source_url: http://www.adress/          # reference webpage of the dataset (if any)
+       description: string                     # short description of the dataset (max 125 characters)
+       contact: string                         # data originator name and mail contact
+       year_bounds: list                       # Initial and final years of the dataset time extension, e.g. [0111, 1900]
+       driver: dafault|drv_name                   # 'default' handles NetCDF files, while specific intake procedures must defined in `data_drivers.py`
+       levels: list                            # Python list object with vertical reference levels of data
+       components:
+           <comp_name>:                        # dataset component name, identifing data realm among atm, ocn, lnd, ice, ocnbgc
+               source: string                  # name of the originator, e.g. model name or satellite platform
+               filename: string                # generalized data filename structure with the inclusion of wildcards to parse time and type
+                                               # For example, Dummy_Model_<year>_<data_stream>.nc
+                                               # where <data_stream> identifies the data type spcified in the section below
+               data_stream:
+                   <output_group>:             # group of output files with the same structure over the time
+                       3D: dict                # 3-dimensional variables name stored in files and corresponding long_name, e.g. {'temp':'Temperature'}
+                       2D: dict                # same as above but for 2-dimensional variables
+                       coords: dict            # mapping of 2-dimensional coordinate names to library standard lon and lat names.
+                                               # Example: {'lon':'glamt', 'lat':'gphit'}
+                       coord_map: dict         # mapping of dimensions names to library standard lon,lat,lev,time. 
+                                               # Example: {'lon':'x', 'lat':'y', 'time':'time_centered', 'lev':'deptht'}
+                       mask: string            # name of mask variable to be applied during data intake, if mask is provided in metrics section below,
+                                               # Mask is expected to follow this convention, 0:remove, 1:retain (see also `mask_data` function)
+       metrics:
+            mask: dict                         # Two element dictionary to identify input mask file, with
+                                               #   'file': full path of filename 
+                                               #   'coord_map': mapping of dimensions names, as described above       
+
 ===================================
 '''
 
