@@ -1,15 +1,16 @@
 '''
 Color control and choice 
+========================
 
-SciVis Colormaps 
-----------------
+Colormap Selection 
+------------------
 The following colormaps obtained from SciVis (`https://sciviscolor.org/`) are available in `zapata/SciVis_colormaps`.
 
 .. image:: ../resources/colormap.png
         :scale: 100 %
         :align: center
 
-Functions
+Utilities 
 ---------
 **convert_colormap**    
 
@@ -19,7 +20,8 @@ Functions
 import os
 import sys
 from xml.dom import minidom
-import matplotlib as col
+import matplotlib.pyplot as plt
+import matplotlib.colors as col
 import numpy as np
 from lxml import etree
 
@@ -61,7 +63,7 @@ def make_cmap(xml):
         cdict['red'].append((1, colors[-1][0], colors[-1][0]))
         cdict['green'].append((1, colors[-1][1], colors[-1][1]))
         cdict['blue'].append((1, colors[-1][2], colors[-1][2]))
-    cmap = col.colors.LinearSegmentedColormap('my_colormap',cdict,256)
+    cmap = col.LinearSegmentedColormap('my_colormap',cdict,256)
     return cmap
 
 
@@ -110,13 +112,14 @@ def viewcmap(DIR):
     for i in sorted(os.listdir(DIR)):
         filename, file_extension = os.path.splitext(i)
         if file_extension == '.xml':
-            tt=zcol.make_cmap(COLOR +'/'+ i)
+            tt=make_cmap(COLOR +'/'+ i)
             tt.name = filename
             plot_cmap(tt)
     return
-def _showcolormap():
+def _showcolormap(COLOR,TGTDIR):
     '''
     Create picture of all colormap in directory COLOR
+    and puts pictue in directory TGTDIR
     '''
     fil = []
     for i in sorted(os.listdir(COLOR)):
@@ -128,7 +131,7 @@ def _showcolormap():
     fig,ax=plt.subplots(nrows=int(nplot/2),ncols=2,figsize=(12,32))
     for i in range(0,int(nplot/2)):
 
-            tt=zcol.make_cmap(COLOR +'/'+ fil[i])
+            tt=make_cmap(COLOR +'/'+ fil[i])
             filename, file_extension = os.path.splitext(fil[i])
             tt.name = filename
             gradient = np.linspace(0, 1, 256)
@@ -142,7 +145,7 @@ def _showcolormap():
             axs.imshow(gradient, aspect='auto', cmap=tt)
     for i in range(0,int(nplot/2)):
 
-            tt=zcol.make_cmap(COLOR +'/'+ fil[i+nplot2])
+            tt=make_cmap(COLOR +'/'+ fil[i+nplot2])
             filename, file_extension = os.path.splitext(fil[i+nplot2])
             tt.name = filename
             gradient = np.linspace(0, 1, 256)
@@ -156,5 +159,5 @@ def _showcolormap():
             axs.imshow(gradient, aspect='auto', cmap=tt)
     fig.tight_layout(pad=0.5)
     fig.show()
-    plt.savefig('colormap.png')
+    plt.savefig(TGTDIR + '/colormap.png')
     return
