@@ -18,7 +18,7 @@ A new dataset can be included by editing the catalogue YAML files (either main o
        remote: logical                         # used to indentify data on remote filesystem (True) ot not (False)
        path: /path_to_data/                    # path of data without the subtree elements (see next item)
        subtree: <t_card>(/<t_card>)            # wildcards used to define data organization on temporal basis, availables cards
-                                               # <year>: YYYY, <month>:MM, <day>:DD
+                                               # <year>: YYYY, <mon>:MM, <day>:DD ; <var>: variable name; <lev>: vertical level value
        source_url: http://www.adress/          # reference webpage of the dataset (if any)
        description: string                     # short description of the dataset (max 125 characters)
        contact: string                         # data originator name and mail contact
@@ -110,7 +110,7 @@ def inquire_catalogue(dataset=None, info=False):
        tmp_dict = yaml.load(open(user_catalogue), Loader=yaml.FullLoader)
        if (tmp_dict is not None):
           catalogue.update(tmp_dict)
-          print('Appned user defined lists of datasets to catalogue:\n')
+          print('Append user defined lists of datasets to catalogue:\n')
 
     # Print list of available datasets
     if dataset is None:
