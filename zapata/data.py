@@ -18,12 +18,14 @@ A new dataset can be included by editing the catalogue YAML files (either main o
        remote: logical                         # used to indentify data on remote filesystem (True) ot not (False)
        path: /path_to_data/                    # path of data without the subtree elements (see next item)
        subtree: <t_card>(/<t_card>)            # wildcards used to define data organization on temporal basis, availables cards
-                                               # <year>: YYYY, <mon>:MM, <day>:DD ; <var>: variable name; <lev>: vertical level value
+                                               # <year>: YYYY, <month>:MM (leading zero), <mon>:MM (no leading zero), 
+                                               # <var>: variable name; <lev>: vertical level value
        source_url: http://www.adress/          # reference webpage of the dataset (if any)
        description: string                     # short description of the dataset (max 125 characters)
        contact: string                         # data originator name and mail contact
        year_bounds: list                       # Initial and final years of the dataset time extension, e.g. [0111, 1900]
-       driver: dafault|drv_name                   # 'default' handles NetCDF files, while specific intake procedures must defined in `data_drivers.py`
+       driver: string                          # 'default' handles NetCDF files that includes coordinates, while 
+                                               # 'driver_name' refers to the specific intake procedure defined in `data_drivers.py`
        levels: list                            # Python list object with vertical reference levels of data
        components:
            <comp_name>:                        # dataset component name, identifing data realm among atm, ocn, lnd, ice, ocnbgc
@@ -512,10 +514,12 @@ def get_data_files(dataset, var, level, period):
             sys.exit(1)
         level = level[0]
         # check if month in subtree
-        if re.search('month',datatree) :
+        if re.search('<month>',datatree) :
             months = [str(item).zfill(2) for item in range(1,13)]
+        elif re.search('<mon>',datatree) :
+            months = [str(item) for item in range(1,13)]
         #TODO do we need to handle dayss in subtree?
-        if re.search('day',datatree):
+        if re.search('<day>',datatree):
             print('Cannot handle dataset subtree with days')
             sys.exit(1)
     else:
@@ -529,6 +533,12 @@ def get_data_files(dataset, var, level, period):
     for ii in wildcards.keys():
         datatree = datatree.replace('<' + ii +'>',wildcards[ii])
         filename = filename.replace('<' + ii +'>',wildcards[ii])
+
+    # check month format in filename
+    if re.search('<month>',filename):
+        months = [str(item).zfill(2) for item in range(1,13)]
+    elif re.search('<mon>',filename):
+        months = [str(item) for item in range(1,13)]
     
     # compose files list
     in_files=[]
@@ -537,10 +547,12 @@ def get_data_files(dataset, var, level, period):
             thispath = '/'.join([datapath, datatree])
             #subtree replace
             thispath = thispath.replace('<year>',str(yy))
+            thispath = thispath.replace('<mon>',str(mm))
             thispath = thispath.replace('<month>',str(mm))
             #filename replace
             thisname = filename
             thisname = thisname.replace('<year>',str(yy))
+            thisname = thisname.replace('<mon>',str(mm))
             thisname = thisname.replace('<month>',str(mm))
             #list files
             tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
