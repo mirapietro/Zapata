@@ -13,7 +13,7 @@ import pandas as pd
 import glob
 
 
-def cglorsv7(dataset, var, level, period):
+def cglorsv7(dataset, var, level, period, season):
     '''
     Driver for data retrieve of C-GLORS V7 global ocean reanalyses
     Read requested data into an xarray DataArray
@@ -28,6 +28,8 @@ def cglorsv7(dataset, var, level, period):
         vertical levels float value
     period : list
         Might be None or a two element list with initial and final year
+    season : string
+        Month ('JAN'), season ('DJF', 'AMJ') or annual ('ANN')
 
     Returns
     -------
@@ -67,7 +69,7 @@ def cglorsv7(dataset, var, level, period):
     return out
 
 
-def era5_numpy(dataset, var, level, period):
+def era5_numpy(dataset, var, level, period, season):
     '''
     Driver for data retrieve of ERA5 in numpy format
     Read requested data into an xarray DataArray
@@ -82,6 +84,8 @@ def era5_numpy(dataset, var, level, period):
         vertical levels float value
     period : list
         Might be None or a two element list with initial and final year
+    season : string
+        Month ('JAN'), season ('DJF', 'AMJ') or annual ('ANN')
 
     Returns
     -------
@@ -91,19 +95,48 @@ def era5_numpy(dataset, var, level, period):
     '''
     from natsort import natsorted
     from zapata.data import get_data_files
+    from zapata.data import define_time_frames
   
     out = None
 
-    # get all levels if not specified
     if level is None:
         level = dataset['levels']
  
     for lev in level:
 
         files = get_data_files(dataset, var, [lev], period)
-        
-        # use natural sorting of files
-        files['files'] = natsorted(files['files'])
+
+        # use natural sorting of files list
+        inp_files = natsorted(files['files'])
+
+        # define selected data time axis
+        time_bnd = files['period']
+        prds = (time_bnd[1] - time_bnd[0] + 1) * 12 ; frq = 'M'
+        timeline = pd.date_range(str(time_bnd[0])+'-01-01', periods=prds,freq=frq)
+        del prds, time_bnd 
+
+        # filter by year/season/month if provided
+        if season:
+            # admissible time frames
+            time_frames = define_time_frames(season)
+            if len(time_frames[season]) > 1:
+                sel_idx = time_frames[season][2]
+            else:
+                sel_idx = time_frames[season][0]
+
+            sel_data = []
+            time = []
+            for fid,ff in enumerate(inp_files):
+                #get filename month
+                ff_month = int(ff.split('_')[-2])
+                if ff_month in sel_idx:
+                    sel_data.append(ff)
+                    time.append(timeline[fid].strftime('%Y-%m-%d'))
+            inp_files = sel_data
+            time = pd.to_datetime(time)
+            del fid, ff, ff_month, sel_data, sel_idx
+        else:
+            time = timeline
 
         # get lon/lat coordinates
         if dataset['metrics']['lon'][-3:] == 'npy':
@@ -113,24 +146,13 @@ def era5_numpy(dataset, var, level, period):
             lon = eval(dataset['metrics']['lon'])
             lat = eval(dataset['metrics']['lat'])
 
-        # define time axis
-        time_bnd = files['period']
-        if dataset['data_freq'] == 'yearly':
-            prds = (time_bnd[1] - time_bnd[0] + 1) ; frq = 'YS'
-        elif dataset['data_freq'] == 'monthly':
-            prds = (time_bnd[1] - time_bnd[0] + 1) * 12 ; frq = 'M'
-        elif dataset['data_freq'] == 'daily':
-            prds = (time_bnd[1] - time_bnd[0] + 1) * 365 ; frq = 'D'
-        time = pd.date_range(str(time_bnd[0])+'-01-01', periods=prds,freq=frq)
-        del prds, frq
-
         # get first file
-        ndat = np.load(files['files'][0])
+        ndat = np.load(inp_files[0])
 
-        # append other data
-        if len(files['files']) > 1:
+        # append other data over time
+        if len(inp_files) > 1:
            ndat =  np.expand_dims(ndat, axis=0)
-           for ff in files['files'][1:]:
+           for ff in inp_files[1:]:
               tmp = np.expand_dims(np.load(ff), axis=0)
               ndat = np.append(ndat, tmp, axis=0)
               del tmp

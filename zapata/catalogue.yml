@@ -130,7 +130,7 @@ ERA5_MM:
       data_stream:
          monthly:
            3D: {'U':'Zonal Wind', 'V':'Meridional Wind', 'W':'Vertical Velocity', 'T':'Temperature', 'Z':'Geopotential Height'}
-           2D: {'SST':'Sea Surface Tenperature', 'tp':'Precipitation', 'MSL':'Mean Sea Level Pressure'}
+           2D: {'SST':'Sea Surface Temperature', 'tp':'Precipitation', 'MSL':'Mean Sea Level Pressure'}
   # Places in <path>
   metrics:
     lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
