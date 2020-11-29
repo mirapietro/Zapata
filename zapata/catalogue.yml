@@ -110,7 +110,7 @@ SST:
 #
 #
 ERA5_MM:
-  remote: False
+  remote: True
   path: /data/products/ZAPATA/ERA5_MM
   subtree: <var><lev>
   source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
