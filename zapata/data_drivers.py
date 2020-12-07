@@ -93,6 +93,7 @@ def era5_numpy(dataset, var, level, period, season):
         Output data from dataset
 
     '''
+    from tqdm import tqdm
     from natsort import natsorted
     from zapata.data import get_data_files
     from zapata.data import define_time_frames
@@ -101,8 +102,14 @@ def era5_numpy(dataset, var, level, period, season):
 
     if level is None:
         level = dataset['levels']
+
+    if var in ['tp', 'MSL', 'SST']:
+        level = ['SURF',]
  
     for lev in level:
+
+        if not isinstance(lev, str):
+            lev = int(lev)
 
         files = get_data_files(dataset, var, [lev], period)
 
@@ -152,7 +159,7 @@ def era5_numpy(dataset, var, level, period, season):
         # append other data over time
         if len(inp_files) > 1:
            ndat =  np.expand_dims(ndat, axis=0)
-           for ff in inp_files[1:]:
+           for ff in tqdm(inp_files[1:]):
               tmp = np.expand_dims(np.load(ff), axis=0)
               ndat = np.append(ndat, tmp, axis=0)
               del tmp
