@@ -133,8 +133,11 @@ def inquire_catalogue(dataset=None, info=False):
     if info:
        print(out['description'])
        print('(Contact: ' + out['contact'] + ', URL: ' + out['source_url'] + ')')
-       yr_bnd = [str(x) for x in out['year_bounds']]
-       print('Time window: ' + '-'.join(yr_bnd) + '\nLocation: ' + out['path'] + '\n')
+       tmp_val = [str(x) for x in out['year_bounds']]
+       print('Time window: ' + '-'.join(tmp_val) + '\nLocation: ' + out['path'] + '\n')
+       if 'levels' in out.keys():
+           tmp_val = [str(x) for x in out['levels']]
+           print('Vertical levels: ' + ', '.join(tmp_val) + '\n')
        for comp in out['components']:
            thecomp = out['components'][comp]
            print( comp + ' component [' +thecomp['source'] + ']')
@@ -165,8 +168,8 @@ def read_data(dataset=None, var=None, period=None, level=None, season=None, regi
          variable name
     period : list
         A two element list with initial and final years
-    level : float
-        level value (if not in levels list the closest one will be used)
+    level : list  
+        level value as float (if not matching any dataset level, it takes the closest one)
     season : string
         Month ('JAN'), season ('DJF', 'AMJ') or annual ('ANN')
     region : list
@@ -644,12 +647,18 @@ def dataset_request_var(dataset, var, level, period):
 
     '''
     # check for level bounds
-    level_bnd = [min(dataset['levels']), max(dataset['levels'])]
-    if level is not None and not isinstance(level[0], str):
-        for lev in level:
-            if lev < level_bnd[0] or lev > level_bnd[1]:
-                print('Requested level ' + str(lev) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
-                sys.exit(1)
+    if level is not None:
+        if 'levels' in dataset.keys():
+            if not isinstance(level[0], str):
+                level_bnd = [min(dataset['levels']), max(dataset['levels'])]
+                for lev in level:
+                    if lev < level_bnd[0] or lev > level_bnd[1]:
+                        print('Requested level ' + str(lev) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
+                        sys.exit(1)
+        else:
+            print('Level was requested, but the dataset has no levelsi defined')
+            sys.exit(1)
+           
 
     # check for time bounds
     time_bnd = dataset['year_bounds']
