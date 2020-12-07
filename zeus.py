@@ -43,9 +43,9 @@ def init(user, host=None, remote_env=None):
     ----------
     user : str
          Username on Zeus.
-    host : str
+    host : str, optional
          Local hostname for Zeus cluster (default: 192.168.118.11).
-    remote_env : str
+    remote_env : str, optional
          Name of the conda environment to use on Zeus (default: data-science-cmcc-v1).
 
     Returns
@@ -579,7 +579,7 @@ def start_dask(
 
     # default values
     shebang = "#!/bin/bash"
-    python = "/zeus/opt/anaconda/3.7/envs/data-science-cmcc-v1/bin/python"
+    python = "python3"
 
     def lsf_format_bytes_ceil(n, lsf_units="mb"):
         """ Format bytes as text
@@ -651,8 +651,8 @@ def start_dask(
         sched_exec = "%s -m distributed.cli.dask_scheduler" % python
         sched_exec += (
             " --port 0 --dashboard-address 0 --scheduler-file %s/connection"
-            " --idle-timeout 3600 --local-directory %s"
-            % (local_directory, local_directory,)
+            " --idle-timeout 3600"
+            % local_directory
         )
         sched_exec += " --interface ens2f1"
         sched_exec += " >> %s/scheduler_%s.log 2>&1 &" % (log_directory, name)
