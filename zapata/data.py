@@ -18,12 +18,14 @@ A new dataset can be included by editing the catalogue YAML files (either main o
        remote: logical                         # used to indentify data on remote filesystem (True) ot not (False)
        path: /path_to_data/                    # path of data without the subtree elements (see next item)
        subtree: <t_card>(/<t_card>)            # wildcards used to define data organization on temporal basis, availables cards
-                                               # <year>: YYYY, <mon>:MM, <day>:DD ; <var>: variable name; <lev>: vertical level value
+                                               # <year>: YYYY, <month>:MM (leading zero), <mon>:MM (no leading zero), 
+                                               # <var>: variable name; <lev>: vertical level value
        source_url: http://www.adress/          # reference webpage of the dataset (if any)
        description: string                     # short description of the dataset (max 125 characters)
        contact: string                         # data originator name and mail contact
        year_bounds: list                       # Initial and final years of the dataset time extension, e.g. [0111, 1900]
-       driver: dafault|drv_name                   # 'default' handles NetCDF files, while specific intake procedures must defined in `data_drivers.py`
+       driver: string                          # 'default' handles NetCDF files that includes coordinates, while 
+                                               # 'driver_name' refers to the specific intake procedure defined in `data_drivers.py`
        levels: list                            # Python list object with vertical reference levels of data
        components:
            <comp_name>:                        # dataset component name, identifing data realm among atm, ocn, lnd, ice, ocnbgc
@@ -59,7 +61,6 @@ import yaml, glob
 import zapata.data_drivers as zdrv
 
 xr.set_options(keep_attrs=True)
-
 
 def inquire_catalogue(dataset=None, info=False):
     '''
@@ -132,8 +133,11 @@ def inquire_catalogue(dataset=None, info=False):
     if info:
        print(out['description'])
        print('(Contact: ' + out['contact'] + ', URL: ' + out['source_url'] + ')')
-       yr_bnd = [str(x) for x in out['year_bounds']]
-       print('Time window: ' + '-'.join(yr_bnd) + '\nLocation: ' + out['path'] + '\n')
+       tmp_val = [str(x) for x in out['year_bounds']]
+       print('Time window: ' + '-'.join(tmp_val) + '\nLocation: ' + out['path'] + '\n')
+       if 'levels' in out.keys():
+           tmp_val = [str(x) for x in out['levels']]
+           print('Vertical levels: ' + ', '.join(tmp_val) + '\n')
        for comp in out['components']:
            thecomp = out['components'][comp]
            print( comp + ' component [' +thecomp['source'] + ']')
@@ -164,8 +168,8 @@ def read_data(dataset=None, var=None, period=None, level=None, season=None, regi
          variable name
     period : list
         A two element list with initial and final years
-    level : float
-        level value (if not in levels list the closest one will be used)
+    level : list  
+        level value as float (if not matching any dataset level, it takes the closest one)
     season : string
         Month ('JAN'), season ('DJF', 'AMJ') or annual ('ANN')
     region : list
@@ -186,7 +190,7 @@ def read_data(dataset=None, var=None, period=None, level=None, season=None, regi
     '''
     datacat = inquire_catalogue(dataset)
 
-    out = load_dataarray(datacat, var, level, period)
+    out = load_dataarray(datacat, var, level, period, season)
  
     # temporal sampling
     if season is not None:
@@ -214,7 +218,7 @@ def read_data(dataset=None, var=None, period=None, level=None, season=None, regi
     return out
 
 
-def load_dataarray(dataset, var, level, period):
+def load_dataarray(dataset, var, level, period, season):
     '''
     Read requested data into an xarray DataArray using dataset driver
 
@@ -228,6 +232,8 @@ def load_dataarray(dataset, var, level, period):
         vertical levels float value
     period : list
         Might be None or a two element list with initial and final year
+    season : string
+        Month ('JAN'), season ('DJF', 'AMJ') or annual ('ANN')
 
     Returns
     -------
@@ -258,7 +264,7 @@ def load_dataarray(dataset, var, level, period):
     else:
         # check if external driver exist
         if data_driver in dir(zdrv):
-            out = getattr(zdrv, data_driver)(dataset, var, level, period)
+            out = getattr(zdrv, data_driver)(dataset, var, level, period, season)
         else:
             print('Driver %s not defined in data_drivers.py.' % data_driver)
             sys.exit(1)
@@ -294,25 +300,20 @@ def da_time_mean(da, sample):
     '''
     indexes = None
 
-    # admissible time groups
-    time_grp ={'DJF': ['Q-NOV', [0, 4]], 'MAM':['Q-NOV', [1, 4]], 'JJA':['Q-NOV', [2, 4]], 'SON':['Q-NOV', [3, 4]],
-        'JFM':['Q-DEC', [0, 4]], 'AMJ':['Q-DEC', [1, 4]], 'JAS':['Q-DEC', [2, 4]], 'OND':['Q-DEC', [3, 4]],
-        'ANN':['A', [0, 1]], 
-        'JAN':[1,], 'FEB':[2,], 'MAR': [3,], 'APR':[4,], 'MAY':[5,], 'JUN':[6,],
-        'JUL':[7,], 'AUG':[8,], 'SEP': [9,], 'OCT':[10,], 'NOV':[11,], 'DEC':[12,]}
+    time_frames = define_time_frames(sample)
 
     # reduce data to months
     da = da.resample(time='M').mean(dim='time')
 
-    if sample in time_grp.keys():
-        if len(time_grp[sample]) > 1:
-            weights = subyear_weights(da.time, time_grp[sample][0])
-            da = (da * weights).resample(time=time_grp[sample][0]).sum(dim='time')
-            idx = time_grp[sample][1]
+    if sample in time_frames.keys():
+        if len(time_frames[sample]) > 1:
+            weights = subyear_weights(da.time, time_frames[sample][0])
+            da = (da * weights).resample(time=time_frames[sample][0]).sum(dim='time')
+            idx = time_frames[sample][1]
             da = da.isel(time=slice(idx[0], None, idx[1]))
             da.attrs.update({'time_resample':sample})
         else:
-            months = ( da.time.dt.month == time_grp[sample])
+            months = ( da.time.dt.month == time_frames[sample])
             da = da.sel(time=months)
             da.attrs.update({'time_resample':sample})
 
@@ -322,6 +323,35 @@ def da_time_mean(da, sample):
 
     return da
 
+
+def define_time_frames(sample):
+    '''
+    Define time frames handled by the library
+
+    Parameters
+    ----------
+    sample : string
+        Identifier of temporal sampling (e.g., JAN, FEB, ...,  ANN, DJF, MAM ...)
+
+    Returns
+    -------
+    time_frames : dict
+        dictionary with allowed time frames (short name and attributes)
+    '''
+
+    time_frames={'DJF': ['Q-NOV', [0, 4], [12, 1, 2]], 'MAM':['Q-NOV', [1, 4], [3, 4, 5]], 
+        'JJA':['Q-NOV', [2, 4], [6, 7, 8]], 'SON':['Q-NOV', [3, 4], [9, 10, 11]],
+        'JFM':['Q-DEC', [0, 4], [1, 2, 3]], 'AMJ':['Q-DEC', [1, 4], [4, 5, 6]], 
+        'JAS':['Q-DEC', [2, 4], [7, 8, 9]], 'OND':['Q-DEC', [3, 4], [10, 11, 12]],
+        'ANN':['A', [0, 1], range(1,13)],
+        'JAN':[1,], 'FEB':[2,], 'MAR': [3,], 'APR':[4,], 'MAY':[5,], 'JUN':[6,],
+        'JUL':[7,], 'AUG':[8,], 'SEP': [9,], 'OCT':[10,], 'NOV':[11,], 'DEC':[12,]}
+
+    if sample not in time_frames.keys():
+        print('define_time_frames: requested temporal sampling' + sample + ' is not in admissible time groups.')
+        sys.exit(1)
+
+    return time_frames
 
 def subyear_weights(time, freq):
     '''
@@ -512,10 +542,12 @@ def get_data_files(dataset, var, level, period):
             sys.exit(1)
         level = level[0]
         # check if month in subtree
-        if re.search('month',datatree) :
+        if re.search('<month>',datatree) :
             months = [str(item).zfill(2) for item in range(1,13)]
+        elif re.search('<mon>',datatree) :
+            months = [str(item) for item in range(1,13)]
         #TODO do we need to handle dayss in subtree?
-        if re.search('day',datatree):
+        if re.search('<day>',datatree):
             print('Cannot handle dataset subtree with days')
             sys.exit(1)
     else:
@@ -529,6 +561,12 @@ def get_data_files(dataset, var, level, period):
     for ii in wildcards.keys():
         datatree = datatree.replace('<' + ii +'>',wildcards[ii])
         filename = filename.replace('<' + ii +'>',wildcards[ii])
+
+    # check month format in filename
+    if re.search('<month>',filename):
+        months = [str(item).zfill(2) for item in range(1,13)]
+    elif re.search('<mon>',filename):
+        months = [str(item) for item in range(1,13)]
     
     # compose files list
     in_files=[]
@@ -537,10 +575,12 @@ def get_data_files(dataset, var, level, period):
             thispath = '/'.join([datapath, datatree])
             #subtree replace
             thispath = thispath.replace('<year>',str(yy))
+            thispath = thispath.replace('<mon>',str(mm))
             thispath = thispath.replace('<month>',str(mm))
             #filename replace
             thisname = filename
             thisname = thisname.replace('<year>',str(yy))
+            thisname = thisname.replace('<mon>',str(mm))
             thisname = thisname.replace('<month>',str(mm))
             #list files
             tmpfile = sorted(glob.glob('/'.join([thispath, thisname])))
@@ -607,12 +647,18 @@ def dataset_request_var(dataset, var, level, period):
 
     '''
     # check for level bounds
-    level_bnd = [min(dataset['levels']), max(dataset['levels'])]
-    if level is not None and not isinstance(level[0], str):
-        for lev in level:
-            if lev < level_bnd[0] or lev > level_bnd[1]:
-                print('Requested level ' + str(lev) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
-                sys.exit(1)
+    if level is not None:
+        if 'levels' in dataset.keys():
+            if not isinstance(level[0], str):
+                level_bnd = [min(dataset['levels']), max(dataset['levels'])]
+                for lev in level:
+                    if lev < level_bnd[0] or lev > level_bnd[1]:
+                        print('Requested level ' + str(lev) + ' is not within dataset bounds [%s, %s]' % tuple(level_bnd))
+                        sys.exit(1)
+        else:
+            print('Level was requested, but the dataset has no levelsi defined')
+            sys.exit(1)
+           
 
     # check for time bounds
     time_bnd = dataset['year_bounds']

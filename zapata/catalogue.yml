@@ -87,34 +87,6 @@ C-GLORSv7:
     coords: '/data/products/GLOBAL_REANALYSES/C-GLORSv7/MONTHLY/NEMO_coordinates.nc'
 
 #
-ERA5_MM:
-  remote: False
-  path: /Users/lovato/ClimData/ERA5_MM
-  subtree: <var><lev>
-  source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
-  description: ERA5 Monthly Mean on Pressure Levels (compiled by A. Navarra 2019)
-  contact: Antonio Navarra
-  year_bounds: [1979, 2018]
-  data_block: monthly
-  data_freq: monthly
-  driver: 'era5_numpy'
-  levels: [10, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,]
-  # data
-  components:
-    atm:
-      source: 'IFS'
-      grid: {'x':1440, 'y':721, 'z':14}
-      filename: <var>_<lev>_<year>_<mon>_MM.npy
-      data_stream:
-         monthly: 
-           3D: {'U':'Zonal Wind', 'V':'Meridional Wind', 'W':'Vertical Velocity', 'T':'Temperature', 'Z':'Geopotential Height'}
-           2D: {'SST':'Sea Surface Tenperature', 'tp':'Precipitation', 'MSL':'Mean Sea Level Pressure'}
-  # Places in <path> 
-  metrics:
-    lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
-    lat: 'np.asarray([i for i in np.arange(-90,90.1,0.25)][::-1])'
-
-#
 SST:
   remote: True
   path: /data/inputs/metocean/historical/obs/satellite/SST/CNR/L3/day
@@ -135,5 +107,60 @@ SST:
       data_stream:
         L3S:
           2D: {'sea_surface_temperature':'sea_surface_temperature', 'quality_level':'quality_level'}
+#
+#
+ERA5_MM:
+  remote: True
+  path: /data/products/ZAPATA/ERA5_MM
+  subtree: <var><lev>
+  source_url: http://confluence.ecmwf.int/display/CKB/ERA5+data+documentation#ERA5datadocumentation-Parameterlistings
+  description: ERA5 Monthly Mean on Pressure Levels (compiled by A. Navarra 2019)
+  contact: Antonio Navarra
+  year_bounds: [1979, 2018]
+  data_block: monthly
+  data_freq: monthly
+  driver: 'era5_numpy'
+  levels: [10., 50., 100., 150., 200., 250., 300., 400., 500., 600., 700., 850., 925., 1000.,]
+  # data
+  components:
+    atm:
+      source: 'IFS'
+      grid: {'x':1440, 'y':721, 'z':14}
+      filename: <var>_<lev>_<year>_<mon>_MM.npy
+      data_stream:
+         monthly:
+           3D: {'U':'Zonal Wind', 'V':'Meridional Wind', 'W':'Vertical Velocity', 'T':'Temperature', 'Z':'Geopotential Height'}
+           2D: {'SST':'Sea Surface Temperature', 'tp':'Precipitation', 'MSL':'Mean Sea Level Pressure'}
+  # Places in <path>
+  metrics:
+    lon: 'np.asarray([i for i in np.arange(0,360.,0.25)])'
+    lat: 'np.asarray([i for i in np.arange(-90,90.1,0.25)][::-1])'
 
+#
+dummy_dataset:
+  remote: False
+  path: /Users/lovato/dummy_dataset
+  subtree: <var><lev>
+  source_url: dummy dataset generated in the above path by first executing create_dummy_dataset.py from misc folder
+  description: dummy dataset for testing library functionalities
+  contact: Tomas Lovato
+  year_bounds: [2000, 2010]
+  data_block: monthly
+  data_freq: monthly
+  driver: 'era5_numpy'
+  levels: [50, 200, 500, 850, 1000,]
+  # data
+  components:
+    atm:
+      source: 'dummy_atm'
+      grid: {'x':360, 'y':180, 'z':5}
+      filename: <var>_<lev>_<year>_<mon>_MM.npy
+      data_stream:
+         monthly:
+           3D: {'Z':'Geopotential Height'}
+           2D: {'MSL':'Mean Sea Level Pressure'}
+  # Places in <path>
+  metrics:
+    lon: 'np.asarray([i for i in np.arange(0,360.,1.0)])'
+    lat: 'np.asarray([i for i in np.arange(-90,90.,1.0)][::-1])'
 

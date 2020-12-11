@@ -30,6 +30,7 @@ dependencies:
   - sphinx
   - seaborn
   - natsort
+  - tqdm
   # dev only
   - pudb
   - yapf
