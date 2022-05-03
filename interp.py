@@ -11,7 +11,7 @@ The staggering requires different interpolators operators for scalar points at T
 and vector quantities carried at (u,v) points. For the moment a simple interpolation is carried out
 but a more accurate vector interpolation is under development.
 
-The interpolation is obtained by triangulation of the starting grid and seaprate interpolation to the new grid.
+The interpolation is obtained by triangulation of the starting grid and separate interpolation to the new grid.
 The weights are preserved and they can be used for repeated application of the same set of grids.
 
 Classes 
@@ -153,7 +153,7 @@ class Atmosphere_Interpolator():
 class Ocean_Interpolator():
     """This class creates weights for interpolation of ocean fields.
 
-    This class create an interpolator operator from a *source grid* 
+    This class creates an interpolation operator from a *source grid* 
     `src_grid` to a *target grid* `tgt_grd`. The interpolator then
     can be used to perform the actual interpolation. The model uses
     an Arakawa C-grid, that is shown in the following picture. The f-points
@@ -163,7 +163,7 @@ class Ocean_Interpolator():
         :scale: 25 %
         :align: right
 
-    The Arakawa C-grid used in the ocean model show also the ordering
+    The Arakawa C-grid used in the ocean model shows also the ordering
     of the points, indicating which points correspond to the (i,j) index.
 
     The *source grid* must be a `xarray` `DataSet` containing coordinates
@@ -249,7 +249,7 @@ class Ocean_Interpolator():
     mask_sea_over_land :
         Mask border point for Sea over land
     
-    UV_sea_over_land :
+    fill_sea_over_land :
         Fill U,V values over land
     
     to_file :
@@ -259,15 +259,15 @@ class Ocean_Interpolator():
     --------    
     Create the weights for interpolation
 
-    >>> w= zint.Ocean_Interpolator(src_grid,tgt_grid) 
+    >>> w = zint.Ocean_Interpolator(src_grid_name, tgt_grid_name) 
     
     Interpolate temperature
 
-    >>> target_xarray=w.interp_T(src_xarray,method='linear')
+    >>> target_xarray = w.interp_T(src_xarray, method='linear')
 
     Interpolate U,V
 
-    >>> target_xarray=w.interp_UV(U_xarray,V_xarray,method='linear')
+    >>> target_xarray = w.interp_UV(U_xarray, V_xarray, method='linear')
 
 
     """
@@ -280,7 +280,7 @@ class Ocean_Interpolator():
                 'name','cent_long','tri_sea_T','tri_sea_U','tri_sea_V','tangle',\
                     'ingrid','outgrid','level','window','period')
 
-    def __init__(self, src_grid_name, tgt_grid_name,level=1,verbose=False,window=3,period=1):
+    def __init__(self, src_grid_name, tgt_grid_name, level=1, verbose=False, window=3, period=1):
         # Put here info on grids to be obtained from __call__
         # This currently works with mask files
         # 'masks_CMCC-CM2_VHR4_AGCM.nc'
@@ -289,7 +289,8 @@ class Ocean_Interpolator():
         
         # Path to auxiliary Ocean files
         homedir = os.path.expanduser("~")
-        self.mdir = homedir + '/Dropbox (CMCC)/data_zapata'
+        #self.mdir = homedir + '/Dropbox (CMCC)/data_zapata'
+        self.mdir = '/work/oda/pm28621/C-GLORS_Zapata/'
         self.ingrid = src_grid_name
         self.outgrid = tgt_grid_name
         
@@ -301,27 +302,25 @@ class Ocean_Interpolator():
         if level > 0:
             self.level=level
         else:
-            SystemError(f' Surface variable not available, Level {level}')
+            SystemError(f'Surface variable not available, Level {level}')
 
         #Resolve grids
-        s_in = self._resolve_grid(src_grid_name,level)
+        s_in = self._resolve_grid(src_grid_name, level)
 
         tk = s_in['tmask']
         self.T_lon = s_in['lonT']
         self.T_lat = s_in['latT']
-        mask = tk.assign_coords({'lat':self.T_lat,'lon':self.T_lon}).drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
-
+        mask = tk.assign_coords({'lat':self.T_lat,'lon':self.T_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
 
         tk = s_in['umask']
         self.U_lon = s_in['lonU']
         self.U_lat = s_in['latU']
-        masku = tk.assign_coords({'lat':self.U_lat,'lon':self.U_lon}).drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
-
+        masku = tk.assign_coords({'lat':self.U_lat,'lon':self.U_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
         
         tk = s_in['vmask']
         self.V_lon = s_in['lonV']
         self.V_lat = s_in['latV']
-        maskv = tk.assign_coords({'lat':self.V_lat,'lon':self.V_lon}).drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
+        maskv = tk.assign_coords({'lat':self.V_lat,'lon':self.V_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
 
         self.name = 'UV  Velocity'
         self.level = str(level)
@@ -334,52 +333,52 @@ class Ocean_Interpolator():
       
         #Sea over land
        
-        self.mask = xr.where(mask !=0, 1,np.nan)
-        self.masktb,dum = self.mask_sea_over_land(mask)
+        self.mask = xr.where(mask !=0, 1, np.nan)
+        self.masktb, dum = self.mask_sea_over_land(mask)
     
-        self.maskub,self.masku = self.mask_sea_over_land(masku)
-        self.maskvb,self.maskv = self.mask_sea_over_land(maskv)
+        self.maskub, self.masku = self.mask_sea_over_land(masku)
+        self.maskvb, self.maskv = self.mask_sea_over_land(maskv)
  
         print(f' Generating interpolator for {self.name}')
         if verbose:
-            print(self.mask,self.masku,self.maskv)
+            print(self.mask, self.masku, self.maskv)
         
         # Get triangulation for all grids
-        self.latlon,self.sea_index, self.masT_vec = get_sea(self.mask)
+        self.latlon, self.sea_index, self.masT_vec = get_sea(self.mask)
         self.tri_sea_T  = Delaunay(self.latlon)  # Compute the triangulation for T
         print(f' computing the triangulation for T grid')
 
-        latlon_U,self.sea_index_U, masU_vec = get_sea(self.masku)
+        latlon_U, self.sea_index_U, masU_vec = get_sea(self.masku)
         self.tri_sea_U  = Delaunay(latlon_U)  # Compute the triangulation for U
         print(f' computing the triangulation for U grid')
 
-        latlon_V,self.sea_index_V, masT_vec = get_sea(self.maskv)
+        latlon_V, self.sea_index_V, masT_vec = get_sea(self.maskv)
         self.tri_sea_V  = Delaunay(latlon_V)  # Compute the triangulation for V
         print(f' computing the triangulation for V grid')
         
-        #Target Grid
-
-        s_out = self._resolve_grid(tgt_grid_name,level,verbose=verbose)
+        # Target Grid
+        s_out = self._resolve_grid(tgt_grid_name, level, verbose=verbose)
         self.mask_reg = s_out['tmask']
         self.cent_long = s_out['cent_long']
-        self.latlon_reg,self.sea_index_reg,self.regmask_vec = get_sea(self.mask_reg)
+        self.latlon_reg, self.sea_index_reg, self.regmask_vec = get_sea(self.mask_reg)
         
 
     def __call__(self):
-        print(f' Interpolator for T,U,V GLORS data ')
+        print(f' Interpolator for T, U, V GLORS data ')
         print(f' This is for level at depth {self.level} m')
         print(f' Main methods interp_T and interp_UV')
         return
 
+
     def __repr__(self):
         '''  Printing other info '''
-        print(f' Interpolator for T,U,V GLORS data ')
+        print(f' Interpolator for T, U, V GLORS data ')
         print(f' This is for level at depth {self.level} m')
         return '\n' 
+
     
     def interp_T(self, xdata, method='linear'):
         '''
-        
         Perform interpolation for T Grid point to the target grid.
         This methods can be used for scalar quantities.
 
@@ -399,26 +398,34 @@ class Ocean_Interpolator():
             Interpolated xarray on the target grid
         '''
 
-        # Compute interpolation T
+        # stack the input and keep only the sea
         Tstack = xdata.stack(ind=('y','x'))
         sea_T = Tstack[self.sea_index]
-        temp = xr.full_like(self.regmask_vec,np.nan)
+        # prepare the (stacked) output
+        temp = xr.full_like(self.regmask_vec, np.nan)
+
+        # define the interpolator
         if method == 'linear':
             interpolator = spint.LinearNDInterpolator(self.tri_sea_T, sea_T)
         elif method == 'nearest':
             interpolator = spint.NearestNDInterpolator(self.tri_sea_T, sea_T)
         else:
-            SystemError(f' Error in interp_T , wrong method  {method}')
+            SystemError(f'Error in interp_T , wrong method  {method}')
+        # Interpolate
         T_reg = interpolator(self.latlon_reg)
+        # save the output
         temp[self.sea_index_reg] = T_reg.data
         out = temp.unstack()
-        #Fix dateline problem
+
+        # Fix dateline problem
         if self.outgrid == 'L44_025_REG_GLO':
             delx=0.25
             ddelx=3*delx
             out[:,1439] = out[:,1438] + delx*(out[:,1]-out[:,1438])/ddelx
             out[:,0] = out[:,1438] + 2*delx*(out[:,1]-out[:,1438])/ddelx
+
         return out
+
 
     def interp_UV(self, udata, vdata, method = 'linear'):
         '''
@@ -440,20 +447,20 @@ class Ocean_Interpolator():
         '''
         
         # Insert NaN
-        udata = xr.where(udata < 200,udata, np.nan)
-        vdata = xr.where(vdata < 200,vdata, np.nan)
+        udata = xr.where(udata < 200, udata, np.nan)
+        vdata = xr.where(vdata < 200, vdata, np.nan)
 
-        #udata,vdata = self.UV_sea_over_land(udata, vdata, self.masku,self.maskv)
-        udata = self.fill_sea_over_land(udata,self.masku)
-        vdata = self.fill_sea_over_land(vdata,self.maskv)
+        # Fill U, V values over land
+        udata = self.fill_sea_over_land(udata, self.masku)
+        vdata = self.fill_sea_over_land(vdata, self.maskv)
 
-        # Compute interpolation  for U,V
+        # Compute interpolation for U,V
         Ustack = udata.stack(ind=('y','x'))
         Vstack = vdata.stack(ind=('y','x'))
         sea_U = Ustack[self.sea_index_U]
         sea_V = Vstack[self.sea_index_V]
 
-        #Interpolate to T_grid
+        # Interpolate to T_grid
         if method == 'linear':
             int_U = spint.LinearNDInterpolator(self.tri_sea_U, sea_U)
             int_V = spint.LinearNDInterpolator(self.tri_sea_V, sea_V)
@@ -461,7 +468,7 @@ class Ocean_Interpolator():
             int_U = spint.NearestNDInterpolator(self.tri_sea_U, sea_U)
             int_V = spint.NearestNDInterpolator(self.tri_sea_V, sea_V)
         else:
-            SystemError(f' Error in interp_UV , wrong method  {method}')
+            SystemError(f'Error in interp_UV , wrong method  {method}')
         
         U_on_T = int_U(self.latlon)
         V_on_T = int_V(self.latlon)
@@ -474,25 +481,25 @@ class Ocean_Interpolator():
         UT = UT.unstack()
         VT = VT.unstack()
 
-        #Rotate Velocities
+        # Rotate Velocities
         fac = self.tangle*math.pi/180.
         uu = (UT * np.cos(fac) - VT * np.sin(fac)).drop_vars(['nav_lon','nav_lat'])
         vv = (VT * np.cos(fac) + UT * np.sin(fac)).drop_vars(['nav_lon','nav_lat'])
 
         # Interpolate to regular grid
-        Uf = self.interp_T( uu, method=method)
-        Vf = self.interp_T( vv, method=method)
+        Uf = self.interp_T(uu, method=method)
+        Vf = self.interp_T(vv, method=method)
 
-        #Fix dateline problem
+        # Fix dateline problem
         if self.outgrid == 'L44_025_REG_GLO':
             delx=0.25
             ddelx=3*delx
             Uf[:,1439] = Uf[:,1438] + delx*(Uf[:,1]-Uf[:,1438])/ddelx
             Uf[:,0] = Uf[:,1438] + 2*delx*(Uf[:,1]-Uf[:,1438])/ddelx
            
-        
         return Uf,Vf
     
+
     def to_file(self, filename):
         '''
         This method writes to file the interpolating object in
@@ -502,12 +509,13 @@ class Ocean_Interpolator():
         with gzip.open(filename, 'wb') as output:  # Overwrites any existing file.
             pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
-    def mask_sea_over_land(self,mask):
+
+    def mask_sea_over_land(self, mask):
         '''
         Mask border point for `Sea over land`.
 
         Sea over land is obtained by forward and backward filling NaN land
-        value with an arbitrary value, then athey are masked to reveal only the 
+        value with an arbitrary value, then they are masked to reveal only the 
         coastal points.
 
         Parameters
@@ -521,15 +529,23 @@ class Ocean_Interpolator():
             border mask
 
         '''
-        masknan=xr.where(mask != 0, 1, np.nan)
-        um1 = masknan.ffill(dim='x',limit=1).fillna(0.)+  masknan.bfill(dim='x',limit=1).fillna(0.)- 2*masknan.fillna(0)
-        um2 = masknan.ffill(dim='y',limit=1).fillna(0.)+  masknan.bfill(dim='y',limit=1).fillna(0.)- 2*masknan.fillna(0)
+        # np.nan where the mask=0, 1 elsewhere
+        masknan = xr.where(mask != 0, 1, np.nan)
+        # propagate in the x-direction (keep only the x-border)
+        um1 = masknan.ffill(dim='x',limit=1).fillna(0.) + masknan.bfill(dim='x',limit=1).fillna(0.)- 2*masknan.fillna(0)
+        # propagate in the y-direction (keep only the y-border)
+        um2 = masknan.ffill(dim='y',limit=1).fillna(0.) + masknan.bfill(dim='y',limit=1).fillna(0.)- 2*masknan.fillna(0)
+        # keep only the border
         bord = (um1+um2)/2
+        # add the inside
         um = bord + masknan.fillna(0)
-        um = xr.where(um!=0, 1,np.nan)
-        mb = xr.where(bord !=0, 1,np.nan)
+        # uniform the non-zero values (border + inside) to all 1s
+        um = xr.where(um!=0, 1, np.nan)
+        # border mask: 1 for border points, np.nan elsewhere
+        mb = xr.where(bord !=0, 1, np.nan)
 
         return mb, um
+
 
     def _resolve_grid(self,ingrid,level,verbose=False):
         '''
@@ -556,9 +572,10 @@ class Ocean_Interpolator():
     
         elif ingrid == 'L75_025_REG_GLO':
             print(f' Regular L75 0.25 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset(self.mdir + '/L75_025_REG_GLO/GLO-MFC_001_025_mask_bathy.nc').sel(z=level). \
-                rename({'longitude':'T_lon','latitude':'T_lat'})
-            struct={'tmask': grid.mask, 'tangle': None }
+            grid = xr.open_dataset(self.mdir + '/L75_025_REG_GLO/GLO-MFC_001_025_mask_bathy.nc').sel(z=level).rename({'longitude':'lon','latitude':'lat'})
+               # rename({'longitude':'T_lon','latitude':'T_lat'})
+            cent_long = 720
+            struct={'tmask': grid.mask, 'tangle': None, 'cent_long': cent_long}
         
         elif ingrid == 'L44_025_REG_GLO':
             print(f' Regular L44 0.25 Lat-Lon Grid from WOA -- {ingrid}')
@@ -573,21 +590,23 @@ class Ocean_Interpolator():
             print(f'Elements of {ingrid} extracted \n ')
             for i in struct.keys():
               print(f' {i} \n')
+
         return struct
-    def fill_sea_over_land(self,U,u_mask):
+
+
+    def fill_sea_over_land(self, U, u_mask):
         '''
         Put values Sea over land.
 
         Using the mask of the border points, the border points are filled 
-        with the convolution in 2D, using a window of width `window`, here
-        The min_periods value is controlling the minimum number of points
+        with the convolution in 2D, using a window of width `window`.
+        The `period` value is controlling the minimum number of points
         within the window that is necessary to yield a result.
 
-        They can be fixed as attributes of the interpolator
+        `period` and `window` are assigned as attributes of the interpolator.
 
         Parameters
         ==========
-
         U:
             Field to be treated
         u_mask:
@@ -598,13 +617,18 @@ class Ocean_Interpolator():
         U:
             Filled array
         '''
+        # replace each entry with the average of a square window (3x3) centered at the value
+        # if there is at least <period> (1) non-nan value in the window 
+        r = U.rolling(x=self.window, y=self.window, min_periods=self.period, center=True)
+        r1 = r.mean()
         
-        r = U.rolling(x=self.window, y=self.window, min_periods=self.period,center=True)
-        r1=r.mean()
-        
+        # select the border 
+        # maskub is the boundary mask returned by mask_sea_over_land
         border = ~np.isnan(self.maskub).drop_vars({'lat','lon'}).stack(ind=self.maskub.dims)
-        UU=U.stack(ind=U.dims)
+        # stack U and r1
+        UU = U.stack(ind=U.dims)
         rs = r1.stack(ind=r1.dims)
+        # replace the border of U (previously nans) with the border of r1
         UU[border] = rs[border]
 
         UUU = UU.unstack()
@@ -619,7 +643,7 @@ def get_sea(maskT):
     '''
 
     # Try Interpolation
-    tm = zlib.putna(-0.1,0.1,maskT)
+    tm = zlib.putna(-0.1, 0.1, maskT)
     sea_index = ~np.isnan(tm).stack(ind=maskT.dims)
 
     maskT_vec = tm.stack(ind=maskT.dims)
@@ -629,13 +653,16 @@ def get_sea(maskT):
     sea_point.name = 'Sea'
     
     # Compute triangularization for sea points
-    latlon=np.asarray([sea_point.lat.data,sea_point.lon.data]).T
+    latlon = np.asarray([sea_point.lat.data, sea_point.lon.data]).T
+
     return latlon, sea_index, maskT_vec
+
+
 def from_file(file):
     '''
     Read interpolator object from `file`
-
     '''
+
     with gzip.open(file, 'rb') as input:
         w = pickle.load(input)
     return w

@@ -111,7 +111,7 @@ def year2date(years,i):
     date = mon[m] + ' ' + y
     return date
 
-def date2year(years,date):
+def date2year(years, date):
     """Transform index date ['Jan' '1989' ] in index i.
     
     Years are from np.arange(1979,2018, 1/12)
@@ -122,25 +122,22 @@ def date2year(years,date):
     index = (y-1979)*12 + m
     return int(index)
 
-def putna(left,right, xar, scalar = None):
+def putna(left, right, xar, scalar = None):
     '''
     Put NaN in xarray according if they are laying in the interval `left,right`
 
     Parameters
     ==========
-
-    left,right: 
+    left, right: 
         Extremes of the interval where the values must be NaN
-    xar :   
-        Xarray
+    xar:   
+        xarray
     scalar :
         If set all entries not satisfying the condition are put equal to `scalar`
 
     Returns
     =======
-
     Modified array
-
     '''
 
     if scalar:
