@@ -450,9 +450,12 @@ class Ocean_Interpolator():
         udata = xr.where(udata < 200, udata, np.nan)
         vdata = xr.where(vdata < 200, vdata, np.nan)
 
+        #DONE replaced the old SoL method w/ a new one
         # Fill U, V values over land
-        udata = self.fill_sea_over_land(udata, self.masku)
-        vdata = self.fill_sea_over_land(vdata, self.maskv)
+        #udata = self.fill_sea_over_land(udata, self.masku)
+        #vdata = self.fill_sea_over_land(vdata, self.maskv)
+        udata = self.xr_seaoverland(udata, nloop=15)
+        vdata = self.xr_seaoverland(vdata, nloop=15)
 
         # Compute interpolation for U,V
         Ustack = udata.stack(ind=('y','x'))
@@ -635,6 +638,43 @@ class Ocean_Interpolator():
         UUU = UUU.assign_coords({'lon':u_mask.lon,'lat':u_mask.lat})
 
         return UUU
+
+
+    def xr_seaoverland(self, var_in,
+                       nloop = 1,
+                       xdim='x', ydim='y',
+                       ismax = False):
+       """ Fill nan values contained in var_in with the average (or max) value
+       of the shifted versions of var_in
+
+       Create a nD x 8 matrix in which, last dimension fixed, the other dimensions
+       contain values that are shifted in one of the 8 possible directions
+       of the last two axes compared to the original matrix """
+       var_out = var_in.copy()
+      
+       for loop in range(nloop):
+          # Initialize the tuple to store the shifts
+          var_shift = ()
+          # Shift in all 8 directions
+          for x in range(-1, 2):
+             for y in range(-1, 2):
+                if ((x != 0) | (y != 0)): # Skip the no-shifting
+                   # Store the shifting in the tuple
+                   var_shift = var_shift + (var_out.shift({xdim:x, ydim:y}),)
+          # Take either the mean or the max over 'shift'
+          if ismax:
+             var_mean = xr.concat(var_shift, dim='shift').max(dim='shift')
+          else:
+             var_mean = xr.concat(var_shift, dim='shift').mean(dim='shift')
+          # Replace input masked points (nan values) with new ones
+          # from the mean (or max) matrix
+          var_out = var_out.where(~np.isnan(var_out), other=var_mean)
+          # Nothing more to flood
+          if np.sum(np.isnan(var_out)) == 0: 
+              print('WARNING. Field does not have anymore land points,', str(loop + 1),
+                    'steps were sufficient to flood it completely.', file=sys.stderr)
+              break
+       return var_out
     
 
 def get_sea(maskT):
