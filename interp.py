@@ -197,10 +197,8 @@ class Ocean_Interpolator():
     Attributes
     ----------
 
-    tgt_grid :
-        Target grid
     mask :
-        Mask of the target grid
+        Mask of the source grid
     vt :
         Weights
     wt :
@@ -221,6 +219,8 @@ class Ocean_Interpolator():
         True if the chosen level in the target grid is all land
     T_only :
         Read only the T grid
+    isglobal:
+        The input grid is global
     T_lon :
         Longitudes of input T-mask
     T_lat :
@@ -286,12 +286,12 @@ class Ocean_Interpolator():
                 'latlon_reg','sea_index_reg','regmask_vec', \
                 'T_lat','T_lon','U_lat','U_lon','V_lat','V_lon',\
                 'name','cent_long','tri_sea_T','tri_sea_U','tri_sea_V','tangle',\
-                'ingrid','outgrid','level','window','period','nloops','empty','T_only',\
+                'ingrid','outgrid','level','window','period','nloops','empty','T_only','isglobal',\
                 'Umask_reg','Ulatlon_reg','Usea_index_reg','Uregmask_vec',\
                 'Vmask_reg','Vlatlon_reg','Vsea_index_reg','Vregmask_vec')
 
     def __init__(self, src_grid_name, tgt_grid_name, level=1, verbose=False, window=3, period=1,
-                 nloops=1, T_only=True):
+                 nloops=1, T_only=True, isglobal=True):
         # Put here info on grids to be obtained from __call__
         # This currently works with mask files
         # 'masks_CMCC-CM2_VHR4_AGCM.nc'
@@ -310,12 +310,6 @@ class Ocean_Interpolator():
         self.period = period
         self.nloops = nloops
 
-        # Check levels #TODO why this?
-        if level > 0:
-            self.level=level
-        else:
-            SystemError(f'Surface variable not available, Level {level}')
-
         #Resolve grids
         s_in = self._resolve_grid(src_grid_name, level)
 
@@ -329,38 +323,35 @@ class Ocean_Interpolator():
         self.T_lon = s_in['lonT']
         self.T_lat = s_in['latT']
         mask = tk.assign_coords({'lat':self.T_lat,'lon':self.T_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
-        #TODO add depth coordinate if level=None (also to U and V)
 
         if s_in['umask'] is not None:
-           tk = s_in['umask']
-           self.U_lon = s_in['lonU']
-           self.U_lat = s_in['latU']
-           masku = tk.assign_coords({'lat':self.U_lat,'lon':self.U_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
+            tk = s_in['umask']
+            self.U_lon = s_in['lonU']
+            self.U_lat = s_in['latU']
+            masku = tk.assign_coords({'lat':self.U_lat,'lon':self.U_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
 
         if s_in['vmask'] is not None:
-           tk = s_in['vmask']
-           self.V_lon = s_in['lonV']
-           self.V_lat = s_in['latV']
-           maskv = tk.assign_coords({'lat':self.V_lat,'lon':self.V_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
+            tk = s_in['vmask']
+            self.V_lon = s_in['lonV']
+            self.V_lat = s_in['latV']
+            maskv = tk.assign_coords({'lat':self.V_lat,'lon':self.V_lon}) #.drop_vars(['U_lon','U_lat','V_lon','V_lat','T_lon','T_lat']).rename({'z':'deptht'})
 
         self.name = 'UV  Velocity'
         self.level = str(level)
 
-        #Fix Polar Fold
-        #TODO add a flag ('global=True/False') to eventually do this fix
-        #mask[-3:,:] = False
+        # Fix Polar Fold
+        if isglobal:
+            mask[-3:,:] = False
 
-        #T angles
+        # T angles
         self.tangle = s_in['tangle']
 
-        #self.mask = xr.where(mask !=0, 1, np.nan)  ## this is the 1st step in mask_sea_over_land()
-        #self.masktb, dum = self.mask_sea_over_land(mask)
-
-        self.mask = self.ALT_mask_sea_over_land(mask)
+        # apply seaoverland over source grid(s)
+        self.mask = self.mask_sea_over_land(mask)
         if s_in['umask'] is not None:
-            self.masku = self.ALT_mask_sea_over_land(masku)
+            self.masku = self.mask_sea_over_land(masku)
         if s_in['vmask'] is not None:
-            self.maskv = self.ALT_mask_sea_over_land(maskv)
+            self.maskv = self.mask_sea_over_land(maskv)
 
         print(f' Generating interpolator for {self.name}')
         if verbose:
@@ -368,18 +359,18 @@ class Ocean_Interpolator():
 
         # Get triangulation for all grids
         self.latlon, self.sea_index, self.masT_vec = get_sea(self.mask, level)
-        self.tri_sea_T  = Delaunay(self.latlon)  # Compute the triangulation for T
-        print(f' computing the triangulation for T grid')
+        self.tri_sea_T  = Delaunay(self.latlon)
+        print(f' computed the triangulation for T grid')
 
         if s_in['umask'] is not None:
             latlon_U, self.sea_index_U, masU_vec = get_sea(self.masku, level)
-            self.tri_sea_U  = Delaunay(latlon_U)  # Compute the triangulation for U
-            print(f' computing the triangulation for U grid')
+            self.tri_sea_U  = Delaunay(latlon_U)
+            print(f' computed the triangulation for U grid')
 
         if s_in['vmask'] is not None:
             latlon_V, self.sea_index_V, masT_vec = get_sea(self.maskv, level)
-            self.tri_sea_V  = Delaunay(latlon_V)  # Compute the triangulation for V
-            print(f' computing the triangulation for V grid')
+            self.tri_sea_V  = Delaunay(latlon_V)
+            print(f' computed the triangulation for V grid')
 
         # Target (T) Grid
         s_out = self._resolve_grid(tgt_grid_name, level, verbose=verbose)
@@ -438,7 +429,7 @@ class Ocean_Interpolator():
         sea_index_reg = self.Usea_index_reg if grd=='U' else self.Vsea_index_reg if grd=='V' else self.sea_index_reg
 
         # Fill T values over land
-        xdata = self.xr_seaoverland(xdata)
+        xdata = self.fill_sea_over_land(xdata)
 
         # stack the input and keep only the sea
         Tstack = xdata.stack(ind=('y','x'))
@@ -493,8 +484,8 @@ class Ocean_Interpolator():
         vdata = xr.where(vdata < 200, vdata, np.nan)
 
         # Fill U, V values over land
-        udata = self.xr_seaoverland(udata)
-        vdata = self.xr_seaoverland(vdata)
+        udata = self.fill_sea_over_land(udata)
+        vdata = self.fill_sea_over_land(vdata)
 
         # Compute interpolation for U,V
         Ustack = udata.stack(ind=('y','x'))
@@ -554,11 +545,10 @@ class Ocean_Interpolator():
 
     def mask_sea_over_land(self, mask):
         '''
-        Mask border point for `Sea over land`.
+        Apply `Sea over land` to a mask.
 
         Sea over land is obtained by forward and backward filling NaN land
-        value with an arbitrary value, then they are masked to reveal only the
-        coastal points.
+        value with an arbitrary value.
 
         Parameters
         ==========
@@ -567,30 +557,9 @@ class Ocean_Interpolator():
 
         Returns
         =======
-        border:
-            border mask
+        masknan:
+            seaoverlanded mask
 
-        '''
-        # np.nan where the mask=0, 1 elsewhere
-        masknan = xr.where(mask != 0, 1, np.nan)
-        # propagate in the x-direction (keep only the x-border)
-        um1 = masknan.ffill(dim='x',limit=1).fillna(0.) + masknan.bfill(dim='x',limit=1).fillna(0.)- 2*masknan.fillna(0)
-        # propagate in the y-direction (keep only the y-border)
-        um2 = masknan.ffill(dim='y',limit=1).fillna(0.) + masknan.bfill(dim='y',limit=1).fillna(0.)- 2*masknan.fillna(0)
-        # keep only the border
-        bord = (um1+um2)/2
-        # add the inside
-        um = bord + masknan.fillna(0)
-        # uniform the non-zero values (border + inside) to all 1s
-        um = xr.where(um!=0, 1, np.nan)
-        # border mask: 1 for border points, np.nan elsewhere
-        mb = xr.where(bord !=0, 1, np.nan)
-
-        return mb, um
-
-
-    def ALT_mask_sea_over_land(self, mask):
-        '''
         '''
         # np.nan where the mask=0, 1 elsewhere
         masknan = xr.where(mask != 0, 1, np.nan)
@@ -652,24 +621,17 @@ class Ocean_Interpolator():
                     'latU': grid.gphiu,'lonV': grid.glamv,'latV': grid.gphiv  }
 
         elif ingrid == 'L50_1o24_BDY_MED':
-            print(f' LOBC L50 1/24 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/Med_LOBC/grids/tmask50_UVT_latlon_coordinates.nc').rename({'T_lat':'lat','T_lon':'lon'})
-            # take only the boundary (T)
-            nc_bndT_tmp = xr.open_dataset('/users_home/oda/pm28621/Med_LOBC/grids/bndT_2D.nc')
-            # this Tgrid implies a masking
-            #Tgrid = grid['tmask'].isel(x=nc_bndT_tmp.nbidta-1, y=nc_bndT_tmp.nbjdta-1) == 1
-            #Tgrid = Tgrid.isel(z=level)
-            # this one does not
+            print(f' LOBC L50 1/24 Lat-Lon Grid (NOT MASKED) -- {ingrid}')
+            grid = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/tmask50_UVT_latlon_coordinates.nc')\
+                        .rename({'T_lat':'lat','T_lon':'lon'})
+            # take only the boundary (T), do not mask
+            nc_bndT_tmp = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/bndT_2D.nc')
             Tgrid = grid['lat'].isel(x=nc_bndT_tmp.nbidta-1, y=nc_bndT_tmp.nbjdta-1) > 0.
-            # take only the boundary (U)
-            nc_bndU_tmp = xr.open_dataset('/users_home/oda/pm28621/Med_LOBC/grids/bndU_2D.nc')
-            #Ugrid = grid['umask'].isel(x=nc_bndU_tmp.nbidta-1, y=nc_bndU_tmp.nbjdta-1) == 1
-            #Ugrid = Ugrid.isel(z=level)
+            # take only the boundary (U), do not mask
+            nc_bndU_tmp = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/bndU_2D.nc')
             Ugrid = grid['lat'].isel(x=nc_bndU_tmp.nbidta-1, y=nc_bndU_tmp.nbjdta-1) > 0.
-            # take only the boundary (V)
-            nc_bndV_tmp = xr.open_dataset('/users_home/oda/pm28621/Med_LOBC/grids/bndV_2D.nc')
-            #Vgrid = grid['vmask'].isel(x=nc_bndV_tmp.nbidta-1, y=nc_bndV_tmp.nbjdta-1) == 1
-            #Vgrid = Vgrid.isel(z=level)
+            # take only the boundary (V), do not mask
+            nc_bndV_tmp = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/bndV_2D.nc')
             Vgrid = grid['lat'].isel(x=nc_bndV_tmp.nbidta-1, y=nc_bndV_tmp.nbjdta-1) > 0.
             # prepare the struct
             cent_long = 720
@@ -678,21 +640,37 @@ class Ocean_Interpolator():
 
         elif ingrid == 'L50_1o24_REG_MED':
             print(f' Regular L50 1/24 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/Med_LOBC/grids/tmask50_UVT_latlon_coordinates.nc').rename({'T_lat':'lat','T_lon':'lon'})
+            grid = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/tmask50_UVT_latlon_coordinates.nc')\
+                    .rename({'T_lat':'lat','T_lon':'lon'})
             grid = grid.isel(z=level)
             cent_long = 720
             struct={'tmask': grid.tmask, 'tangle': None, 'cent_long': cent_long,
                     'umask': grid.umask, 'vmask': grid.vmask}
 
+        # this is a source grid
         elif ingrid == 'L102_025_WOA':
             print(f' Regular L102 0.25 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/WOA_meshmask.nc')
-            grid = grid.isel(x=slice(627,867), y=slice(460,560))
+            grid = grid.isel(x=slice(630,867), y=slice(475,550))
             grid = grid.isel(z=level)
             struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
                     'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':None,
                     'latU': None, 'lonV': None,'latV': None }
-
+        # this is a target grid (for interpolation of WOA over SDN MED)
+        elif ingrid == 'L102_0125_SDN_MED':
+            print(f' Regular L102 0.125 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGSDN_0125h_102v.nc')
+            grid = grid.isel(z=level).rename({'T_lat':'lat','T_lon':'lon'})#.rename({'y':'lat','x':'lon'})
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+                    'tangle': None, 'cent_long':None}
+        # this is a target grid (for interpolation of WOA over SDN NA)
+        elif ingrid == 'L102_025_SDN_NA':
+            print(f' Regular L102 0.125 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGSDN_NA_025h_102v.nc')
+            grid = grid.isel(z=level).rename({'T_lat':'lat','T_lon':'lon'})
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+                    'tangle': None, 'cent_long':None}
+        # this is a target grid (for interpolation of WOA over MFS NEMO)
         elif ingrid == 'L102_1o24_REG_MED':
             print(f' Regular L102 1/24 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask102_T_latlon_coordinates.nc').rename({'T_lat':'lat','T_lon':'lon'})
@@ -701,23 +679,24 @@ class Ocean_Interpolator():
             struct={'tmask': grid.tmask, 'tangle': None, 'cent_long': cent_long,
                     'umask': grid.umask, 'vmask': grid.vmask}
 
-        elif ingrid == 'L65_025_SDN_NA_v2':
-            print(f' Regular L65 0.25 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/SDN_NA_v2_meshmask.nc')
-            grid = grid.isel(y=slice(25,85), x=slice(140,-1))
-            grid = grid.isel(z=level)
-            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
-                    'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':None,
-                    'latU': None, 'lonV': None,'latV': None }
+#        elif ingrid == 'L65_025_SDN_NA_v2':
+#            print(f' Regular L65 0.25 Lat-Lon Grid -- {ingrid}')
+#            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/SDN_NA_v2_meshmask.nc')
+#            grid = grid.isel(y=slice(25,85), x=slice(140,-1))
+#            grid = grid.isel(z=level)
+#            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+#                    'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':None,
+#                    'latU': None, 'lonV': None,'latV': None }
 
-        elif ingrid == 'L65_1o24_REG_MED':
-            print(f' Regular L65 1/24 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask65_T_latlon_coordinates.nc').rename({'T_lat':'lat','T_lon':'lon'})
-            grid = grid.isel(z=level)
-            cent_long = 720
-            struct={'tmask': grid.tmask, 'tangle': None, 'cent_long': cent_long,
-                    'umask': None, 'vmask': None}
+#        elif ingrid == 'L65_1o24_REG_MED':
+#            print(f' Regular L65 1/24 Lat-Lon Grid -- {ingrid}')
+#            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask65_T_latlon_coordinates.nc').rename({'T_lat':'lat','T_lon':'lon'})
+#            grid = grid.isel(z=level)
+#            cent_long = 720
+#            struct={'tmask': grid.tmask, 'tangle': None, 'cent_long': cent_long,
+#                    'umask': None, 'vmask': None}
 
+        # this is a source grid
         elif ingrid == 'L107_025_SDN_NA_v1':
             print(f' Regular L107 0.25 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/SDN_NA_v1_meshmask.nc')
@@ -726,7 +705,14 @@ class Ocean_Interpolator():
             struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
                     'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':None,
                     'latU': None, 'lonV': None,'latV': None }
-
+        # this is a target grid (for interpolation of SDN_NA over WOA)
+        elif ingrid == 'L107_025_WOA':
+            print(f' Regular L107 0.25 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGWOA_025h_107v.nc')
+            grid = grid.isel(z=level).rename({'T_lat':'lat','T_lon':'lon'})#.rename({'y':'lat','x':'lon'})
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+                    'tangle': None, 'cent_long':None}
+        # this is a target grid (for interpolation of SDN_NA over MFS NEMO)
         elif ingrid == 'L107_1o24_REG_MED':
             print(f' Regular L107 1/24 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask107_T_latlon_coordinates.nc').rename({'T_lat':'lat','T_lon':'lon'})
@@ -735,6 +721,7 @@ class Ocean_Interpolator():
             struct={'tmask': grid.tmask, 'tangle': None, 'cent_long': cent_long,
                     'umask': None, 'vmask': None}
 
+        # this is a source grid
         elif ingrid == 'L92_0125_SDN_MED':
             print(f' Regular L92 0.25 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/SDN_MED_meshmask.nc')
@@ -742,7 +729,14 @@ class Ocean_Interpolator():
             struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
                     'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':None,
                     'latU': None, 'lonV': None,'latV': None }
-
+        # this is a target grid (for interpolation of SDN_MED over WOA)
+        elif ingrid == 'L92_025_WOA':
+            print(f' Regular L92 0.25 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGWOA_025h_92v.nc')
+            grid = grid.isel(z=level).rename({'T_lat':'lat','T_lon':'lon'})#.rename({'y':'lat','x':'lon'})
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+                    'tangle': None, 'cent_long':None}
+        # this is a target grid (for interpolation of SDN_MED over MFS NEMO)
         elif ingrid == 'L92_1o24_REG_MED':
             print(f' Regular L92 1/24 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask92_T_latlon_coordinates.nc').rename({'T_lat':'lat','T_lon':'lon'})
@@ -764,6 +758,26 @@ class Ocean_Interpolator():
             cent_long = 720
             struct={'tmask': grid.m025x025L44, 'tangle': None ,'cent_long' : cent_long}
 
+        elif ingrid == 'L50_025_TRP_GLO_Elisa':
+            print(f' Tripolar L50 0.25 Lat-Lon Grid (cropped) -- {ingrid}')
+            grid = xr.open_dataset('/work/oda/pm28621/data/Reanalysis/CGLORS/mesh_mask.nc')
+            # Take only a slice of it
+            grid = grid.isel(x=slice(1064,1064+233),y=slice(622,622+140))
+            grid = grid.isel(z=level, t=0)
+            angle = xr.open_dataset('/work/oda/pm28621/data/Reanalysis/CGLORS/ORCA025L75_angle.nc')\
+                        .isel(x=slice(1064,1064+233),y=slice(622,622+140))
+            struct={'tmask': grid.tmask, 'umask': grid.umask,'vmask': grid.vmask,
+                    'tangle': angle.tangle, 'lonT': grid.glamt,'latT': grid.gphit,'lonU':grid.glamu,
+                    'latU': grid.gphiu,'lonV': grid.glamv,'latV': grid.gphiv  }
+
+        elif ingrid == 'L50_025_REG_MED_Elisa':
+            print(f' Regular L50 0.25 Lat-Lon Grid (cropped) -- {ingrid}')
+            grid = xr.open_dataset('/data/oda/pm28621/Reanalysis/CGLORSv5/outputs//cglors_meshmask/remap_MED_meshmask.nc')
+            grid = grid.isel(z=level, time=0)
+            cent_long = 720
+            struct={'tmask': grid.tmask, 'tangle': None, 'cent_long': cent_long,
+                    'umask': grid.tmask, 'vmask': grid.tmask}
+
         else:
              SystemError(f'Wrong Option in _resolve_grid --> {ingrid}')
 
@@ -775,60 +789,33 @@ class Ocean_Interpolator():
         return struct
 
 
-    def fill_sea_over_land(self, U, u_mask):
+    def fill_sea_over_land(self, var_in,
+                           xdim='x', ydim='y',
+                           ismax = False):
         '''
         Put values Sea over land.
 
-        Using the mask of the border points, the border points are filled
-        with the convolution in 2D, using a window of width `window`.
-        The `period` value is controlling the minimum number of points
-        within the window that is necessary to yield a result.
+        The nan points are filled with the average (or max) value
+        of the shifted versions (8 possible directions) of `var_in`.
+        The `nloops` values controls the number of cycles.
 
-        `period` and `window` are assigned as attributes of the interpolator.
+        `nloops` is assigned as attribute of the interpolator.
 
         Parameters
         ==========
-        U:
+        var_in:
             Field to be treated
-        u_mask:
-            Mask for the field
+        xdim:
+            Name of the x dimension
+        ydim:
+            Name of the y dimension
+        ismax:
+            Take either the mean (ismax=False) or the max (=True) over 'shift'
 
         Returns
         =======
-        U:
+        var_out:
             Filled array
-        '''
-        # replace each entry with the average of a square window (3x3) centered at the value
-        # if there is at least <period> (1) non-nan value in the window
-        r = U.rolling(x=self.window, y=self.window, min_periods=self.period, center=True)
-        r1 = r.mean()
-
-        # select the border
-        # maskub is the boundary mask returned by mask_sea_over_land
-        border = ~np.isnan(self.maskub).drop_vars({'lat','lon'}).stack(ind=self.maskub.dims)
-        # stack U and r1
-        UU = U.stack(ind=U.dims)
-        rs = r1.stack(ind=r1.dims)
-        # replace the border of U (previously nans) with the border of r1
-        UU[border] = rs[border]
-
-        UUU = UU.unstack()
-        UUU = UUU.assign_coords({'lon':u_mask.lon,'lat':u_mask.lat})
-
-        return UUU
-
-
-    def xr_seaoverland(self, var_in,
-                       #nloops = 1, ## this is replaced by the 'nloops' parameter of the OceanInterpolator
-                       xdim='x', ydim='y',
-                       ismax = False):
-        '''
-        Fill nan values contained in var_in with the average (or max) value
-        of the shifted versions of var_in
-
-        Create a nD x 8 matrix in which, last dimension fixed, the other dimensions
-        contain values that are shifted in one of the 8 possible directions
-        of the last two axes compared to the original matrix
         '''
         var_out = var_in.copy()
 
