@@ -584,7 +584,7 @@ class Ocean_Interpolator():
         Internal routine to resolve grid informations
         '''
 
-        elif ingrid == 'L50_025_TRP_GLO':
+        if ingrid == 'L50_025_TRP_GLO':
             print(f' Tripolar L50 0.25 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/work/oda/pm28621/data/Reanalysis/CGLORS/mesh_mask.nc')
             # Take only a slice of it
