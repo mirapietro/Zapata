@@ -312,6 +312,7 @@ class Ocean_Interpolator():
 
         #Resolve grids
         s_in = self._resolve_grid(src_grid_name, level)
+        print(s_in.keys())
 
         self.empty = False
         if s_in['tmask'].sum() == 0.:
@@ -650,7 +651,7 @@ class Ocean_Interpolator():
         # this is a source grid
         elif ingrid == 'L102_025_WOA':
             print(f' Regular L102 0.25 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/WOA_meshmask.nc')
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/WOA_meshmask.nc')
             grid = grid.isel(x=slice(630,867), y=slice(475,550))
             grid = grid.isel(z=level)
             struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
@@ -659,16 +660,16 @@ class Ocean_Interpolator():
         # this is a target grid (for interpolation of WOA over SDN MED)
         elif ingrid == 'L102_0125_SDN_MED':
             print(f' Regular L102 0.125 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGSDN_0125h_102v.nc')\
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/hybrid_grids/REGSDN_0125h_102v.nc')\
                     .rename({'T_lat':'lat','T_lon':'lon'})
             # do not mask (this is an intermediate grid)
             Tgrid = grid['lat'] > 0.
             struct={'tmask': Tgrid, 'umask': None,'vmask': None,
                     'tangle': None, 'cent_long':None}
-        # this is a target grid (for interpolation of WOA over SDN NA)
-        elif ingrid == 'L102_025_SDN_NA':
+        # this is a target grid (for interpolation of WOA over SDN NAT)
+        elif ingrid == 'L102_025_SDN_NAT':
             print(f' Regular L102 0.125 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGSDN_NA_025h_102v.nc')\
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/hybrid_grids/REGSDN_NAT_025h_102v.nc')\
                     .rename({'T_lat':'lat','T_lon':'lon'})
             # do not mask (this is an intermediate grid)
             Tgrid = grid['lat'] > 0.
@@ -677,7 +678,7 @@ class Ocean_Interpolator():
         # this is a target grid (for interpolation of WOA over MFS NEMO)
         elif ingrid == 'L102_1o24_REG_MED':
             print(f' Regular L102 1/24 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask102_T_latlon_coordinates.nc')\
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/tmask102_T_latlon_coordinates.nc')\
                         .rename({'T_lat':'lat','T_lon':'lon'})
             # do not mask (this is an intermediate grid)
             Tgrid = grid['lat'] > 0.
@@ -686,38 +687,57 @@ class Ocean_Interpolator():
                     'umask': None, 'vmask': None}
 
         # this is a source grid
-        elif ingrid == 'L107_025_SDN_NA_v1':
+        elif ingrid == 'L107_025_SDN_NAT_v1':
             print(f' Regular L107 0.25 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/SDN_NA_v1_meshmask.nc')
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/SDN_NAT_v1_meshmask.nc')
             grid = grid.isel(y=slice(50,170), x=slice(240,-1))
             grid = grid.isel(z=level)
             struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
                     'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':None,
                     'latU': None, 'lonV': None,'latV': None }
-        # this is a target grid (for interpolation of SDN_NA over WOA)
+        # this is a target grid (for interpolation of SDN_NAT over WOA)
         elif ingrid == 'L107_025_WOA':
             print(f' Regular L107 0.25 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGWOA_025h_107v.nc')\
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/hybrid_grids/REGWOA_025h_107v.nc')\
                     .rename({'T_lat':'lat','T_lon':'lon'})
             # do not mask (this is an intermediate grid)
             Tgrid = grid['lat'] > 0.
             struct={'tmask': Tgrid, 'umask': None,'vmask': None,
                     'tangle': None, 'cent_long':None}
-        # this is a target grid (for interpolation of SDN_NA over MFS NEMO)
+        # this is a target grid (for interpolation of SDN_NAT over MFS NEMO)
         elif ingrid == 'L107_1o24_REG_MED':
             print(f' Regular L107 1/24 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask107_T_latlon_coordinates.nc')\
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/tmask107_T_latlon_coordinates.nc')\
                         .rename({'T_lat':'lat','T_lon':'lon'})
             # do not mask (this is an intermediate grid)
             Tgrid = grid['lat'] > 0.
             cent_long = 720
             struct={'tmask': Tgrid, 'tangle': None, 'cent_long': cent_long,
                     'umask': None, 'vmask': None}
+        # this is a target grid (for interpolation of SDN_NAT over SDN_MED extended grid)
+        #elif ingrid == 'L107_0125_SDN_EXT':
+        #    print(f' Regular L107 0.125 Lat-Lon Grid -- {ingrid}')
+        #    grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/SDN_complete_meshmask.nc')
+        #    # mask (this is a final target grid)
+        #    Tgrid = grid['tmask'].isel(z=level)
+        #    cent_long = 720
+        #    struct={'tmask': Tgrid, 'tangle': None, 'cent_long': cent_long,
+        #            'umask': None, 'vmask': None}
+
+        # this is a source (and a target) grid
+        elif ingrid == 'L107_0125_SDN_EXT':
+            print(f' Regular L107 0.125 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/SDN_complete_meshmask.nc')
+            grid = grid.isel(z=level)
+            cent_long = 720
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None, 'cent_long': cent_long,
+                    'tangle': None, 'lonT': grid.lon,'latT': grid.lat,'lonU':None,
+                    'latU': None, 'lonV': None,'latV': None }
 
         # this is a source grid
         elif ingrid == 'L92_0125_SDN_MED':
             print(f' Regular L92 0.25 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/SDN_MED_meshmask.nc')
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/SDN_MED_meshmask.nc')
             grid = grid.isel(z=level)
             struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
                     'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':None,
@@ -725,7 +745,7 @@ class Ocean_Interpolator():
         # this is a target grid (for interpolation of SDN_MED over WOA)
         elif ingrid == 'L92_025_WOA':
             print(f' Regular L92 0.25 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/hybrid_grids/REGWOA_025h_92v.nc')\
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/hybrid_grids/REGWOA_025h_92v.nc')\
                     .rename({'T_lat':'lat','T_lon':'lon'})
             # do not mask (this is an intermediate grid)
             Tgrid = grid['lat'] > 0.
@@ -734,7 +754,7 @@ class Ocean_Interpolator():
         # this is a target grid (for interpolation of SDN_MED over MFS NEMO)
         elif ingrid == 'L92_1o24_REG_MED':
             print(f' Regular L92 1/24 Lat-Lon Grid -- {ingrid}')
-            grid = xr.open_dataset('/users_home/oda/pm28621/newREA_IC/grids/tmask92_T_latlon_coordinates.nc')\
+            grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/tmask92_T_latlon_coordinates.nc')\
                     .rename({'T_lat':'lat','T_lon':'lon'})
             # do not mask (this is an intermediate grid)
             Tgrid = grid['lat'] > 0.
