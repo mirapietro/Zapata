@@ -705,7 +705,7 @@ class Ocean_Interpolator():
             struct={'tmask': Tgrid, 'umask': None,'vmask': None,
                     'tangle': None, 'cent_long':None}
         # this is a target grid (for interpolation of SDN_NAT over MFS NEMO)
-        elif ingrid == 'L107_1o24_REG_MED':
+        elif ingrid == 'intermediate_1o24_REG_MED':
             print(f' Regular L107 1/24 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/tmask107_T_latlon_coordinates.nc')\
                         .rename({'T_lat':'lat','T_lon':'lon'})
