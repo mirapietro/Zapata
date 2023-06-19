@@ -515,9 +515,14 @@ class Ocean_Interpolator():
         VT = VT.unstack()
 
         # Rotate Velocities
-        fac = self.tangle*math.pi/180.
-        uu = (UT * np.cos(fac) - VT * np.sin(fac)).drop_vars(['nav_lon','nav_lat'])
-        vv = (VT * np.cos(fac) + UT * np.sin(fac)).drop_vars(['nav_lon','nav_lat'])
+        if self.tangle is not None:
+            fac = self.tangle*math.pi/180.
+            uu = (UT * np.cos(fac) - VT * np.sin(fac)).drop_vars(['nav_lon','nav_lat'])
+            vv = (VT * np.cos(fac) + UT * np.sin(fac)).drop_vars(['nav_lon','nav_lat'])
+        else:
+            print('assuming the parent grid is regular, not rotating the velocities')
+            uu = UT
+            vv = VT
 
         # Interpolate to regular grid
         Uf = self.interp_T(uu, method=method, grd='U')
@@ -599,6 +604,19 @@ class Ocean_Interpolator():
             struct={'tmask': grid.tmask, 'umask': grid.umask,'vmask': grid.vmask,
                     'tangle': angle.tangle, 'lonT': grid.glamt,'latT': grid.gphit,'lonU':grid.glamu,
                     'latU': grid.gphiu,'lonV': grid.glamv,'latV': grid.gphiv  }
+
+        if ingrid == 'L50_1o12_REG_GLO':
+            print(f' Regular L50 1/12 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/data/opa/mfs/Med_static/MFS_EAS6_STATIC_V5/BDY_DATA0/meshmask_mercator_psy4_atlbox.nc')\
+                        .isel(time_counter=0, z=level)
+            # add 2d lat&lon
+            lon2d = np.repeat(np.expand_dims(grid.lon.values, axis=1), len(grid.y), axis=1).transpose()
+            lat2d = np.repeat(np.expand_dims(grid.lat.values, axis=1), len(grid.x), axis=1)
+            grid['lat2d'] = (('y','x'), lat2d)
+            grid['lon2d'] = (('y','x'), lon2d)
+            struct={'tmask': grid.tmask, 'umask': grid.umask,'vmask': grid.vmask,
+                    'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':grid.lon2d,
+                    'latU': grid.lat2d,'lonV': grid.lon2d,'latV': grid.lat2d  }
 
         elif ingrid == 'L50_1o24_BDY_MED':
             print(f' LOBC L50 1/24 Lat-Lon Grid (NOT MASKED) -- {ingrid}')
