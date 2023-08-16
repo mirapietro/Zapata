@@ -588,7 +588,7 @@ class Ocean_Interpolator():
         '''
         Internal routine to resolve grid informations
         '''
-
+        # input mask for the ATL LOBC from CGLORSv5
         if ingrid == 'L50_025_TRP_GLO':
             print(f' Tripolar L50 0.25 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/work/oda/pm28621/data/Reanalysis/CGLORS/mesh_mask.nc')
@@ -605,8 +605,9 @@ class Ocean_Interpolator():
                     'tangle': angle.tangle, 'lonT': grid.glamt,'latT': grid.gphit,'lonU':grid.glamu,
                     'latU': grid.gphiu,'lonV': grid.glamv,'latV': grid.gphiv  }
 
+        # input mask for the ATL LOBC from Mercator
         if ingrid == 'L50_1o12_REG_GLO':
-            print(f' Regular L50 1/12 Lat-Lon Grid -- {ingrid}')
+            print(f' Regular L50 1/12 Lat-Lon Grid for the Atlantic -- {ingrid}')
             grid = xr.open_dataset('/data/opa/mfs/Med_static/MFS_EAS6_STATIC_V5/BDY_DATA0/meshmask_mercator_psy4_atlbox.nc')\
                         .isel(time_counter=0, z=level)
             # add 2d lat&lon
@@ -618,6 +619,21 @@ class Ocean_Interpolator():
                     'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':grid.lon2d,
                     'latU': grid.lat2d,'lonV': grid.lon2d,'latV': grid.lat2d  }
 
+        # input mask for the DRD LOBC from Mercator
+        if ingrid == 'L50_1o12_REG_DRD':
+            print(f' Regular L50 1/12 Lat-Lon Grid for the Dardanelles -- {ingrid}')
+            grid = xr.open_dataset('/data/opa/mfs/Med_static/MFS_EAS6_STATIC_V5/DRDBDY_DATA0-201901/meshmask_mercator_psy4_dardanelles.nc')\
+                        .isel(time_counter=0, z=level)
+            # add 2d lat&lon
+            lon2d = np.repeat(np.expand_dims(grid.lon.values, axis=1), len(grid.y), axis=1).transpose()
+            lat2d = np.repeat(np.expand_dims(grid.lat.values, axis=1), len(grid.x), axis=1)
+            grid['lat2d'] = (('y','x'), lat2d)
+            grid['lon2d'] = (('y','x'), lon2d)
+            struct={'tmask': grid.tmask, 'umask': grid.umask,'vmask': grid.vmask,
+                    'tangle': None, 'lonT': grid.lon2d,'latT': grid.lat2d,'lonU':grid.lon2d,
+                    'latU': grid.lat2d,'lonV': grid.lon2d,'latV': grid.lat2d  }
+
+        # (intermediate) output mask for the ATL LOBC
         elif ingrid == 'L50_1o24_BDY_MED':
             print(f' LOBC L50 1/24 Lat-Lon Grid (NOT MASKED) -- {ingrid}')
             grid = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/tmask50_UVT_latlon_coordinates.nc')\
@@ -630,6 +646,25 @@ class Ocean_Interpolator():
             Ugrid = grid['lat'].isel(x=nc_bndU_tmp.nbidta-1, y=nc_bndU_tmp.nbjdta-1) > 0.
             # take only the boundary (V), do not mask
             nc_bndV_tmp = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/bndV_2D.nc')
+            Vgrid = grid['lat'].isel(x=nc_bndV_tmp.nbidta-1, y=nc_bndV_tmp.nbjdta-1) > 0.
+            # prepare the struct
+            cent_long = 720
+            struct={'tmask': Tgrid, 'tangle': None, 'cent_long': cent_long,
+                    'umask': Ugrid, 'vmask': Vgrid}
+
+        # (intermediate) output mask for the DRD LOBC
+        elif ingrid == 'L50_1o24_BDY_DRD':
+            print(f' Dardanelles LOBC L50 1/24 Lat-Lon Grid (NOT MASKED) -- {ingrid}')
+            grid = xr.open_dataset('/data/oda/pm28621/med_LOBC_out/grids/tmask50_UVT_latlon_coordinates.nc')\
+                        .rename({'T_lat':'lat','T_lon':'lon'})
+            # take only the boundary (T), do not mask
+            nc_bndT_tmp = xr.open_dataset('/data/oda/pm28621/NRT_LOBC_test/grids/bndT_2D_drd.nc')
+            Tgrid = grid['lat'].isel(x=nc_bndT_tmp.nbidta-1, y=nc_bndT_tmp.nbjdta-1) > 0.
+            # take only the boundary (U), do not mask
+            nc_bndU_tmp = xr.open_dataset('/data/oda/pm28621/NRT_LOBC_test/grids/bndU_2D_drd.nc')
+            Ugrid = grid['lat'].isel(x=nc_bndU_tmp.nbidta-1, y=nc_bndU_tmp.nbjdta-1) > 0.
+            # take only the boundary (V), do not mask
+            nc_bndV_tmp = xr.open_dataset('/data/oda/pm28621/NRT_LOBC_test/grids/bndV_2D_drd.nc')
             Vgrid = grid['lat'].isel(x=nc_bndV_tmp.nbidta-1, y=nc_bndV_tmp.nbjdta-1) > 0.
             # prepare the struct
             cent_long = 720
@@ -651,7 +686,7 @@ class Ocean_Interpolator():
         if verbose:
             print(f'Elements of {ingrid} extracted \n ')
             for i in struct.keys():
-              print(f' {i} \n')
+                print(f' {i} \n')
 
         return struct
 
