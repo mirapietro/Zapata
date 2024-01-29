@@ -36,7 +36,7 @@ import scipy.spatial.qhull as qhull
 from scipy.spatial import Delaunay
 
 
-import zapata.lib as zlib
+#from zapata.lib import putna
 
 import xarray as xr
 
@@ -649,6 +649,15 @@ class Ocean_Interpolator():
                     'umask': grid.umask, 'vmask': grid.vmask}
 
         # this is a source grid
+        elif ingrid == 'L72_116_NextData':
+            print(f' Regular L72 1/16 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/data/oda/pm28621/IC_grids/meshmask_SYS4C-sys4a5.nc')
+            grid = grid.isel(z=level).squeeze()
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+                    'tangle': None, 'lonT': grid.nav_lon,'latT': grid.nav_lat,'lonU':None,
+                    'latU': None, 'lonV': None,'latV': None }
+
+        # this is a source grid
         elif ingrid == 'L102_025_WOA':
             print(f' Regular L102 0.25 Lat-Lon Grid -- {ingrid}')
             grid = xr.open_dataset('/users_home/oda/pm28621/IC_MEDRAN24_COP2/grids/WOA_meshmask.nc')
@@ -869,7 +878,7 @@ def get_sea(maskT, level):
     '''
 
     # Try Interpolation
-    tm = zlib.putna(-0.1, 0.1, maskT)
+    tm = putna(-0.1, 0.1, maskT)
     sea_index = ~np.isnan(tm).stack(ind=maskT.dims)
 
     maskT_vec = tm.stack(ind=maskT.dims)
@@ -894,3 +903,27 @@ def from_file(file):
     return w
 
 
+def putna(left, right, xar, scalar = None):
+    '''
+    Put NaN in xarray according if they are laying in the interval `left,right`
+
+    Parameters
+    ==========
+    left, right:
+        Extremes of the interval where the values must be NaN
+    xar:
+        xarray
+    scalar :
+        If set all entries not satisfying the condition are put equal to `scalar`
+
+    Returns
+    =======
+    Modified array
+    '''
+
+    if scalar:
+        out=scalar
+    else:
+        out=xar
+
+    return xr.where((xar < right) & (xar > left), np.nan, out)
