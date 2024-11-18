@@ -648,6 +648,22 @@ class Ocean_Interpolator():
             struct={'tmask': grid.tmask, 'tangle': None, 'cent_long': cent_long,
                     'umask': grid.umask, 'vmask': grid.vmask}
 
+        # source grid
+        ## AI_SST project w/ UniBO
+        elif ingrid == 'SST_REP_L4':
+            print(f' Regular L1 1/20 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/work/cmcc/pm28621/AI_SST/grids/SST_L4_REP_grid.nc').rename({'lon':'x','lat':'y'})
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+                    'tangle': None, 'lonT': grid.nav_lon,'latT': grid.nav_lat,'lonU':None,
+                    'latU': None, 'lonV': None,'latV': None }
+        # target grid
+        ## AI_SST project w/ UniBO
+        elif ingrid == 'AQUA_MODIS':
+            print(f' Regular L1 1/24 Lat-Lon Grid -- {ingrid}')
+            grid = xr.open_dataset('/work/cmcc/pm28621/AI_SST/grids/tmask_interpolated.nc')
+            struct={'tmask': grid.tmask, 'umask': None,'vmask': None,
+                    'tangle': None, 'cent_long':None}
+
         # this is a source grid
         elif ingrid == 'L72_116_NextData':
             print(f' Regular L72 1/16 Lat-Lon Grid -- {ingrid}')
